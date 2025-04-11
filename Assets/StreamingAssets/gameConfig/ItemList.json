@@ -2,12 +2,39 @@
     "items": [
         {
             "id": 0,
-            "name": "Jump High",
+            "name": "Fast Shoes",
             "effects": [
                 {
                     "effectType": "sa",
                     "target": "@CharStats.1",
                     "expr": "10"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "High Jumper",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.4",
+                    "expr": "15"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Full Energy jacket bullets",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@BulletPoolStatsPrimary.3",
+                    "expr": "200"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.2",
+                    "expr": "@PrimaryWeaponStats.2 + 10"
                 }
             ]
         }

@@ -82,7 +82,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         // input system setup
         move = playerInput.actions["Move"];
-        jump = playerInput.actions["Jump"];
         aim = playerInput.actions["Aim"];
         reload = playerInput.actions["Reload"];
         throwAction = playerInput.actions["Throw"];
@@ -99,7 +98,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
             playerInput.actions["Aim"].performed += ctx => { aiming = !aiming; animator.SetBool("aiming", aiming); };
         }
 
-        jump.performed += ctx => { animator.SetBool("jump", true); };
         move.performed += ctx => { animator.SetBool("walking", true); };
         move.canceled += ctx => { animator.SetBool("walking", false); };
         reload.performed += ctx => { animator.SetTrigger("reloading"); };

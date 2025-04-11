@@ -2,8 +2,8 @@
 health = 100.0 
 speed = 7.0
 rotationSpeed = 0.1 
-aimRotationSpeed = 0.1 
-jumpSpeedy = 10.0 
+aimRotationSpeed = 10.0 
+jumpSpeedy = 15.0 
 jumpSpeedx = 10.0 
 jumpSpeedz = 10.0
 speedLimitBeforeRagdolling = 100.0 

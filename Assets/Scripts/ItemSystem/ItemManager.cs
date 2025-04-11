@@ -1,0 +1,178 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using UnityEngine;
+
+/// <summary>
+/// This class converts the JSON file into a list of items
+/// </summary>
+public class ItemManager
+{
+    public int id;
+    public List<AbstractEffect> effects;
+    public static Dictionary<string, int> statClassToIdRegistry;
+    public bool added = false;
+
+    public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
+    public static Dictionary<int, Item> bulletPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file 
+
+    static ItemManager()
+    {
+        // Initialize the statClass dictionary with some values
+        statClassToIdRegistry = new Dictionary<string, int>
+        {
+            { "CharStats", 0},
+            { "testUpdate", 1 },
+            { "Ragdoller",  2 },
+            {"PrimaryWeaponStats", 3},
+            {"SecondaryWeaponState", 4},
+            {"BulletPoolStatsPrimary",5},
+            {"BulletPoolStatsSecondary", 6},
+            {"PhysicalState", 7}
+        };
+
+        globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ItemList.json", false);
+
+        Debug.Log("items compiled");
+
+        bulletPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/Bullets.json", true);
+    }
+
+    /// <summary>
+    /// This method is called at the start of the game to create the item pool reading items form the JSON file
+    /// 
+    /// TODO: in questa fase viene chiamato dal dispatcher per prova
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static Dictionary<int, Item> ComputeAllItems(string path, bool isbullet)
+    {
+        Debug.Log("ComputeAnItem called");
+
+        // Leggi il JSON dal file
+        // TODO: cambiare il path in modo che sia relativo al progetto
+        string text = File.ReadAllText(path);
+
+        // Deserializza il JSON in ItemJson, che contiene la proprietà item
+        ItemJson data = JsonConvert.DeserializeObject<ItemJson>(text);
+
+        // stadio molto prototipale, hardcoded la crezione di questo specifico tipo di effetto
+        // ma i parametri sono presi dinamicaente dal file JSON
+        // Accesso ai dati
+        Item i = null;
+        Dictionary<int, Item> items = new Dictionary<int, Item>();
+
+
+        try
+        {
+            foreach (var item in data.items)  // per ogni item json
+            {
+                i = new Item
+                {
+                    effects = new List<AbstractEffect>()
+                };
+
+                i.name = item.name;
+                i.id = item.id;
+                i.bullet = isbullet;
+                int effectID = 0;
+
+                foreach (var effect in item.effects) // per ogni effetto nella lista
+                {
+                    var type = effect["effectType"].ToString();
+                    AbstractEffect e = null;
+
+                    switch (type)
+                    {
+                        case "sa":
+                            e = new SingleActivationEffect(effect, item.id, effectID, isbullet);
+                            break;
+
+                        case "ot":
+                            e = new OverTimeEffect(effect, item.id, effectID, isbullet);
+                            break;
+
+                        case "area":
+                            e = new PermanentAreaEffect(effect, item.id, effectID, isbullet);
+                            break;
+
+                        default:
+                            throw new Exception("Effect type object type: '" + type +
+                             "' not recognized for item: " + item.id);
+                    }
+
+                    if (e == null)
+                        continue;
+
+                    i.effects.Add(e);
+                    effectID++;
+                    Debug.Log("effect added to item " + i.id + " with id " + effectID + "and name" + i.name);
+                }
+
+                if (items.ContainsKey(i.id))
+                {
+                    throw new Exception("Item with ID " + i.id +
+                    " already exists in the global pool. Skipping creation.");
+                }
+                else
+                {
+                    items.Add(i.id, i);
+                }
+            }
+        }
+
+        catch (KeyNotFoundException e)
+        {
+            Debug.LogError("Error in Item manager unable to create an item with error: " + e.Message
+            + " check the JSON item definition file" + e.StackTrace);
+
+        }
+
+        return items;
+    }
+
+    /// <summary>
+    /// given a pool of indexes, it returns a random item from the pool
+    /// </summary>
+    /// <param name="poolIndexes"></param>
+    /// <returns></returns>
+    public static Item DropFromPool(int[] poolIndexes)
+    {
+        globalItemPool.TryGetValue(poolIndexes[UnityEngine.Random.Range(0, poolIndexes.Length)], out Item item);
+        return item;
+    }
+
+
+    private class ItemJson
+    {
+        public List<ItemIncomplete> items;
+    }
+
+    private class ItemIncomplete
+    {
+        public int id;
+
+        public string name;
+        public List<Dictionary<string, string>> effects;
+    }
+    public class Item
+    {
+        public bool bullet;
+        public string name;
+        public int id;
+        public List<AbstractEffect> effects;
+
+        public override string ToString()
+        {
+            string s = "Item: \n";
+            foreach (var effect in effects)
+            {
+                s += effect.ToString() + "\n";
+            }
+            return s;
+        }
+    }
+
+}
+

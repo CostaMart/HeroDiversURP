@@ -27,11 +27,11 @@ namespace Weapon.State
         {
             if (isPrimary)
             {
-                return ItemManager.statClassToIdRegistry["BulletPoolStatePrimary"];
+                return ItemManager.statClassToIdRegistry["BulletPoolStatsPrimary"];
             }
             else
             {
-                return ItemManager.statClassToIdRegistry["BulletPoolStateSecondary"];
+                return ItemManager.statClassToIdRegistry["BulletPoolStatsSecondary"];
             }
         }
 

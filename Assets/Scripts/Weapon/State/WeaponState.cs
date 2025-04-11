@@ -51,7 +51,6 @@ public class WeaponStats : AbstractStatus
         lineRenderer.startWidth = laserThickness;
 
         Debug.Log("container found and assigned");
-        ReassingLogic();
     }
 
     protected override void Update()
@@ -72,22 +71,26 @@ public class WeaponStats : AbstractStatus
         if (isPrimary)
         {
             Debug.Log("Primary weapon state");
-            return ItemManager.statClassToIdRegistry["PrimaryWeaponState"];
+            return ItemManager.statClassToIdRegistry["PrimaryWeaponStats"];
         }
         else
         {
             Debug.Log("Secondary weapon state");
-            return ItemManager.statClassToIdRegistry["SecondaryWeaponState"];
+            return ItemManager.statClassToIdRegistry["SecondaryWeaponStats"];
         }
     }
 
     public void ReassingLogic()
     {
-        weaponContrainer.activeLogic = weaponLogics[GetFeatureValuesByType<int>(FeatureType.activeLogicIndex).Last()];
+        foreach (var feature in features)
+        {
+            Debug.Log("WeaponState: feature: " + feature.Value.id + " value: " + feature.Value.GetValue());
+        }
+
+        weaponContrainer.activeLogic = weaponLogics[dispatcher.GetAllFeatureByType<int>(FeatureType.activeLogicIndex).Last()];
         weaponContrainer.activeLogic.Dispatcher = dispatcher;
         weaponContrainer.activeLogic.SetWeaponState(this);
         weaponContrainer.activeLogic.Enable();
-        Debug.Log("logic correctly assigned");
     }
 
 }

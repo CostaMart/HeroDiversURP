@@ -117,6 +117,10 @@ public class MovementLogic : MonoBehaviour
     }
 
 
+    void OnTriggerExit(Collider other)
+    {
+        anim.SetBool("jump", true);
+    }
 
     void OnCollisionEnter(Collision collision)
     {
