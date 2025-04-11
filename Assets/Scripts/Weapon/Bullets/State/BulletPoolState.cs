@@ -1,0 +1,39 @@
+
+using System.Collections.Generic;
+using UnityEngine;
+using static ItemManager;
+
+namespace Weapon.State
+{
+    public class BulletPoolStats : AbstractStatus
+    {
+        private Rigidbody rb;
+        private bool isPrimary = true;
+
+        public Item bulletEffects;
+
+        public float directionx;
+        public float directiony;
+        public float directionz;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            bulletEffects = ItemManager.bulletPool[0];
+        }
+
+
+        protected override int ComputeID()
+        {
+            if (isPrimary)
+            {
+                return ItemManager.statClassToIdRegistry["BulletPoolStatePrimary"];
+            }
+            else
+            {
+                return ItemManager.statClassToIdRegistry["BulletPoolStateSecondary"];
+            }
+        }
+
+    }
+}

@@ -1,0 +1,30 @@
+#Player-CharStats
+health = 100.0 
+speed = 7.0
+rotationSpeed = 0.1 
+aimRotationSpeed = 0.1 
+jumpSpeedy = 10.0 
+jumpSpeedx = 10.0 
+jumpSpeedz = 10.0
+speedLimitBeforeRagdolling = 100.0 
+maxJumps = 100000
+##
+
+#PlayerPrimary-WeaponStats
+magCount = 10
+magSize = 10
+fireRate = 4.0 
+fireStrength = 50.0
+laserLength = 100.0 
+automatic = true 
+activeLogicIndex = 1 
+##
+
+#bulletPool-BulletPoolStats
+mass = 2.0
+explosionRadius = 2.0
+destroyOnHit = true
+widthScale = 200.0
+heightScale =100.0
+lengthScale = 1.0
+##

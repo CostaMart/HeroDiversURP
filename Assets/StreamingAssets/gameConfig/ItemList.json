@@ -1,0 +1,15 @@
+{
+    "items": [
+        {
+            "id": 0,
+            "name": "Jump High",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@CharStats.1",
+                    "expr": "10"
+                }
+            ]
+        }
+    ]
+}
