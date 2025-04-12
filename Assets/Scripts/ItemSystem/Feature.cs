@@ -25,7 +25,8 @@ public enum FeatureType
     widthScale,
     heightScale,
     lengthScale,
-    bulletEffects
+    bulletEffects,
+    money
 }
 
 public class Feature

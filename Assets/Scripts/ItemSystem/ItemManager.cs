@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
+using Random = System.Random;
 
 /// <summary>
 /// This class converts the JSON file into a list of items
@@ -107,7 +108,7 @@ public class ItemManager
 
                     i.effects.Add(e);
                     effectID++;
-                    Debug.Log("effect added to item " + i.id + " with id " + effectID + "and name" + i.name);
+                    Debug.Log("ItemManager: effect added to item: " + i.id + " with id: " + effectID + "and name: " + i.name);
                 }
 
                 if (items.ContainsKey(i.id))
@@ -139,8 +140,14 @@ public class ItemManager
     /// <returns></returns>
     public static Item DropFromPool(int[] poolIndexes)
     {
-        globalItemPool.TryGetValue(poolIndexes[UnityEngine.Random.Range(0, poolIndexes.Length)], out Item item);
-        return item;
+        Random rand = new Random();
+        var index = rand.Next(poolIndexes.Length);
+
+
+        Debug.Log("ItemManager: dropping item with id: " + poolIndexes[index]);
+
+
+        return globalItemPool[poolIndexes[index]];
     }
 
 

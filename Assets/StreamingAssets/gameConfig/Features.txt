@@ -8,6 +8,7 @@ jumpSpeedx = 10.0
 jumpSpeedz = 10.0
 speedLimitBeforeRagdolling = 100.0 
 maxJumps = 100000
+money = 100.0
 ##
 
 #PlayerPrimary-WeaponStats

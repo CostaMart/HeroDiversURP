@@ -12,6 +12,17 @@
             ]
         },
         {
+            "id": 3,
+            "name": "5 DodgeCoins",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@CharStats.9",
+                    "expr": "5 + @CharStats.9"
+                }
+            ]
+        },
+        {
             "id": 1,
             "name": "High Jumper",
             "effects": [

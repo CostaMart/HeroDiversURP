@@ -53,7 +53,6 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] public float groundCheckDistance = 1.0f;
     private void FixedUpdate()
     {
-        Debug.Log("health: " + dispatcher.GetAllFeatureByType<float>(FeatureType.health).Sum());
 
         Vector3 direction = Vector3.zero;
 
