@@ -4,11 +4,13 @@ using Mono.Cecil;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static ItemManager;
+using static UnityEngine.InputSystem.InputAction;
 
 public class Dropper : MonoBehaviour
 {
-    private (int, int) range = (1, 1);
+    private (int, int) range = (0, 1);
     private int[] pool;
+    private int[] fixedDropPool;
     private int[] rarities;
     private bool used = false;
     private Material material;
@@ -18,12 +20,22 @@ public class Dropper : MonoBehaviour
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color usedColor = Color.red;
 
+    [SerializeField] PlayerInput playerInput;
+
 
     /// <summary>
     /// load itempool on start
     /// </summary>
     void Start()
     {
+
+
+        if (!playerInput)
+        {
+            Debug.LogError("PlayerInput not found");
+        }
+
+        playerInput.actions["Interact"].performed += Open;
 
         material = GetComponent<Renderer>().material;
 
@@ -33,10 +45,9 @@ public class Dropper : MonoBehaviour
         string name = gameObject.name;
 
         bool found = false;
+        List<int> fixedDropPool = new();
         List<int> myPool = new();
         List<int> ratrities = new();
-
-        (int, int) range = (1, 1);
 
         foreach (var line in lines)
         {
@@ -60,6 +71,11 @@ public class Dropper : MonoBehaviour
 
                 //Debug.Log("Dropper: itempool item with ID: " +
                 //int.Parse(line.Split("rarity: ")[0].Split(' ')[0] + " added in object " + name));
+                if (line.Contains("fixed"))
+                {
+                    fixedDropPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
+                    continue;
+                }
 
                 myPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
                 ratrities.Add(int.Parse(line.Split("rarity: ")[1]));
@@ -67,6 +83,7 @@ public class Dropper : MonoBehaviour
 
         }
 
+        this.fixedDropPool = fixedDropPool.ToArray();
         pool = myPool.ToArray();
         rarities = ratrities.ToArray();
     }
@@ -82,14 +99,20 @@ public class Dropper : MonoBehaviour
     }
 
 
-    public void Open()
+    public void Open(CallbackContext ctx)
     {
+        Debug.Log("dropping");
         if (!inRange) return;
-
         Item it = null;
         used = true;
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
         var numbersOfDrops = Random.Range(range.Item1, range.Item2 + 1);
+
+        foreach (var item in fixedDropPool)
+        {
+            it = DropFromPool(new int[] { item }, new int[] { 100 });
+            Drop(it);
+        }
 
         for (int i = 0; i < numbersOfDrops; i++)
         {

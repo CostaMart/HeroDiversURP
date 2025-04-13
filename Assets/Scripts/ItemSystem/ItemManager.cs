@@ -15,6 +15,8 @@ public class ItemManager
     public List<AbstractEffect> effects;
     public static Dictionary<string, int> statClassToIdRegistry;
     public bool added = false;
+    ItemIconsList list;
+
 
     public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Item> bulletPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file 
@@ -77,6 +79,8 @@ public class ItemManager
 
                 i.name = item.name;
                 i.id = item.id;
+                i.gameIconId = item.gameIconId;
+
                 i.bullet = isbullet;
                 int effectID = 0;
 
@@ -144,16 +148,19 @@ public class ItemManager
         Random rand = new Random();
         var total = raritiesVals.Sum();
         var choosen = rand.Next(0, total);
+        var rarityRange = 0;
 
         for (int i = 0; i < raritiesVals.Length; i++)
         {
-            if (choosen >= raritiesVals[i])
+            rarityRange += raritiesVals[i];
+            if (choosen >= rarityRange)
                 continue;
 
             return globalItemPool[indexes[i]];
         }
 
-        return null;
+        throw new Exception("ItemManager: Unable to select an item to drop");
+
     }
 
 
@@ -165,12 +172,13 @@ public class ItemManager
     private class ItemIncomplete
     {
         public int id;
-
         public string name;
+        public int gameIconId;
         public List<Dictionary<string, string>> effects;
     }
     public class Item
     {
+        public int gameIconId;
         public bool bullet;
         public string name;
         public int id;
