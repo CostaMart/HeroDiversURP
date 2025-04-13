@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 using Random = System.Random;
@@ -138,16 +139,21 @@ public class ItemManager
     /// </summary>
     /// <param name="poolIndexes"></param>
     /// <returns></returns>
-    public static Item DropFromPool(int[] poolIndexes)
+    public static Item DropFromPool(int[] indexes, int[] raritiesVals)
     {
         Random rand = new Random();
-        var index = rand.Next(poolIndexes.Length);
+        var total = raritiesVals.Sum();
+        var choosen = rand.Next(0, total);
 
+        for (int i = 0; i < raritiesVals.Length; i++)
+        {
+            if (choosen >= raritiesVals[i])
+                continue;
 
-        Debug.Log("ItemManager: dropping item with id: " + poolIndexes[index]);
+            return globalItemPool[indexes[i]];
+        }
 
-
-        return globalItemPool[poolIndexes[index]];
+        return null;
     }
 
 

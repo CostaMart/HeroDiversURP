@@ -2,13 +2,21 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Cecil;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static ItemManager;
 
 public class Dropper : MonoBehaviour
 {
-    private int[] pool = new int[1];
+    private (int, int) range = (1, 1);
+    private int[] pool;
+    private int[] rarities;
     private bool used = false;
+    private Material material;
     private Transform spawn;
+    private bool inRange = false;
+    [SerializeField] Color emissionColor = Color.green * 5.0f;
+    [SerializeField] Color defaultColor = Color.white;
+    [SerializeField] Color usedColor = Color.red;
 
 
     /// <summary>
@@ -16,13 +24,19 @@ public class Dropper : MonoBehaviour
     /// </summary>
     void Start()
     {
+
+        material = GetComponent<Renderer>().material;
+
         spawn = transform.GetChild(0);
 
         string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/ItemPools.txt");
         string name = gameObject.name;
 
         bool found = false;
-        List<int> myPool = new List<int>();
+        List<int> myPool = new();
+        List<int> ratrities = new();
+
+        (int, int) range = (1, 1);
 
         foreach (var line in lines)
         {
@@ -30,6 +44,9 @@ public class Dropper : MonoBehaviour
             if (line.Contains(name))
             {
                 found = true;
+                var rangeS = line.Split(' ')[1];
+                range.Item1 = int.Parse(rangeS.Split('-')[0]);
+                range.Item2 = int.Parse(rangeS.Split('-')[1]);
                 continue;
             }
 
@@ -39,33 +56,52 @@ public class Dropper : MonoBehaviour
 
             if (found)
             {
-                Debug.Log("Dropper: itempool item with ID: " + line + " added in object " + name);
-                myPool.Add(int.Parse(line));
+                var item = (0, 0);
+
+                //Debug.Log("Dropper: itempool item with ID: " +
+                //int.Parse(line.Split("rarity: ")[0].Split(' ')[0] + " added in object " + name));
+
+                myPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
+                ratrities.Add(int.Parse(line.Split("rarity: ")[1]));
             }
 
         }
 
         pool = myPool.ToArray();
+        rarities = ratrities.ToArray();
     }
 
     public void OnTriggerStay(Collider other)
     {
-        Item it = null;
-
         if (used) return;
-
         if (other.CompareTag("Player"))
         {
-
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                it = DropFromPool(pool);
-                Drop(it);
-                used = true;
-            }
+            inRange = true;
+            material.SetColor("_EmissionColor", Color.Lerp(material.color, emissionColor, 2f));
         }
+    }
 
 
+    public void Open()
+    {
+        if (!inRange) return;
+
+        Item it = null;
+        used = true;
+        material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
+        var numbersOfDrops = Random.Range(range.Item1, range.Item2 + 1);
+
+        for (int i = 0; i < numbersOfDrops; i++)
+        {
+            it = DropFromPool(pool, rarities);
+            Drop(it);
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        inRange = false;
+        material.SetColor("_EmissionColor", Color.Lerp(material.color, defaultColor, 2f));
     }
 
     private void Drop(Item it)
