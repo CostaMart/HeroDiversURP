@@ -51,7 +51,7 @@ public class MovementLogic : MonoBehaviour
 
     // Dichiara una distanza per il controllo del terreno (valore da settare in base alle esigenze)
     [SerializeField] public float groundCheckDistance = 1.0f;
-    private void FixedUpdate()
+    private void Update()
     {
 
         Vector3 direction = Vector3.zero;
@@ -112,7 +112,7 @@ public class MovementLogic : MonoBehaviour
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
 
-        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed));
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.deltaTime));
     }
 
 

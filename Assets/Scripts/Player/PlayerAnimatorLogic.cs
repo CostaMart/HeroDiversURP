@@ -75,6 +75,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private bool pistol = false;
+    private bool needsRigRebuild = false;
     void Start()
     {
         if (headRotationConstraint == null)
@@ -139,19 +140,15 @@ public class PlayerAnimatorLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        // se  stiamo mirando spostiamo l'arma nella posizione di mira, si controlla lastwas per non farlo ripetutamente
         if (aiming)
         {
             if (!lastWas)
             {
-                // se il constraint per la testa è impostato ruotala
                 if (headRotationConstraint != null)
-                {
                     headRotationConstraint.weight = 1;
-                }
 
                 lastWas = true;
+
                 if (!pistol)
                 {
                     weapon.transform.SetParent(aimingWeaponStand);
@@ -165,7 +162,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
                     pistolObject.transform.localRotation = Quaternion.identity;
                 }
 
-                //1* qui cambiamo il punto verso cui il personaggio si rivolge, quando miriamo lo facciamo girare leggermente più a destra per un effetto migliore
                 var newSourceObject = aimConstraint.data.sourceObjects;
                 newSourceObject.SetWeight(0, 0);
                 newSourceObject.SetWeight(1, 1);
@@ -177,10 +173,10 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
                 twoBoneIKConstraintL.weight = 1;
                 weaponDirectionConstraint.weight = 1;
-                rb.Build();
+
+                needsRigRebuild = true;
             }
 
-            // spostiamo la mano nella posizione corretta a seconda di se si impugna una pistola o un fucile
             if (pistol)
             {
                 twoBoneIKConstraintR.weight = 1;
@@ -189,25 +185,21 @@ public class PlayerAnimatorLogic : MonoBehaviour
                 IKLeftHand.position = PistleHandle.position;
                 IKLeftHand.rotation = PistleHandle.rotation;
             }
-
             else
             {
                 twoBoneIKConstraintR.weight = 0;
                 IKLeftHand.position = wpnFrontHandle.position;
                 IKLeftHand.rotation = wpnFrontHandle.rotation;
             }
-
         }
 
-        // se non stiamo mirando spostiamo l'arma nella posizione di riposo, si controlla lastwas per non farlo ripetutamente
         if (!aiming && lastWas)
         {
             if (headRotationConstraint != null)
-            {
                 headRotationConstraint.weight = 0;
-            }
 
             lastWas = false;
+
             if (!pistol)
             {
                 weapon.transform.SetParent(relaxedWeaponStand);
@@ -221,23 +213,29 @@ public class PlayerAnimatorLogic : MonoBehaviour
                 pistolObject.transform.localRotation = Quaternion.identity;
             }
 
-            // questo è il duale del commento 1*, se non stiamo mirando vogliamo il personaggio rivolto in avanti 
             var newSourceObject = aimConstraint.data.sourceObjects;
             newSourceObject.SetWeight(0, 1);
             newSourceObject.SetWeight(1, 0);
             aimConstraint.data.sourceObjects = newSourceObject;
-            var newConstrintData = aimConstraint.data;
 
-            newConstrintData.offset = Vector3.zero;
-            aimConstraint.data = newConstrintData;
+            var newConstraintData = aimConstraint.data;
+            newConstraintData.offset = Vector3.zero;
+            aimConstraint.data = newConstraintData;
+
             twoBoneIKConstraintL.weight = 0;
             twoBoneIKConstraintR.weight = 0;
             weaponDirectionConstraint.weight = 0;
-            rb.Build();
 
+            needsRigRebuild = true;
         }
 
-
     }
-
+    public void LateUpdate()
+    {
+        if (needsRigRebuild)
+        {
+            rb.Build();
+            needsRigRebuild = false;
+        }
+    }
 }

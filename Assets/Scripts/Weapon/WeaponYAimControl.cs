@@ -1,12 +1,7 @@
-using Unity.Cinemachine;
-using UnityEditor.EditorTools;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
-using UnityEngine.InputSystem;
 
 public class WeapnYAimControl : MonoBehaviour
 {
-
     private float rotationX = 0f;
     private float rotationY = 0f;
 
@@ -16,8 +11,11 @@ public class WeapnYAimControl : MonoBehaviour
 
     [SerializeField] private ControlEventManager controlEventManager;
     [SerializeField] private CameraSettings cameraSettings;
-    private bool aiming = false;
 
+    [SerializeField] private float rotationSmoothSpeed = 20f; // maggiore = più reattivo, minore = più morbido
+
+    private bool aiming = false;
+    private Quaternion targetRotation;
 
     void Awake()
     {
@@ -25,24 +23,19 @@ public class WeapnYAimControl : MonoBehaviour
         controlEventManager.AddListenerAiming(OnAiming);
     }
 
-    /// <summary>
-    /// By doing this operation in lateupdate i let the followed object move first!
-    /// otherwise there is a strange flickering effect
-    /// </summary>
-    void LateUpdate()
+    void Update()
     {
-
-        // Gestisci la rotazione verticale (X) con il movimento del mouse
-        rotationX -= delta.y * cameraSettings.Sensitivity; // Ruota sull'asse X (verticale)
+        // Calcola la rotazione target basata sul mouse
+        rotationX -= delta.y * cameraSettings.Sensitivity;
         rotationX = Mathf.Clamp(rotationX, cameraSettings.LowerBoundYrotation, cameraSettings.UpperBoundYrotation);
-
-        // Gestisci la rotazione orizzontale (Y) prendendo la rotazione del parent
         rotationY = parentTransform.eulerAngles.y;
+        var rotationZ = parentTransform.eulerAngles.z;
 
-        var rotationz = parentTransform.eulerAngles.z;
+        // Imposta la rotazione target
+        targetRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
 
-        // Applica la rotazione finale
-        transform.rotation = Quaternion.Euler(rotationX, rotationY, rotationz);
+        // Interpola verso la rotazione target per ottenere un movimento fluido
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 5000);
     }
 
     void OnAiming(bool value)
