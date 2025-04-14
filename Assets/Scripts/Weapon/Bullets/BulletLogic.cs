@@ -14,9 +14,10 @@ public class Bullet : AbstractStatus
     private Rigidbody rb;
     private Collider c;
     public Modifier bulletEffets;
+    private bool started = false;
+
 
     public BulletPoolStats bulletPoolState;
-
     private float EnableTime;
 
 
@@ -35,30 +36,33 @@ public class Bullet : AbstractStatus
 
     new void Update()
     {
-
-        if (EnableTime > 5)
         {
-            EnableTime = 0;
-            resetItem();
-        }
 
-        if (bulletPoolState.dirty)
-        {
-            transform.localScale = new Vector3(bulletPoolState
-            .GetFeatureValuesByType<float>(FeatureType.widthScale).Sum(), bulletPoolState
-            .GetFeatureValuesByType<float>(FeatureType.heightScale).Sum(),
-            bulletPoolState.GetFeatureValuesByType<float>(FeatureType.lengthScale).Sum());
 
-            rb.mass = bulletPoolState.GetFeatureValuesByType<float>(FeatureType.mass).Sum();
+            if (bulletPoolState.dirty)
+            {
+                transform.localScale = new Vector3(bulletPoolState
+                .GetFeatureValuesByType<float>(FeatureType.widthScale).Sum(), bulletPoolState
+                .GetFeatureValuesByType<float>(FeatureType.heightScale).Sum(),
+                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.lengthScale).Sum());
+
+                rb.mass = bulletPoolState.GetFeatureValuesByType<float>(FeatureType.mass).Sum();
+            }
         }
     }
 
     // Update is called once per frame
-    // quando avviene una collisione il proiettile torna al luogo di origine, disattivando la fisica in modo tale da non dare fastidio.
-    void OnCollisionEnter(Collision collision)
+    public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Bullet colliding with " + collision.gameObject.name);
-        Collider[] colliders = Physics.OverlapSphere(collision.transform.position, bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum());
+
+
+        bulletPoolState.vfxPool[1].gameObject.SetActive(true);
+        bulletPoolState.vfxPool[1].transform.position = collision.contacts[0].point;
+        bulletPoolState.vfxPool[1].transform.rotation = Quaternion.LookRotation(collision.contacts[0].normal);
+        bulletPoolState.vfxPool[1].Play();
+
+        Collider[] colliders = Physics.OverlapSphere(collision.transform.position,
+        bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum());
 
         foreach (Collider col in colliders)
         {
@@ -67,10 +71,8 @@ public class Bullet : AbstractStatus
                 try
                 {
                     bulletPoolState.bulletEffects.effects[0].localParametersRefClasses =
-
                     bulletPoolState.effectsDispatcher.
                     resolveReferences(bulletPoolState.bulletEffects.effects[0].localParametersRef);
-
                     d.DispatchFromOtherDispatcher(bulletPoolState.bulletEffects);
                 }
                 catch (Exception e)
@@ -88,6 +90,7 @@ public class Bullet : AbstractStatus
 
     void resetItem()
     {
+
         rb.linearVelocity = Vector3.zero; // Azzeriamo la velocità lineare
         rb.angularVelocity = Vector3.zero; // Azzeriamo la velocità angolare
         transform.position = initialPos; // Riportiamo il proiettile alla posizione iniziale

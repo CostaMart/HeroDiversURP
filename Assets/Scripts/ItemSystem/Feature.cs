@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 public enum FeatureType
 {
+    maxHealth,
     health,
     speed,
     rotationSpeed,

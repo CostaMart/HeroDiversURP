@@ -1,5 +1,6 @@
 #Player-CharStats
-health = 100.0  ID:1
+maxHealth = 200.0 ID:9
+health = 200.0  ID:1
 speed = 7.0 ID:2
 rotationSpeed = 10.0  ID:13
 aimRotationSpeed = 100.0 ID:14
@@ -33,6 +34,7 @@ damage = 10.0 ID:8
 ##
 
 #Cube-CharStats
+maxHealth = 100.0 ID:9
 health = 100.0 ID:1
 receivedDamage = 0 ID:2
 ##

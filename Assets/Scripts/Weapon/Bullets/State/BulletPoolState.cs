@@ -12,7 +12,7 @@ namespace Weapon.State
         private bool isPrimary = true;
         public Modifier bulletEffects;
         [SerializeField] public EffectsDispatcher effectsDispatcher;
-
+        [SerializeField] public List<ParticleSystem> vfxPool;
         public float directionx;
         public float directiony;
         public float directionz;

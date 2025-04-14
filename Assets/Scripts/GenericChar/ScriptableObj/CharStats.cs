@@ -24,7 +24,10 @@ public class CharStats : AbstractStatus
     {
         base.Update();
 
-        if (GetFeatureValuesByType<float>(FeatureType.health).Sum() <= 0)
+        var hp = GetFeatureValuesByType<float>(FeatureType.health).Sum();
+        Math.Clamp(hp, 0, GetFeatureValuesByType<float>(FeatureType.maxHealth).Sum());
+
+        if (hp <= 0)
         {
             Debug.Log("Charstats: dead: " + this.name);
             this.gameObject.SetActive(false);
