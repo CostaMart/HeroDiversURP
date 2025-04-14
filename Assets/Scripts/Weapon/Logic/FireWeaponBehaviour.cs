@@ -52,7 +52,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
                 weaponStat.bulletPool = newPool;
                 weaponStat.bulletRigids = new Rigidbody[newPool.Length];
 
-                for (int index = i; index < weaponStat.bulletPool.Length; index++)
+                for (int index = 0; index < weaponStat.bulletPool.Length; index++)
                 {
                     weaponStat.bulletPool[index] = Instantiate(weaponStat.bulletPrefab, weaponStat.pool.transform);
                     weaponStat.bulletPool[index].GetComponent<Bullet>().bulletPoolState = weaponStat.pool;

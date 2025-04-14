@@ -1,5 +1,4 @@
 #BoxCommon 1-1
 1 rarity: 10
-0 rarity: 10 
 3 rarity: fixed
 ##

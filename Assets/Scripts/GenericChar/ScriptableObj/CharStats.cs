@@ -22,14 +22,6 @@ public class CharStats : AbstractStatus
     new void Update()
     {
         base.Update();
-        float health = GetStatByID<float>((int)FeatureType.health);
-
-
-        if (health <= 0)
-        {
-            Debug.Log("im dead");
-            this.gameObject.SetActive(false);
-        }
     }
 
 }

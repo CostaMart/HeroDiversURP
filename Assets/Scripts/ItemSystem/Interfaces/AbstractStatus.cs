@@ -37,6 +37,7 @@ public abstract class AbstractStatus : MonoBehaviour
         Dictionary<int, Feature> features = new();
         var ind = 0;
 
+        /// semplice parsing del file Features.txt per recuperare le features
         foreach (var thisLine in lines)
         {
 
@@ -59,29 +60,33 @@ public abstract class AbstractStatus : MonoBehaviour
                     Type t;
                     FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
                     Debug.Log("starting parsing ");
+                    parts = parts[1].Split("ID:");
 
-                    if (int.TryParse(parts[1], out _))
+                    var splittedComment = parts[1].Split('\\');
+                    ind = int.Parse(splittedComment[0]);
+
+                    if (int.TryParse(parts[0], out _))
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " of " + parts[0]
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[0] + " ID: " + parts[1]
                          + " as int");
-                        Feature f = new Feature(featureType, int.Parse(parts[1]), typeof(int));
-                        f.SetValue(int.Parse(parts[1]));
+                        Feature f = new Feature(featureType, int.Parse(parts[0]), typeof(int));
+                        f.SetValue(int.Parse(parts[0]));
                         features.Add(ind, f);
                     }
-                    else if (float.TryParse(parts[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+                    else if (float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " of " + parts[0]
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " ID: " + parts[0]
                          + " as float");
-                        Feature f = new Feature(featureType, float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture), typeof(float));
-                        f.SetValue(float.Parse(parts[1].Replace(" ", ""), System.Globalization.CultureInfo.InvariantCulture));
+                        Feature f = new Feature(featureType, float.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture), typeof(float));
+                        f.SetValue(float.Parse(parts[0].Replace(" ", ""), System.Globalization.CultureInfo.InvariantCulture));
                         features.Add(ind, f);
                     }
                     else
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " of " + parts[0]
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " ID: " + parts[0]
                          + " as bool");
-                        Feature f = new Feature(featureType, bool.Parse(parts[1]), typeof(bool));
-                        f.SetValue(bool.Parse(parts[1]));
+                        Feature f = new Feature(featureType, bool.Parse(parts[0]), typeof(bool));
+                        f.SetValue(bool.Parse(parts[0]));
                         features.Add(ind, f);
                     }
 
@@ -89,10 +94,9 @@ public abstract class AbstractStatus : MonoBehaviour
                 catch
                 (Exception e)
                 {
-                    Debug.LogError("Error in parsing line: " + line);
+                    Debug.LogError("Abstract Status: Error in parsing line: " + line + " " + e.Message);
                 }
 
-                ind++;
             }
 
             if (line.Contains("#" + this.gameObject.name + "-" + this.GetType().Name))
@@ -219,16 +223,17 @@ public abstract class AbstractStatus : MonoBehaviour
             if (target.type == typeof(int))
             {
                 int inthelper = (int)features[targetID].GetValue();
-                inthelper += Convert.ToInt32(effect.Activate(this));
+                inthelper = Convert.ToInt32(effect.Activate(this));
                 toApply = inthelper;
                 target.SetValue(inthelper);
             }
             else if (target.type == typeof(float))
             {
                 float floathelper = (float)features[targetID].GetValue();
-                floathelper += Convert.ToSingle(effect.Activate(this));
+                floathelper = Convert.ToSingle(effect.Activate(this));
                 toApply = floathelper;
-                Debug.Log("setting vvalue to: " + floathelper);
+
+                Debug.Log("AbstractStatus effect activation: setting value to: " + floathelper);
                 target.SetValue(floathelper);
             }
             else if (target.type == typeof(bool))

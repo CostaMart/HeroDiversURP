@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,7 @@ public class PlayerControlManager : MonoBehaviour
     [SerializeField] private CharStats playerSettings;
     [SerializeField] private ControlEventManager ControlEventManager;
     [SerializeField] private EquipmentEventManager EquipmentEventManager;
+    [SerializeField] private EffectsDispatcher dispatcher;
     // ------------------------------------
     void Awake()
     {
@@ -73,9 +75,9 @@ public class PlayerControlManager : MonoBehaviour
     }
     void Update()
     {
-        if (Math.Abs(rb.linearVelocity.y) > playerSettings.GetStatByID<float>((int)FeatureType.speedLimitBeforeRagdolling)
-        || Math.Abs(rb.linearVelocity.x) > playerSettings.GetStatByID<float>((int)FeatureType.speedLimitBeforeRagdolling)
-        || Math.Abs(rb.linearVelocity.z) > playerSettings.GetStatByID<float>((int)FeatureType.speedLimitBeforeRagdolling))
+        if (Math.Abs(rb.linearVelocity.y) > dispatcher.GetAllFeatureByType<float>(FeatureType.speedLimitBeforeRagdolling).Sum()
+        || Math.Abs(rb.linearVelocity.x) > dispatcher.GetAllFeatureByType<float>(FeatureType.speedLimitBeforeRagdolling).Sum()
+        || Math.Abs(rb.linearVelocity.z) > dispatcher.GetAllFeatureByType<float>(FeatureType.speedLimitBeforeRagdolling).Sum())
         {
             Debug.Log("request ragdolling start");
             ControlEventManager.raiseRagdollEvent(true);

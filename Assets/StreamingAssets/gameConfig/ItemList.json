@@ -7,8 +7,8 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@CharStats.1",
-                    "expr": "10"
+                    "target": "@CharStats.2",
+                    "expr": "100"
                 }
             ]
         },
@@ -19,20 +19,20 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@CharStats.9",
-                    "expr": "5 + @CharStats.9"
+                    "target": "@CharStats.8",
+                    "expr": "5 + @CharStats.8"
                 }
             ]
         },
         {
             "id": 1,
             "gameIconId": 48,
-            "name": "High Jumper",
+            "name": "wide bullets",
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.4",
-                    "expr": "15"
+                    "target": "@PrimaryWeaponStats.2",
+                    "expr": "@PrimaryWeaponStats.2 + 100"
                 }
             ]
         },

@@ -1,31 +1,31 @@
 #Player-CharStats
-health = 100.0 
-speed = 7.0
-rotationSpeed = 10.0 
-aimRotationSpeed = 100.0
-jumpSpeedy = 15.0 
-jumpSpeedx = 10.0 
-jumpSpeedz = 10.0
-speedLimitBeforeRagdolling = 100.0 
-maxJumps = 100000
-money = 100.0
+health = 100.0  ID:1
+speed = 7.0 ID:2
+rotationSpeed = 10.0  ID:13
+aimRotationSpeed = 100.0 ID:14
+jumpSpeedy = 15.0  ID:3
+jumpSpeedx = 10.0 ID:4  
+jumpSpeedz = 10.0 ID:5
+speedLimitBeforeRagdolling = 300.0 ID:6
+maxJumps = 100000 ID:7
+money = 100.0 ID:8
 ##
 
 #PlayerPrimary-WeaponStats
-magCount = 10
-magSize = 10
-fireRate = 4.0 
-fireStrength = 50.0
-laserLength = 100.0 
-automatic = true 
-activeLogicIndex = 1 
+magCount = 10 ID:1
+magSize = 10 ID:2
+fireRate = 4.0 ID:3
+fireStrength = 50.0 ID:4
+laserLength = 100.0 ID:5
+automatic = true  ID:6
+activeLogicIndex = 1  ID:7
 ##
 
 #bulletPool-BulletPoolStats
-mass = 2.0
-explosionRadius = 2.0
-destroyOnHit = true
-widthScale = 200.0
-heightScale =100.0
-lengthScale = 1.0
+mass = 2.0 ID:1
+explosionRadius = 2.0 ID:2
+destroyOnHit = true ID:3
+widthScale = 200.0 ID:4
+heightScale =100.0 ID:5
+lengthScale = 1.0 ID:6
 ##

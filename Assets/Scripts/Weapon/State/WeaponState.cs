@@ -86,6 +86,7 @@ public class WeaponStats : AbstractStatus
         {
             Debug.Log("WeaponState: feature: " + feature.Value.id + " value: " + feature.Value.GetValue());
         }
+        Debug.Log(dispatcher.GetAllFeatureByType<int>(FeatureType.activeLogicIndex).Last());
 
         weaponContrainer.activeLogic = weaponLogics[dispatcher.GetAllFeatureByType<int>(FeatureType.activeLogicIndex).Last()];
         weaponContrainer.activeLogic.Dispatcher = dispatcher;
