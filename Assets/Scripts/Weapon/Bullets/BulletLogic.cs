@@ -13,10 +13,7 @@ public class Bullet : AbstractStatus
     private Vector3 initialPos;
     private Rigidbody rb;
     private Collider c;
-
-
-
-    public Item bulletEffets;
+    public Modifier bulletEffets;
 
     public BulletPoolStats bulletPoolState;
 
@@ -69,10 +66,16 @@ public class Bullet : AbstractStatus
             {
                 try
                 {
+                    bulletPoolState.bulletEffects.effects[0].localParametersRefClasses =
+
+                    bulletPoolState.effectsDispatcher.
+                    resolveReferences(bulletPoolState.bulletEffects.effects[0].localParametersRef);
+
                     d.DispatchFromOtherDispatcher(bulletPoolState.bulletEffects);
                 }
                 catch (Exception e)
                 {
+                    Debug.LogError(e);
                     continue;
                 }
             }

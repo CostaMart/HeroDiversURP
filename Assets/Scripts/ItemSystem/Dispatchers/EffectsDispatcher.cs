@@ -49,7 +49,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// This method is called when an item is picked up by the player
     /// <paramref name="it"/> the item picked up
     /// </summary>
-    public void ItemDispatch(Item it)
+    public void ItemDispatch(Modifier it)
     {
         if (it.bullet)
         {
@@ -71,7 +71,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
         }
     }
 
-    public virtual void DispatchFromOtherDispatcher(Item it)
+    public virtual void DispatchFromOtherDispatcher(Modifier it)
     {
         foreach (AbstractEffect up in it.effects)
         {

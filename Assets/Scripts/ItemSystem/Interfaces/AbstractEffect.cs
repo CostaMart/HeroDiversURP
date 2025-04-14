@@ -136,6 +136,8 @@ public abstract class AbstractEffect
             i++;
         }
 
+        i = 0;
+
         foreach (var match in external)
         {
             s = s.Replace(match.ToString(), c.ToString());

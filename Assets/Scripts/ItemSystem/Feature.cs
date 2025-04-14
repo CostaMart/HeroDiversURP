@@ -20,13 +20,17 @@ public enum FeatureType
     automatic,
     activeLogicIndex,
     explosionRadius,
+    affetedByGravity,
+    linearDamping,
     mass,
     destroyOnHit,
     widthScale,
     heightScale,
     lengthScale,
     bulletEffects,
-    money
+    money,
+    damage,
+    receivedDamage,
 }
 
 public class Feature

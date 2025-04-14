@@ -18,8 +18,8 @@ public class ItemManager
     ItemIconsList list;
 
 
-    public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
-    public static Dictionary<int, Item> bulletPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file 
+    public static Dictionary<int, Modifier> globalItemPool = new Dictionary<int, Modifier>(); /// this contains all the items created by the game from the JSON file
+    public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>(); /// this contains all the items created by the game from the JSON file 
 
     static ItemManager()
     {
@@ -33,10 +33,10 @@ public class ItemManager
             {"SecondaryWeaponState", 4},
             {"BulletPoolStatsPrimary",5},
             {"BulletPoolStatsSecondary", 6},
-            {"PhysicalState", 7}
+            {"PhysicsStats", 7}
         };
 
-        globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ItemList.json", false);
+        globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);
 
         Debug.Log("items compiled");
 
@@ -50,7 +50,7 @@ public class ItemManager
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static Dictionary<int, Item> ComputeAllItems(string path, bool isbullet)
+    public static Dictionary<int, Modifier> ComputeAllItems(string path, bool isbullet)
     {
         Debug.Log("ComputeAnItem called");
 
@@ -59,20 +59,20 @@ public class ItemManager
         string text = File.ReadAllText(path);
 
         // Deserializza il JSON in ItemJson, che contiene la proprietà item
-        ItemJson data = JsonConvert.DeserializeObject<ItemJson>(text);
+        ModifierJson data = JsonConvert.DeserializeObject<ModifierJson>(text);
 
         // stadio molto prototipale, hardcoded la crezione di questo specifico tipo di effetto
         // ma i parametri sono presi dinamicaente dal file JSON
         // Accesso ai dati
-        Item i = null;
-        Dictionary<int, Item> items = new Dictionary<int, Item>();
+        Modifier i = null;
+        Dictionary<int, Modifier> items = new Dictionary<int, Modifier>();
 
 
         try
         {
-            foreach (var item in data.items)  // per ogni item json
+            foreach (var item in data.mods)  // per ogni item json
             {
-                i = new Item
+                i = new Modifier
                 {
                     effects = new List<AbstractEffect>()
                 };
@@ -143,7 +143,7 @@ public class ItemManager
     /// </summary>
     /// <param name="poolIndexes"></param>
     /// <returns></returns>
-    public static Item DropFromPool(int[] indexes, int[] raritiesVals)
+    public static Modifier DropFromPool(int[] indexes, int[] raritiesVals)
     {
         Random rand = new Random();
         var total = raritiesVals.Sum();
@@ -164,19 +164,19 @@ public class ItemManager
     }
 
 
-    private class ItemJson
+    private class ModifierJson
     {
-        public List<ItemIncomplete> items;
+        public List<ModifierIncomplete> mods;
     }
 
-    private class ItemIncomplete
+    private class ModifierIncomplete
     {
         public int id;
         public string name;
         public int gameIconId;
         public List<Dictionary<string, string>> effects;
     }
-    public class Item
+    public class Modifier
     {
         public int gameIconId;
         public bool bullet;
@@ -186,7 +186,7 @@ public class ItemManager
 
         public override string ToString()
         {
-            string s = "Item: \n";
+            string s = "Modifier: \n";
             foreach (var effect in effects)
             {
                 s += effect.ToString() + "\n";

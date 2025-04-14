@@ -7,7 +7,7 @@ jumpSpeedy = 15.0  ID:3
 jumpSpeedx = 10.0 ID:4  
 jumpSpeedz = 10.0 ID:5
 speedLimitBeforeRagdolling = 300.0 ID:6
-maxJumps = 100000 ID:7
+maxJumps = 1 ID:7
 money = 100.0 ID:8
 ##
 
@@ -25,7 +25,20 @@ activeLogicIndex = 1  ID:7
 mass = 2.0 ID:1
 explosionRadius = 2.0 ID:2
 destroyOnHit = true ID:3
-widthScale = 200.0 ID:4
+widthScale = 100.0 ID:4
 heightScale =100.0 ID:5
-lengthScale = 1.0 ID:6
+lengthScale = 100.0 ID:6
+bulletEffects = 0  ID:7
+damage = 10.0 ID:8
+##
+
+#Cube-CharStats
+health = 100.0 ID:1
+receivedDamage = 0 ID:2
+##
+
+#Cube-PhysicsStats
+lengthScale = 10.0 ID:1
+heightScale = 10.0 ID:2
+widthScale = 10.0 ID:3
 ##

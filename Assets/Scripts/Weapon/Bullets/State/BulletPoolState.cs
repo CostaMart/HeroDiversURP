@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static ItemManager;
 
@@ -9,8 +10,8 @@ namespace Weapon.State
     {
         private Rigidbody rb;
         private bool isPrimary = true;
-
-        public Item bulletEffects;
+        public Modifier bulletEffects;
+        [SerializeField] public EffectsDispatcher effectsDispatcher;
 
         public float directionx;
         public float directiony;
@@ -19,7 +20,7 @@ namespace Weapon.State
         protected override void Awake()
         {
             base.Awake();
-            bulletEffects = ItemManager.bulletPool[0];
+            bulletEffects = ItemManager.bulletPool[GetFeatureValuesByType<int>(FeatureType.bulletEffects).Last()];
         }
 
 

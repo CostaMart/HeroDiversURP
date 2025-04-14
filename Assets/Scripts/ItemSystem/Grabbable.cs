@@ -7,7 +7,7 @@ public class Grabbable : MonoBehaviour
 {
 
     public TMP_Text text;
-    public Item item;
+    public Modifier item;
     private bool active = false;
 
     [SerializeField] private ItemIconsList itemIconsList;

@@ -1,5 +1,5 @@
 {
-    "items": [
+    "mods": [
         {
             "id": 0,
             "name": "Bullet 1",
@@ -7,7 +7,7 @@
                 {
                     "effectType": "sa",
                     "target": "!CharStats.1",
-                    "expr": "!CharStats.1 - 1"
+                    "expr": "!CharStats.1 - (@BulletPoolStatsPrimary.8)/2"
                 }
             ]
         }

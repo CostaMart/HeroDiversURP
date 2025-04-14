@@ -115,6 +115,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
 
             timer = 0;
 
+            //TODO: gestire questo con il sistema di item
             magCount--;
             shootingIndex = 0;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemMono : MonoBehaviour
 {
 
-    public ItemManager.Item item = ItemManager.bulletPool[0];
+    public ItemManager.Modifier item = ItemManager.bulletPool[0];
 
     void OnCollisionEnter(Collision collision)
     {

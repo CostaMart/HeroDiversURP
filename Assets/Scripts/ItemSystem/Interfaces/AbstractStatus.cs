@@ -67,24 +67,30 @@ public abstract class AbstractStatus : MonoBehaviour
 
                     if (int.TryParse(parts[0], out _))
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[0] + " ID: " + parts[1]
-                         + " as int");
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[0]
+                         + " ID: " + parts[1] + " as int");
+
                         Feature f = new Feature(featureType, int.Parse(parts[0]), typeof(int));
                         f.SetValue(int.Parse(parts[0]));
                         features.Add(ind, f);
                     }
-                    else if (float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+                    else if (float.TryParse(parts[0], System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out _))
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " ID: " + parts[0]
-                         + " as float");
-                        Feature f = new Feature(featureType, float.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture), typeof(float));
-                        f.SetValue(float.Parse(parts[0].Replace(" ", ""), System.Globalization.CultureInfo.InvariantCulture));
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1]
+                        + " ID: " + parts[0] + " as float");
+
+                        Feature f = new Feature(featureType, float.Parse(parts[0],
+                        System.Globalization.CultureInfo.InvariantCulture), typeof(float));
+                        f.SetValue(float.Parse(parts[0].Replace(" ", ""),
+                        System.Globalization.CultureInfo.InvariantCulture));
                         features.Add(ind, f);
                     }
                     else
                     {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] + " ID: " + parts[0]
-                         + " as bool");
+                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] +
+                         " ID: " + parts[0] + " as bool");
+
                         Feature f = new Feature(featureType, bool.Parse(parts[0]), typeof(bool));
                         f.SetValue(bool.Parse(parts[0]));
                         features.Add(ind, f);
@@ -214,41 +220,57 @@ public abstract class AbstractStatus : MonoBehaviour
     protected virtual void ActivateEffects()
     {
         object toApply;
-
-        foreach (var effect in activeEffects)
+        try
         {
-            int targetID = effect.targetAttributeID;
-            Feature target = features[targetID];
 
-            if (target.type == typeof(int))
+            foreach (var effect in activeEffects)
             {
-                int inthelper = (int)features[targetID].GetValue();
-                inthelper = Convert.ToInt32(effect.Activate(this));
-                toApply = inthelper;
-                target.SetValue(inthelper);
-            }
-            else if (target.type == typeof(float))
-            {
-                float floathelper = (float)features[targetID].GetValue();
-                floathelper = Convert.ToSingle(effect.Activate(this));
-                toApply = floathelper;
+                int targetID = effect.targetAttributeID;
 
-                Debug.Log("AbstractStatus effect activation: setting value to: " + floathelper);
-                target.SetValue(floathelper);
-            }
-            else if (target.type == typeof(bool))
-            {
-                bool boolhelper = (bool)features[targetID].GetValue();
-                boolhelper = (bool)effect.Activate(this);
-                toApply = boolhelper;
-                target.SetValue(boolhelper);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid type: " + target.type);
-            }
+                Feature target = features[targetID];
+
+                if (target.type == typeof(int))
+                {
+                    int inthelper = (int)features[targetID].GetValue();
+                    inthelper = Convert.ToInt32(effect.Activate(this));
+                    toApply = inthelper;
+                    target.SetValue(inthelper);
+                }
+                else if (target.type == typeof(float))
+                {
+                    float floathelper = (float)features[targetID].GetValue();
+                    floathelper = Convert.ToSingle(effect.Activate(this));
+                    toApply = floathelper;
+
+                    Debug.Log("AbstractStatus effect activation: setting value to: " + floathelper);
+                    target.SetValue(floathelper);
+                }
+                else if (target.type == typeof(bool))
+                {
+                    bool boolhelper = (bool)features[targetID].GetValue();
+                    boolhelper = (bool)effect.Activate(this);
+                    toApply = boolhelper;
+                    target.SetValue(boolhelper);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid type: " + target.type);
+                }
 
 
+            }
+        }
+        catch (KeyNotFoundException e)
+        {
+            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
+        }
+        catch (InvalidCastException e)
+        {
+            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
         }
 
 

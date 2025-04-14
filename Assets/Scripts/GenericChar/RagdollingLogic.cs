@@ -58,8 +58,6 @@ public class Ragdoller : MonoBehaviour
             if (rb != otherRigid)
             {
                 otherRigid.isKinematic = !ragdolling;
-                otherRigid.linearVelocity = rb.linearVelocity;
-                otherRigid.angularVelocity = rb.angularVelocity;
 
                 // è necessario recuperare questa reference per posizionare il
                 //  personaggio correttamente quando si ripristinerà dopo la ragdoll

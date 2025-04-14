@@ -1,5 +1,5 @@
 {
-    "items": [
+    "mods": [
         {
             "id": 0,
             "gameIconId": 37,
@@ -27,12 +27,12 @@
         {
             "id": 1,
             "gameIconId": 48,
-            "name": "wide bullets",
+            "name": "Fast Bullets",
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.2",
-                    "expr": "@PrimaryWeaponStats.2 + 100"
+                    "target": "@PrimaryWeaponStats.4",
+                    "expr": "@PrimaryWeaponStats.4 + 100"
                 }
             ]
         },
