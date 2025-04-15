@@ -62,7 +62,7 @@ public class Dropper : MonoBehaviour
             }
 
             /// pool completely loaded
-            if (line.Contains("##"))
+            if (line.Contains("##") && found)
                 break;
 
             if (found)

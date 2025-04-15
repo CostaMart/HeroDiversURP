@@ -175,5 +175,18 @@ public abstract class EffectsDispatcher : MonoBehaviour
             .SelectMany(status => status.GetFeatureValuesByType<T>(f))
             .ToArray();
     }
+
+    /// <summary>
+    /// of all the stats classes into this object that have the feature f, returns the most recent value
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="f"></param>
+    /// <returns></returns>
+    public T GetMostRecentFeatureValue<T>(FeatureType f)
+    {
+        var toRet = affectables.Values.SelectMany(stats => stats.features.Values.Where(feat => feat.id == f)).ToList();
+        toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
+        return (T)toRet.First().GetValue();
+    }
 }
 

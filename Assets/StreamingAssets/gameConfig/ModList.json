@@ -4,16 +4,18 @@
             "id": 0,
             "gameIconId": 37,
             "name": "Fast Shoes",
+            "inGamePrice": 1,
             "effects": [
                 {
                     "effectType": "sa",
                     "target": "@CharStats.2",
-                    "expr": "100"
+                    "expr": "20"
                 }
             ]
         },
         {
             "id": 3,
+            "inGamePrice": 1,
             "gameIconId": 9,
             "name": "5 DodgeCoins",
             "effects": [
@@ -27,6 +29,7 @@
         {
             "id": 1,
             "gameIconId": 48,
+            "inGamePrice": 1,
             "name": "Fast Bullets",
             "effects": [
                 {
@@ -39,6 +42,7 @@
         {
             "id": 2,
             "gameIconId": 0,
+            "inGamePrice": 1,
             "name": "Full Energy jacket bullets",
             "effects": [
                 {

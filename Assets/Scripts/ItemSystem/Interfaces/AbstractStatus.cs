@@ -59,6 +59,13 @@ public abstract class AbstractStatus : MonoBehaviour
 
                     Type t;
                     FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
+
+                    if (featureType == FeatureType.money || featureType == FeatureType.keys)
+                    {
+                        Debug.LogWarning("AbstractStatus: money and keys are special features, not customizable");
+                        continue;
+                    }
+
                     Debug.Log("starting parsing ");
                     parts = parts[1].Split("ID:");
 
@@ -111,6 +118,7 @@ public abstract class AbstractStatus : MonoBehaviour
                 hasBeenFound = true;
             }
         }
+
 
         if (hasBeenFound)
             return features;

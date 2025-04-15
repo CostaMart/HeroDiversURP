@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
+using UnityEngine;
 
 public enum FeatureType
 {
+    keys,
     maxHealth,
     health,
     speed,
@@ -40,6 +42,7 @@ public class Feature
     public Type type;
     public object baseValue;
     public object currentValue;
+    public float lastModifiedTime;
 
     public Feature(FeatureType id, object baseValue, Type type)
     {
@@ -58,6 +61,7 @@ public class Feature
     public void SetValue(object value)
     {
         this.currentValue = value;
+        lastModifiedTime = Time.time;
     }
 
 }

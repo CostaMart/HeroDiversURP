@@ -7,12 +7,13 @@ public class WeapnYAimControl : MonoBehaviour
 
     private Vector2 delta;
 
-    public Transform parentTransform;
+    public Rigidbody parentTransform;
 
     [SerializeField] private ControlEventManager controlEventManager;
     [SerializeField] private CameraSettings cameraSettings;
 
     [SerializeField] private float rotationSmoothSpeed = 20f; // maggiore = più reattivo, minore = più morbido
+
 
     private bool aiming = false;
     private Quaternion targetRotation;
@@ -20,16 +21,18 @@ public class WeapnYAimControl : MonoBehaviour
     void Awake()
     {
         controlEventManager.AddMouseControlListener(OnMouseMove);
+
         controlEventManager.AddListenerAiming(OnAiming);
     }
 
-    void Update()
+    void LateUpdate()
     {
         // Calcola la rotazione target basata sul mouse
         rotationX -= delta.y * cameraSettings.Sensitivity;
         rotationX = Mathf.Clamp(rotationX, cameraSettings.LowerBoundYrotation, cameraSettings.UpperBoundYrotation);
-        rotationY = parentTransform.eulerAngles.y;
-        var rotationZ = parentTransform.eulerAngles.z;
+
+        rotationY = parentTransform.rotation.eulerAngles.y;
+        var rotationZ = parentTransform.rotation.eulerAngles.z;
 
         // Imposta la rotazione target
         targetRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);

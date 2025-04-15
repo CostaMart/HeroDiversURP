@@ -80,6 +80,7 @@ public class ItemManager
                 i.name = item.name;
                 i.id = item.id;
                 i.gameIconId = item.gameIconId;
+                i.inGamePrice = item.inGamePrice;
 
                 i.bullet = isbullet;
                 int effectID = 0;
@@ -173,12 +174,14 @@ public class ItemManager
     {
         public int id;
         public string name;
+        public int inGamePrice;
         public int gameIconId;
         public List<Dictionary<string, string>> effects;
     }
     public class Modifier
     {
         public int gameIconId;
+        public int inGamePrice;
         public bool bullet;
         public string name;
         public int id;
