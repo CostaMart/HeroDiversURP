@@ -25,7 +25,7 @@ public class MouseRotateCamera : MonoBehaviour
     public CinemachineThirdPersonFollow followCamera;
     [Tooltip("riferimento alla cinecamera")]
     [SerializeField] private CinemachineCamera cineCam;
-
+    private float initialCameraDistance;
 
     [SerializeField] private CameraSettings settings;
     [SerializeField] private ControlEventManager ControlEventManager;
@@ -45,6 +45,7 @@ public class MouseRotateCamera : MonoBehaviour
 
     void Start()
     {
+        initialCameraDistance = followCamera.CameraDistance;
         transform.localPosition = initialLocalPos;
 
         // Blocca il cursore al centro dello schermo e lo rende invisibile
@@ -55,44 +56,27 @@ public class MouseRotateCamera : MonoBehaviour
         zoomVector.y = 0;
         zoomVector.x = 0;
     }
-
+    public float ZoomSpeed = 5.0f;
     void Update()
     {
+        float targetFov = aiming ? settings.AimingFov : settings.DefaultFov;
+        float targetDistance = aiming ? initialCameraDistance - settings.Zoom : initialCameraDistance;
 
-
-        if (aiming && !zoomed)
-        {
-            zoomed = true;
-
-            followCamera.CameraDistance = followCamera.CameraDistance - settings.Zoom;
-            cineCam.Lens.FieldOfView = settings.AimingFov;
-        }
-        else if (zoomed && !aiming)
-        {
-            cineCam.Lens.FieldOfView = settings.DefaultFov;
-            zoomed = false;
-            followCamera.CameraDistance = followCamera.CameraDistance + settings.Zoom;
-        }
+        // Interpolazione smooth
+        cineCam.Lens.FieldOfView = Mathf.Lerp(cineCam.Lens.FieldOfView, targetFov, Time.deltaTime * settings.ZoomSpeed);
+        followCamera.CameraDistance = Mathf.Lerp(followCamera.CameraDistance, targetDistance, Time.deltaTime * settings.ZoomSpeed);
 
         // Calcola la direzione di rotazione in base al movimento del mouse
-        rotationY += delta.x * settings.Sensitivity;  // Ruota sull'asse Y (orizzontale)
-        rotationX -= delta.y * settings.Sensitivity;  // Ruota sull'asse X (verticale)
-
-        // Limita la rotazione X per evitare rotazioni strane
+        rotationY += delta.x * settings.Sensitivity;
+        rotationX -= delta.y * settings.Sensitivity;
         rotationX = Mathf.Clamp(rotationX, settings.LowerBoundYrotation, settings.UpperBoundYrotation);
 
-        // logica di rotazione a ragdoll disattivo
         if (!ragdolling)
-
         {
-            // Se non siamo in ragdoll, usa la rotazione X e Y specificate
             transform.rotation = Quaternion.Euler(rotationX, rotationY, 0f);
         }
-
-        // logica di rotazione a ragdoll attivo
         else
         {
-            // Se siamo in ragdoll, mantieni l'oggetto orientato verso l'alto lungo l'asse Y
             transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
             transform.position = ragdollRef.transform.position;
         }

@@ -9,7 +9,7 @@ public class CameraSettings : ScriptableObject
     [SerializeField] private float sensitivity = 0.1f;
     [SerializeField] private float aimingFov = 40f;
     [SerializeField] private float zoom = 1.5f;
-
+    public float ZoomSpeed = 5.0f;
     [SerializeField] private float defaultFov = 60f;
     [SerializeField] private float lowerBoundYrotation = -50f;
     [SerializeField] private float upperBoundYrotation = 90f;

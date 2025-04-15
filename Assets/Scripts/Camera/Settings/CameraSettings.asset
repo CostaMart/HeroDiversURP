@@ -15,6 +15,7 @@ MonoBehaviour:
   sensitivity: 0.1
   aimingFov: 40
   zoom: 1
+  ZoomSpeed: 20
   defaultFov: 60
   lowerBoundYrotation: -50
   upperBoundYrotation: 40
