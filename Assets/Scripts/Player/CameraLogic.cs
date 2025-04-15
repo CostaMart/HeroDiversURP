@@ -48,7 +48,7 @@ public class MouseRotateCamera : MonoBehaviour
         transform.localPosition = initialLocalPos;
 
         // Blocca il cursore al centro dello schermo e lo rende invisibile
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         initialPos = transform.localPosition;
         zoomVector = Vector3.one * settings.Zoom;

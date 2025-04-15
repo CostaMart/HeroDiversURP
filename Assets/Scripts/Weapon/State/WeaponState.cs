@@ -23,7 +23,7 @@ public class WeaponStats : AbstractStatus
     public float laserThickness = 0.1f;
     public LayerMask laserMask;
 
-    [SerializeField] private bool isPrimary = true; // 0 = primary, 1 = secondary
+    [SerializeField] public bool isPrimary = true; // 0 = primary, 1 = secondary
     [SerializeField] private Material[] laserMaterial;
     [SerializeField] public BulletPoolStats bulletPoolState;
 
@@ -33,7 +33,7 @@ public class WeaponStats : AbstractStatus
     [SerializeField] private EffectsDispatcher dispatcher;
     [SerializeField] private List<AbstractWeaponLogic> weaponLogics;
     [HideInInspector] public AbstractWeaponLogic activeLogic;
-    [HideInInspector] public WeaponBehaviourContainer weaponContrainer;
+    [HideInInspector] public WeaponBehaviourContainer weaponContainer;
     public ControlEventManager controlEventManager;
     public PlayerInput inputSys;
     [SerializeField] public Transform muzzle;
@@ -44,15 +44,19 @@ public class WeaponStats : AbstractStatus
     protected override void Awake()
     {
         base.Awake();
-
-        weaponContrainer = GetComponent<WeaponBehaviourContainer>();
-        lineRenderer = muzzle.gameObject.GetComponent<LineRenderer>();
-        lineRenderer.material = laserMaterial[laserType];
-        lineRenderer.startWidth = laserThickness;
+        if (!isPrimary) this.gameObject.SetActive(false);
 
         Debug.Log("container found and assigned");
     }
 
+    public void OnEnable()
+    {
+        weaponContainer = GetComponent<WeaponBehaviourContainer>();
+        lineRenderer = muzzle.gameObject.GetComponent<LineRenderer>();
+        lineRenderer.material = laserMaterial[laserType];
+        lineRenderer.startWidth = laserThickness;
+        ReassingLogic();
+    }
     protected override void Update()
     {
         base.Update();
@@ -87,10 +91,12 @@ public class WeaponStats : AbstractStatus
             Debug.Log("WeaponState: feature: " + feature.Value.id + " value: " + feature.Value.GetValue());
         }
 
-        weaponContrainer.activeLogic = weaponLogics[dispatcher.GetAllFeatureByType<int>(FeatureType.activeLogicIndex).Last()];
-        weaponContrainer.activeLogic.Dispatcher = dispatcher;
-        weaponContrainer.activeLogic.SetWeaponState(this);
-        weaponContrainer.activeLogic.Enable();
+        weaponContainer.activeLogic = weaponLogics[dispatcher.GetMostRecentFeatureValue<int>(isPrimary ?
+        FeatureType.pactiveLogicIndex : FeatureType.sactiveLogicIndex)];
+
+        weaponContainer.activeLogic.Dispatcher = dispatcher;
+        weaponContainer.activeLogic.SetWeaponState(this);
+        weaponContainer.activeLogic.Enable();
     }
 
 }

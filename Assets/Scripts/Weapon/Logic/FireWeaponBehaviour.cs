@@ -24,7 +24,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
 
     public override void Enable()
     {
-        magCount = _dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
+        magCount = _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagCount : FeatureType.smagCount).Sum();
         timer = 0;
         shootingIndex = 0;
         weaponStat.controlEventManager.AddListenerReload(Reload);
@@ -34,13 +34,13 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
 
     public override void Updating()
     {
-        if (weaponStat.bulletPool.Length < _dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum() *
-         _dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum())
+        if (weaponStat.bulletPool.Length < _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagSize : FeatureType.smagSize).Sum() *
+         _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagCount : FeatureType.smagCount).Sum())
         {
             if (weaponStat.bulletPool != null)
             {
                 var newPool = new GameObject[magCount *
-                _dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum()];
+                _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagSize : FeatureType.smagSize).Sum()];
                 int i = 0;
 
                 foreach (GameObject bullet in weaponStat.bulletPool)
@@ -76,11 +76,13 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
             return;
 
         // Non si spara se abbiamo già sparato tutti i colpi del caricatore
-        if (shootingIndex >= _dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum())
+        if (shootingIndex >= _dispatcher.GetAllFeatureByType<int>(
+            weaponStat.isPrimary ? FeatureType.pmagSize : FeatureType.smagSize).Sum())
             return;
 
         // Rateo di fuoco
-        float fireDelay = 1f / _dispatcher.GetAllFeatureByType<float>(FeatureType.fireRate).Sum();
+        float fireDelay = 1f / _dispatcher.GetAllFeatureByType<float>(
+            weaponStat.isPrimary ? FeatureType.pfireRate : FeatureType.sfireRate).Sum();
         if (Time.time - timer < fireDelay)
             return;
 
@@ -93,12 +95,14 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
         bullet.transform.rotation = weaponStat.muzzle.rotation;
 
         weaponStat.bulletRigids[shootingIndex].linearVelocity = weaponStat.muzzle.forward
-        * _dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
+        * _dispatcher.GetAllFeatureByType<float>
+        (weaponStat.isPrimary ? FeatureType.pfireStrength : FeatureType.sfireStrength).Sum();
 
         shootingIndex++;
 
         // Se non è automatico, disattiviamo il flag di shooting
-        if (!_dispatcher.GetAllFeatureByType<bool>(FeatureType.automatic).Last())
+        if (!_dispatcher.GetMostRecentFeatureValue<bool>(
+            weaponStat.isPrimary ? FeatureType.pautomatic : FeatureType.sautomatic))
             shooting = false;
     }
 
@@ -132,7 +136,8 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
 
         RaycastHit hit;
         // Se il raggio colpisce qualcosa, usa la posizione di impatto, altrimenti usa la lunghezza massima
-        if (Physics.Raycast(ray, out hit, _dispatcher.GetAllFeatureByType<float>(FeatureType.laserLength).Sum(), weaponStat.laserMask))
+        if (Physics.Raycast(ray, out hit, _dispatcher.GetAllFeatureByType<float>(weaponStat.isPrimary ?
+        FeatureType.plaserLength : FeatureType.slaserLength).Sum(), weaponStat.laserMask))
         {
             weaponStat.lineRenderer.SetPosition(0, origineLaser);         // Punto di partenza (muzzle)
             weaponStat.lineRenderer.SetPosition(1, hit.point);            // Punto di impatto
@@ -141,7 +146,8 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
         {
             weaponStat.lineRenderer.SetPosition(0, origineLaser);         // Punto di partenza (muzzle)
             weaponStat.lineRenderer.SetPosition(1, origineLaser + direzioneLaser *
-             _dispatcher.GetAllFeatureByType<float>(FeatureType.laserLength).Sum());// Lunghezza massima del laser
+             _dispatcher.GetAllFeatureByType<float>(weaponStat.isPrimary ?
+             FeatureType.plaserLength : FeatureType.slaserLength).Sum());// Lunghezza massima del laser
         }
     }
 

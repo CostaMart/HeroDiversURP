@@ -188,8 +188,8 @@ public class PlayerAnimatorLogic : MonoBehaviour
             else
             {
                 twoBoneIKConstraintR.weight = 0;
-                IKLeftHand.position = wpnFrontHandle.position;
-                IKLeftHand.rotation = wpnFrontHandle.rotation;
+                IKLeftHand.position = Vector3.Lerp(IKLeftHand.position, wpnFrontHandle.position, 0.5f);
+                IKLeftHand.rotation = Quaternion.Lerp(IKLeftHand.rotation, wpnFrontHandle.rotation, 0.5f);
             }
         }
 
@@ -229,9 +229,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
             needsRigRebuild = true;
         }
 
-    }
-    public void LateUpdate()
-    {
         if (needsRigRebuild)
         {
             rb.Build();

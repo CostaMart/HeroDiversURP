@@ -30,10 +30,10 @@ public class ItemManager
             { "testUpdate", 1 },
             { "Ragdoller",  2 },
             {"PrimaryWeaponStats", 3},
-            {"SecondaryWeaponState", 4},
+            {"SecondaryWeaponStats", 4},
             {"BulletPoolStatsPrimary",5},
             {"BulletPoolStatsSecondary", 6},
-            {"PhysicsStats", 7}
+            {"PhysicsStats", 7},
         };
 
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);

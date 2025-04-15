@@ -25,7 +25,7 @@ public class WeapnYAimControl : MonoBehaviour
         controlEventManager.AddListenerAiming(OnAiming);
     }
 
-    void LateUpdate()
+    void Update()
     {
         // Calcola la rotazione target basata sul mouse
         rotationX -= delta.y * cameraSettings.Sensitivity;
@@ -38,7 +38,7 @@ public class WeapnYAimControl : MonoBehaviour
         targetRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
 
         // Interpola verso la rotazione target per ottenere un movimento fluido
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 5000);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5000f * Time.deltaTime);
     }
 
     void OnAiming(bool value)

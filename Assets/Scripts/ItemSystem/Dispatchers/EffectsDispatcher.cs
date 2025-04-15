@@ -149,7 +149,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError(e.Message + " in gameobject: " + transform.gameObject.name + "in object"
+                        Debug.LogError(e.Message + " in gameobject: " + transform.gameObject.name + " in object "
                         + parent.name);
                     }
                 }
@@ -186,7 +186,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     {
         var toRet = affectables.Values.SelectMany(stats => stats.features.Values.Where(feat => feat.id == f)).ToList();
         toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
-        return (T)toRet.First().GetValue();
+        return (T)toRet.FirstOrDefault().GetValue();
     }
 }
 

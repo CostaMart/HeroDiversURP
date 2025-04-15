@@ -12,13 +12,23 @@ maxJumps = 1 ID:7
 ##
 
 #PlayerPrimary-WeaponStats
-magCount = 10 ID:1
-magSize = 10 ID:2
-fireRate = 4.0 ID:3
-fireStrength = 50.0 ID:4
-laserLength = 100.0 ID:5
-automatic = true  ID:6
-activeLogicIndex = 1  ID:7
+pmagCount = 10 ID:1
+pmagSize = 10 ID:2
+pfireRate = 0.5 ID:3
+pfireStrength = 50.0 ID:4
+plaserLength = 100.0 ID:5
+pautomatic = true  ID:6
+pactiveLogicIndex = 1  ID:7
+##
+
+#PlayerSecondary-WeaponStats
+smagCount = 10 ID:1
+smagSize = 10 ID:2
+sfireRate = 4.0 ID:3
+sfireStrength = 50.0 ID:4
+slaserLength = 100.0 ID:5
+sautomatic = true  ID:6
+sactiveLogicIndex = 1  ID:7
 ##
 
 #bulletPool-BulletPoolStats
