@@ -113,9 +113,11 @@ public class MovementLogic : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        anim.SetBool("jump", true);
         if (other.CompareTag("terrain"))
+        {
+            anim.SetBool("jump", true);
             isGrounded = false;
+        }
     }
 
     void OnCollisionEnter(Collision collision)

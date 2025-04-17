@@ -265,8 +265,6 @@ public abstract class AbstractStatus : MonoBehaviour
                 {
                     throw new ArgumentException("Invalid type: " + target.type);
                 }
-
-
             }
         }
         catch (KeyNotFoundException e)

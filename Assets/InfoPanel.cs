@@ -5,86 +5,82 @@ using UnityEngine;
 
 public class InfoPanel : MonoBehaviour
 {
-    bool panelVisible = false;
-    public string name;
-    public string message;
+    private enum PanelState { Idle, Entering, Showing, Exiting }
+
+    private PanelState currentState = PanelState.Idle;
+
+    public string defaultName;
+    public string defaultMessage;
     public GameObject panel;
-    Vector3 paneOriginalPos;
+    private Vector3 panelOriginalPos;
     public TMPro.TMP_Text panelName;
     public TMPro.TMP_Text panelDescription;
-    public float distance;
-    bool panelActive = false;
-    bool coroutine = false;
-    Queue<(string, string)> messages = new Queue<(string, string)>();
+    public float distance = 300f;
+    public float moveSpeed = 5f;
+    public float displayTime = 2f;
+
+    private Queue<(string, string)> messages = new Queue<(string, string)>();
+    private Vector3 targetPosition;
+    private float showTimer = 0f;
+
     void Start()
     {
         panel.SetActive(false);
-        paneOriginalPos = panel.transform.localPosition;
+        panelOriginalPos = panel.transform.localPosition;
+        targetPosition = panelOriginalPos;
     }
+
     void Update()
     {
-        while (messages.Count > 0)
+        switch (currentState)
         {
-
-            if (panelActive)
-            {
-                panelName.text = messages.Peek().Item1;
-                panelDescription.text = messages.Dequeue().Item2;
-
-                panel.SetActive(true);
-                panel.transform.localPosition = paneOriginalPos;
-
-
-                // Calculate target position (10 units to the right from original position)
-                Vector3 targetPosition = paneOriginalPos - Vector3.right * distance;
-
-                // Smoothly move the panel toward the target position
-                float moveSpeed = 5f * Time.deltaTime; // Adjust speed as needed
-                panel.transform.localPosition = Vector3.Lerp(panel.transform.localPosition, targetPosition, moveSpeed);
-
-                if (panel.transform.localPosition == targetPosition)
+            case PanelState.Idle:
+                if (messages.Count > 0)
                 {
-                    StartCoroutine("DisapearPanel");
-                    coroutine = true;
+                    // Pronto per entrare
+                    (string title, string desc) = messages.Dequeue();
+                    panelName.text = title;
+                    panelDescription.text = desc;
+                    panel.SetActive(true);
+                    targetPosition = panelOriginalPos - Vector3.right * distance;
+                    currentState = PanelState.Entering;
                 }
-            }
-            else
-            {
+                break;
 
-                panelName.text = name;
-                panelDescription.text = message;
-
-
-                // Smoothly move the panel toward the target position
-                float moveSpeed = 5f * Time.deltaTime; // Adjust speed as needed
-                panel.transform.localPosition = Vector3.Lerp(panel.transform.localPosition, paneOriginalPos, moveSpeed);
-
-                if (panel.transform.localPosition == paneOriginalPos)
+            case PanelState.Entering:
+                panel.transform.localPosition = Vector3.Lerp(panel.transform.localPosition, targetPosition, moveSpeed * Time.deltaTime);
+                if (Vector3.Distance(panel.transform.localPosition, targetPosition) < 0.1f)
                 {
+                    panel.transform.localPosition = targetPosition; // Snap
+                    showTimer = displayTime;
+                    currentState = PanelState.Showing;
+                }
+                break;
+
+            case PanelState.Showing:
+                showTimer -= Time.deltaTime;
+                if (showTimer <= 0f)
+                {
+                    targetPosition = panelOriginalPos;
+                    currentState = PanelState.Exiting;
+                }
+                break;
+
+            case PanelState.Exiting:
+                panel.transform.localPosition = Vector3.Lerp(panel.transform.localPosition, targetPosition, moveSpeed * Time.deltaTime);
+                if (Vector3.Distance(panel.transform.localPosition, targetPosition) < 0.1f)
+                {
+                    panel.transform.localPosition = targetPosition;
                     panel.SetActive(false);
-                    panelActive = true;
+                    currentState = PanelState.Idle;
                 }
-
-            }
-
+                break;
         }
-
     }
 
     public void AppearPanel(string name, string message)
     {
         messages.Enqueue((name, message));
-
-        Debug.Log("infoPanel: " + name + " " + message);
-        Debug.Log("infoPanel: " + messages.Count);
-        panelActive = true;
+        Debug.Log("Requesting panel: " + messages.Count);
     }
-
-    public IEnumerator DisapearPanel()
-    {
-        yield return new WaitForSeconds(2f);
-        panelActive = false;
-        coroutine = false;
-    }
-
 }

@@ -47,6 +47,7 @@
             "gameIconId": 0,
             "inGamePrice": 1,
             "name": "Poison",
+            "description": "the most dangerous poison in the galaxy",
             "effects": [
                 {
                     "totalDuration": 10,

@@ -3,6 +3,7 @@ using System.IO;
 using Mono.Cecil;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using static ItemManager;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -105,6 +106,9 @@ public class Dropper : MonoBehaviour
         if (!inRange) return;
         Modifier it = null;
         used = true;
+
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().isKinematic = false;
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f - Vector3.forward * 10f, ForceMode.Impulse);
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
         var numbersOfDrops = Random.Range(range.Item1, range.Item2 + 1);
 
@@ -135,10 +139,15 @@ public class Dropper : MonoBehaviour
 
         if (container.TryGetComponent(out Rigidbody rb))
         {
-            rb.AddForce(Vector3.up * 10 + spawn.forward * 10, ForceMode.Impulse);
-        }
+            // Direzione random
+            Vector3 randomDirection = new Vector3(
+                Random.Range(-1f, 1f), // X random
+                1f,                   // Sempre un po' verso l'alto
+                Random.Range(-1f, 1f)  // Z random
+            ).normalized; // Normalizzo così non è troppo forte su certi assi
 
-        return;
+            rb.AddForce(randomDirection * 10f, ForceMode.Impulse);
+        }
     }
 
 }

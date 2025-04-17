@@ -10,6 +10,7 @@ public class Grabbable : MonoBehaviour
     public Modifier item;
     private bool active = false;
     public bool selling = false;
+    bool grabbable = true;
     [SerializeField] public EconomyManager economyManager;
 
     [SerializeField] private ItemIconsList itemIconsList;
@@ -39,6 +40,8 @@ public class Grabbable : MonoBehaviour
         myRenderer.material = meshRenderer.sharedMaterial;
         myRenderer.enabled = true;
 
+        active = false;
+
         panel = GameObject.Find("GUI").GetComponent<InfoPanel>();
     }
 
@@ -57,7 +60,7 @@ public class Grabbable : MonoBehaviour
 
 
 
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.E))
         {
             // if selling try buy item
             if (selling)
@@ -68,7 +71,9 @@ public class Grabbable : MonoBehaviour
                 }
 
             Debug.Log("Requesting panel");
-            panel.AppearPanel(item.name, item.description);
+            if (grabbable)
+                panel.AppearPanel(item.name, item.description);
+            grabbable = false;
             other.gameObject.GetComponent<EffectsDispatcher>().ItemDispatch(item);
             Destroy(transform.parent.gameObject);
         }
