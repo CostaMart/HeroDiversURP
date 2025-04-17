@@ -136,6 +136,47 @@ public class ItemManager
 
         }
 
+        // create special items for system usages
+
+        // mag consumption primary
+        var utilitymod = new Modifier();
+        utilitymod.effects = new List<AbstractEffect>();
+        utilitymod.name = "magConsumptionPrimary";
+
+
+        utilitymod.effects.Add(new SingleActivationEffect(
+                new Dictionary<string, string>
+                {
+                    { "effectType", "sa" },
+                    { "effectName", "ammoConsumption" },
+                    { "description", "consumes 1 ammo" },
+                    { "inGamePrice", "0" },
+                    { "gameIconId", "0" },
+                    { "target","@PrimaryWeaponStats.1"},
+                    {"expr","@PrimaryWeaponStats.1 - 1"}
+                }, 0, 0, false));
+
+        items.Add(-1, utilitymod);
+
+        // mag consumption primarySecondary
+        utilitymod = new Modifier();
+        utilitymod.effects = new List<AbstractEffect>();
+        utilitymod.name = "magConsumptionSecondary";
+
+        utilitymod.effects.Add(new SingleActivationEffect(
+                new Dictionary<string, string>
+                {
+                    { "effectType", "sa" },
+                    { "effectName", "ammoConsumption" },
+                    { "description", "consumes 1 ammo" },
+                    { "inGamePrice", "0" },
+                    { "gameIconId", "0" },
+                    { "target","@SecondaryWeaponStats.1"},
+                    {"expr","@SecondaryWeaponStats.1 - 1"}
+
+                }, 0, 0, false));
+        items.Add(-2, utilitymod);
+
         return items;
     }
 

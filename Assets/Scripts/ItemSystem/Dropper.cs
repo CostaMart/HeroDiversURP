@@ -20,7 +20,7 @@ public class Dropper : MonoBehaviour
     [SerializeField] Color emissionColor = Color.green * 5.0f;
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color usedColor = Color.red;
-
+    [SerializeField] Animator anim;
     [SerializeField] PlayerInput playerInput;
 
 
@@ -109,6 +109,9 @@ public class Dropper : MonoBehaviour
 
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>().isKinematic = false;
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f - Vector3.forward * 10f, ForceMode.Impulse);
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddTorque(Vector3.right * (-10f), ForceMode.Impulse);
+
+        anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
         var numbersOfDrops = Random.Range(range.Item1, range.Item2 + 1);
 

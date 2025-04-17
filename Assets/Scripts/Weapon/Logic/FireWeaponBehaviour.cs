@@ -11,7 +11,6 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
     public Animator anim;
     public bool animatorSet = false;
     public float timer = 0f;
-    public int shootingIndex = 0;
     public int magCount = 0;
 
 
@@ -26,7 +25,6 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
     {
         magCount = _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagCount : FeatureType.smagCount).Sum();
         timer = 0;
-        shootingIndex = 0;
         weaponStat.controlEventManager.AddListenerReload(Reload);
         weaponStat.inputSys.actions["Attack"].performed += context => { this.shooting = true; };
         weaponStat.inputSys.actions["Attack"].canceled += context => { this.shooting = false; };
@@ -76,7 +74,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
             return;
 
         // Non si spara se abbiamo già sparato tutti i colpi del caricatore
-        if (shootingIndex >= _dispatcher.GetAllFeatureByType<int>(
+        if (weaponStat.currentAmmo >= _dispatcher.GetAllFeatureByType<int>(
             weaponStat.isPrimary ? FeatureType.pmagSize : FeatureType.smagSize).Sum())
             return;
 
@@ -89,16 +87,16 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
         // Sparo
         timer = Time.time;
 
-        GameObject bullet = weaponStat.bulletPool[shootingIndex];
+        GameObject bullet = weaponStat.bulletPool[weaponStat.currentAmmo];
         bullet.SetActive(true);
         bullet.transform.position = weaponStat.muzzle.position;
         bullet.transform.rotation = weaponStat.muzzle.rotation;
 
-        weaponStat.bulletRigids[shootingIndex].linearVelocity = weaponStat.muzzle.forward
+        weaponStat.bulletRigids[weaponStat.currentAmmo].linearVelocity = weaponStat.muzzle.forward
         * _dispatcher.GetAllFeatureByType<float>
         (weaponStat.isPrimary ? FeatureType.pfireStrength : FeatureType.sfireStrength).Sum();
 
-        shootingIndex++;
+        weaponStat.currentAmmo++;
 
         // Se non è automatico, disattiviamo il flag di shooting
         if (!_dispatcher.GetMostRecentFeatureValue<bool>(
@@ -120,8 +118,8 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
             timer = 0;
 
             //TODO: gestire questo con il sistema di item
-            magCount--;
-            shootingIndex = 0;
+            weaponStat.dispatcher.ItemDispatch(ItemManager.globalItemPool[-1]);
+            weaponStat.currentAmmo = 0;
         }
     }
 

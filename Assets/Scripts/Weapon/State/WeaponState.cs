@@ -22,6 +22,8 @@ public class WeaponStats : AbstractStatus
     public int laserType;
     public float laserThickness = 0.1f;
     public LayerMask laserMask;
+    public int currentAmmo = 0;
+    public int curretnAMmoSecondary = 0;
 
     [SerializeField] public bool isPrimary = true; // 0 = primary, 1 = secondary
     [SerializeField] private Material[] laserMaterial;
@@ -30,7 +32,7 @@ public class WeaponStats : AbstractStatus
     [Header("Weapon Logic")]
     [Tooltip("list of wepon logics this wepon can use")]
     public BulletPoolStats pool;
-    [SerializeField] private EffectsDispatcher dispatcher;
+    [SerializeField] public EffectsDispatcher dispatcher;
     [SerializeField] private List<AbstractWeaponLogic> weaponLogics;
     [HideInInspector] public AbstractWeaponLogic activeLogic;
     [HideInInspector] public WeaponBehaviourContainer weaponContainer;
@@ -38,6 +40,7 @@ public class WeaponStats : AbstractStatus
     public PlayerInput inputSys;
     [SerializeField] public Transform muzzle;
     [HideInInspector] public LineRenderer lineRenderer;
+
 
 
     // Update is called once per frame
