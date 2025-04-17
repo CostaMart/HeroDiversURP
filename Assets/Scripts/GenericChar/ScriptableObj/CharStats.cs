@@ -29,7 +29,7 @@ public class CharStats : AbstractStatus
         base.Update();
 
         var hp = GetFeatureValuesByType<float>(FeatureType.health).Sum();
-        Math.Clamp(hp, 0, GetFeatureValuesByType<float>(FeatureType.maxHealth).Sum());
+        hp = Math.Clamp(hp, 0, GetFeatureValuesByType<float>(FeatureType.maxHealth).Sum());
 
         if (hp <= 0)
         {
@@ -37,8 +37,6 @@ public class CharStats : AbstractStatus
             this.gameObject.SetActive(false);
         }
 
-        Debug.Log("Charstats: residual life: " + GetFeatureValuesByType<float>(FeatureType.health).Sum()
-        + "for object: " + this.name);
     }
 
 }

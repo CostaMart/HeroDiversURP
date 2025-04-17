@@ -71,7 +71,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
         }
     }
 
-    public virtual void DispatchFromOtherDispatcher(Modifier it)
+    public virtual void TransactModifier(Modifier it)
     {
         foreach (AbstractEffect up in it.effects)
         {

@@ -25,6 +25,7 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] private ControlEventManager controlEventManager;
     [SerializeField] private float maxSlopeAngle = 45f;
     private Vector3 moveDirection = Vector3.zero;
+    private bool isGrounded = true;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -51,7 +52,7 @@ public class MovementLogic : MonoBehaviour
 
     // Dichiara una distanza per il controllo del terreno (valore da settare in base alle esigenze)
     [SerializeField] public float groundCheckDistance = 1.0f;
-    private void Update()
+    private void FixedUpdate()
     {
 
         Vector3 direction = Vector3.zero;
@@ -95,52 +96,57 @@ public class MovementLogic : MonoBehaviour
             if (!aiming)
             {
                 targetRotation = Quaternion.LookRotation(direction);
-
             }
-            if (allowMovement)
-            {
 
+            if (allowMovement && isGrounded)
+            {
                 Vector3 linear = direction.normalized * dispatcher.GetAllFeatureByType<float>(FeatureType.speed).Sum();
                 linear.y = rb.linearVelocity.y;
                 rb.linearVelocity = linear;
             }
 
         }
-        else
-        {
-            // Solo gravità
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-        }
 
-        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.deltaTime));
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed));
     }
 
 
     void OnTriggerExit(Collider other)
     {
         anim.SetBool("jump", true);
+        if (other.CompareTag("terrain"))
+            isGrounded = false;
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("terrain"))
+        {
             jumpsAvailable = dispatcher.GetAllFeatureByType<int>(FeatureType.maxJumps).Sum();
+            isGrounded = true;
+        }
     }
 
     public void Jump()
     {
-        Vector3 direction = Vector3.zero;
-
-        direction += camera.transform.forward * moveDirection.y;
-        direction += camera.transform.right * moveDirection.x;
-
         if (jumpsAvailable <= 0) return;
 
+        // Calculate movement direction based on camera orientation
+        Vector3 direction = Vector3.zero;
+        direction += camera.transform.forward * moveDirection.y;
+        direction += camera.transform.right * moveDirection.x;
+        direction.y = 0; // Ensure direction is horizontal only
+        direction = direction.normalized; // Normalize for direction only
+
+        // Get jump speeds from dispatcher
+        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy).Sum();
+        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx).Sum();
 
         rb.linearVelocity = new Vector3(
             rb.linearVelocity.x,
-            dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy).Sum(),
+            jumpForceVertical,
             rb.linearVelocity.z);
+
         jumpsAvailable--;
     }
 

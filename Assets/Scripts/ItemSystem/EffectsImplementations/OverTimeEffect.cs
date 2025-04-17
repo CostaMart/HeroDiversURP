@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
 class OverTimeEffect : AbstractEffect
 {
-    /// <summary>
-    /// Total duration of the effect
-    /// </summary>
     private float totalDuration;
-    private float timeLimitBeforeActivation;
-    private float activationTimer = 0;
-    private float totalTimeElapsed = 0;
+    private float timeLimitBetweenActivation;
+    private float nextActivationTime;
+    private float effectStartTime;
 
-    public OverTimeEffect(Dictionary<string, string> data, int itemID, int effectID, bool inABullet) : base(data, itemID, inABullet)
-
+    public OverTimeEffect(Dictionary<string, string> data, int itemID, int effectID, bool inABullet)
+        : base(data, itemID, inABullet)
     {
         if (!data.ContainsKey("totalDuration") || !data.ContainsKey("rate"))
         {
@@ -24,7 +24,7 @@ class OverTimeEffect : AbstractEffect
         float actRate = float.Parse(data["rate"]);
 
         totalDuration = totald;
-        timeLimitBeforeActivation = 1 / actRate;
+        timeLimitBetweenActivation = actRate;
     }
 
     public override object Activate(AbstractStatus target)
@@ -32,27 +32,30 @@ class OverTimeEffect : AbstractEffect
         return Tick(target);
     }
 
-
     private object Tick(AbstractStatus target)
-
     {
-        totalTimeElapsed += Time.deltaTime;
-        activationTimer += Time.deltaTime;
-        object result = null;
-
-        if (activationTimer >= timeLimitBeforeActivation)
+        if (effectStartTime == 0)
         {
-            activationTimer = 0;
-            result = base.DoEffect();
+            effectStartTime = Time.time;
+            nextActivationTime = Time.time + timeLimitBetweenActivation;
         }
 
-        if (totalTimeElapsed >= totalDuration)
+        object result = -1;
+
+        if (Time.time >= nextActivationTime)
+        {
+            result = base.DoEffect();
+            nextActivationTime += timeLimitBetweenActivation;
+        }
+
+        if (Time.time - effectStartTime >= totalDuration)
         {
             target.RemoveEffect(this);
         }
 
         return result;
     }
+
     public override void Attach(Dictionary<int, AbstractStatus> target, EffectsDispatcher dispatcher)
     {
         this.dispatcher = dispatcher;

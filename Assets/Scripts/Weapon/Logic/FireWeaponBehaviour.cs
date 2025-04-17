@@ -141,6 +141,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
         {
             weaponStat.lineRenderer.SetPosition(0, origineLaser);         // Punto di partenza (muzzle)
             weaponStat.lineRenderer.SetPosition(1, hit.point);            // Punto di impatto
+            weaponStat.lineRenderer.widthCurve = AnimationCurve.Linear(0, 0, 0.1f, 0.1f); // Imposta la larghezza del laser
         }
         else
         {
@@ -148,6 +149,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
             weaponStat.lineRenderer.SetPosition(1, origineLaser + direzioneLaser *
              _dispatcher.GetAllFeatureByType<float>(weaponStat.isPrimary ?
              FeatureType.plaserLength : FeatureType.slaserLength).Sum());// Lunghezza massima del laser
+            weaponStat.lineRenderer.widthCurve = AnimationCurve.Linear(0, 0, 0.1f, 0.1f); // Imposta la larghezza del laser
         }
     }
 

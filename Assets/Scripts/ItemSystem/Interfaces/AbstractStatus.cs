@@ -246,9 +246,10 @@ public abstract class AbstractStatus : MonoBehaviour
                 }
                 else if (target.type == typeof(float))
                 {
-                    float floathelper = (float)features[targetID].GetValue();
+                    float? floathelper = (float)features[targetID].GetValue();
                     floathelper = Convert.ToSingle(effect.Activate(this));
-                    toApply = floathelper;
+
+                    floathelper = floathelper != -1 ? floathelper : (float)target.GetValue();
 
                     Debug.Log("AbstractStatus effect activation: setting value to: " + floathelper);
                     target.SetValue(floathelper);

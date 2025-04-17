@@ -4,6 +4,7 @@
             "id": 0,
             "gameIconId": 37,
             "name": "Fast Shoes",
+            "description": "nano fiber shoes, incredibily lighter, made by Nike for military porpouses, as strange as it may sound",
             "inGamePrice": 1,
             "effects": [
                 {
@@ -18,6 +19,7 @@
             "inGamePrice": 1,
             "gameIconId": 9,
             "name": "5 DodgeCoins",
+            "description": "5 DodgeCoins, the currency of the future, used by the most advanced civilizations in the galaxy",
             "effects": [
                 {
                     "effectType": "sa",
@@ -31,6 +33,7 @@
             "gameIconId": 48,
             "inGamePrice": 1,
             "name": "Fast Bullets",
+            "description": "Bullets made with a special alloy, they are lighter and faster than normal bullets, don't get used to them",
             "effects": [
                 {
                     "effectType": "sa",
@@ -43,17 +46,14 @@
             "id": 2,
             "gameIconId": 0,
             "inGamePrice": 1,
-            "name": "Full Energy jacket bullets",
+            "name": "Poison",
             "effects": [
                 {
-                    "effectType": "sa",
-                    "target": "@BulletPoolStatsPrimary.3",
-                    "expr": "200"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.2",
-                    "expr": "@PrimaryWeaponStats.2 + 10"
+                    "totalDuration": 10,
+                    "rate": "0,1",
+                    "effectType": "ot",
+                    "target": "@CharStats.1",
+                    "expr": "@CharStats.1 - 5"
                 }
             ]
         }

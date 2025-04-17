@@ -69,7 +69,7 @@ public class Ragdoller : MonoBehaviour
 
         foreach (Collider otherCollid in GetComponentsInChildren<Collider>())
         {
-            if (otherCollid != col)
+            if (otherCollid != col && otherCollid.gameObject != this.gameObject)
             {
                 otherCollid.enabled = ragdolling;
             }

@@ -14,6 +14,7 @@ public class WeapnYAimControl : MonoBehaviour
     Rigidbody rb;
 
     [SerializeField] private float rotationSmoothSpeed = 20f; // maggiore = più reattivo, minore = più morbido
+    [SerializeField] private EffectsDispatcher dispatcher;
 
 
     private bool aiming = false;
@@ -33,13 +34,13 @@ public class WeapnYAimControl : MonoBehaviour
         rotationX -= delta.y * cameraSettings.Sensitivity;
         rotationX = Mathf.Clamp(rotationX, cameraSettings.LowerBoundYrotation, cameraSettings.UpperBoundYrotation);
 
-        rotationY = rb.rotation.eulerAngles.y;
+        rotationY += delta.x * cameraSettings.Sensitivity;
 
         // Imposta la rotazione target
         targetRotation = Quaternion.Euler(rotationX, rotationY, 0);
 
         // Interpola verso la rotazione target per ottenere un movimento fluido
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, dispatcher.GetMostRecentFeatureValue<float>(FeatureType.rotationSpeed));
     }
 
     void OnAiming(bool value)

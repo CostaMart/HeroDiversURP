@@ -13,6 +13,7 @@ public class Grabbable : MonoBehaviour
     [SerializeField] public EconomyManager economyManager;
 
     [SerializeField] private ItemIconsList itemIconsList;
+    private InfoPanel panel;
 
     public void Start()
     {
@@ -37,6 +38,8 @@ public class Grabbable : MonoBehaviour
         var myRenderer = GetComponent<MeshRenderer>();
         myRenderer.material = meshRenderer.sharedMaterial;
         myRenderer.enabled = true;
+
+        panel = GameObject.Find("GUI").GetComponent<InfoPanel>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -64,6 +67,8 @@ public class Grabbable : MonoBehaviour
                     return;
                 }
 
+            Debug.Log("Requesting panel");
+            panel.AppearPanel(item.name, item.description);
             other.gameObject.GetComponent<EffectsDispatcher>().ItemDispatch(item);
             Destroy(transform.parent.gameObject);
         }

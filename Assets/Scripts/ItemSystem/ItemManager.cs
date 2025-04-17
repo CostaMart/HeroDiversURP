@@ -175,6 +175,7 @@ public class ItemManager
         public int id;
         public string name;
         public int inGamePrice;
+        public string description;
         public int gameIconId;
         public List<Dictionary<string, string>> effects;
     }
@@ -182,6 +183,7 @@ public class ItemManager
     {
         public int gameIconId;
         public int inGamePrice;
+        public string description;
         public bool bullet;
         public string name;
         public int id;

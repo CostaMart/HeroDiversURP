@@ -138,7 +138,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (aiming)
         {
@@ -188,8 +188,8 @@ public class PlayerAnimatorLogic : MonoBehaviour
             else
             {
                 twoBoneIKConstraintR.weight = 0;
-                IKLeftHand.position = Vector3.Lerp(IKLeftHand.position, wpnFrontHandle.position, 0.5f);
-                IKLeftHand.rotation = Quaternion.Lerp(IKLeftHand.rotation, wpnFrontHandle.rotation, 0.5f);
+                IKLeftHand.position = Vector3.Slerp(IKLeftHand.position, wpnFrontHandle.position, 0.5f);
+                IKLeftHand.rotation = Quaternion.Slerp(IKLeftHand.rotation, wpnFrontHandle.rotation, 0.5f);
             }
         }
 
