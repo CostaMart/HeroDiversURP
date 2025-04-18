@@ -1,20 +1,31 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static ItemManager;
 using static Unity.Cinemachine.CinemachineSplineDollyLookAtTargets;
+using static UnityEngine.InputSystem.InputAction;
+using Random = UnityEngine.Random;
 
 public class Seller : MonoBehaviour
 {
-    List<int> itIds;
-    List<int> rarities;
+    List<int> itIds = new() { 1 };
+    List<int> rarities = new() { 1 };
     (int, int) itemNumRange = (1, 1);
     Transform transform;
     [SerializeField] private EconomyManager economyManager;
+    private GameObject guiCam;
     float offset = 0f;
     int rigtOrLeft = 1;
     List<Modifier> it;
+    private InteractiveShopMan shopMan;
+    private GameObject shopManContainer;
+    private PlayerInput input;
+    private EffectsDispatcher dispatcher;
+
     void Start()
     {
         ReadSellingPool();
@@ -24,29 +35,36 @@ public class Seller : MonoBehaviour
         for (var x = 0; x < itemNum; x++)
         {
             it.Add(ItemManager.DropFromPool(itIds.ToArray(), rarities.ToArray()));
-            Place(it[x]);
         }
 
+        guiCam = GameObject.Find("GUICam");
+
+        // search guiMan
+        shopManContainer = guiCam.transform.GetChild(0).transform.GetChild(1).gameObject;
+        shopMan = shopManContainer.GetComponent<InteractiveShopMan>();
+
+        var player = GameObject.Find("Player");
+        input = player.GetComponent<PlayerInput>();
+        dispatcher = player.GetComponent<EffectsDispatcher>();
     }
-    private void Place(Modifier it)
+
+    void OnTriggerEnter(Collider other)
     {
-        Vector3 myOffset = new(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
-        myOffset.x += this.offset;
-
-
-
-        GameObject prefab = Resources.Load("prefabs/ItemContainer") as GameObject;
-        GameObject container = Instantiate(prefab, myOffset, Quaternion.identity);
-
-        Grabbable g = container.transform.GetChild(0).GetComponent<Grabbable>();
-        g.item = it;
-        g.selling = true;
-        g.economyManager = economyManager;
-
-        this.offset += 3f * rigtOrLeft;
-        rigtOrLeft = rigtOrLeft * -1;
-
+        input.actions["Interact"].performed += startGui;
     }
+
+    void OnTriggerExit(Collider other)
+    {
+        input.actions["Interact"].performed -= startGui;
+        shopMan.gameObject.SetActive(false);
+    }
+
+    public void startGui(CallbackContext ctx)
+    {
+        shopMan.SetupItemList(it.ToArray(), this);
+        shopMan.gameObject.SetActive(true);
+    }
+
     private void ReadSellingPool()
     {
         string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/ItemPools.txt");
@@ -92,6 +110,22 @@ public class Seller : MonoBehaviour
         }
 
         itIds = myPool.ToList();
+
+        if (itIds.Count == 0)
+        {
+            throw new Exception("Seller: " + gameObject.name + "'s itempool was not defined.");
+        }
+
         rarities = ratrities.ToList();
     }
+
+    /// <summary>
+    /// removes an item from the pool of this seller, used when the item is sold
+    /// </summary>
+    /// <param name="item"></param>
+    public void Sold(Modifier item)
+    {
+        this.it.Remove(item);
+    }
+
 }

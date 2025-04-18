@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Bullet
   - terrain
+  - FxTemporaire
+  - NPC
   layers:
   - Default
   - TransparentFX

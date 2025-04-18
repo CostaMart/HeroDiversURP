@@ -81,7 +81,7 @@ public class ItemManager
                 i.id = item.id;
                 i.gameIconId = item.gameIconId;
                 i.inGamePrice = item.inGamePrice;
-
+                i.description = item.description;
                 i.bullet = isbullet;
                 int effectID = 0;
 
@@ -176,7 +176,6 @@ public class ItemManager
 
                 }, 0, 0, false));
         items.Add(-2, utilitymod);
-
         return items;
     }
 
@@ -201,8 +200,13 @@ public class ItemManager
             return globalItemPool[indexes[i]];
         }
 
-        throw new Exception("ItemManager: Unable to select an item to drop");
+        if (indexes == null)
+            throw new Exception("ItemManager: Unable to select an item to drop, indexes are null");
 
+        if (raritiesVals == null)
+            throw new Exception("ItemManager: Unable to select an item to drop, rarities are null");
+
+        throw new Exception("ItemManager: Unable to select an item to drop");
     }
 
 

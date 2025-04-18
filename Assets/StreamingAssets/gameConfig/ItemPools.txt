@@ -4,6 +4,6 @@
 2 rarity: fixed
 ##
 
-#AlienSeller 1-3
+#CuteAlien 2-2
 1 rarity: 10
 ##
