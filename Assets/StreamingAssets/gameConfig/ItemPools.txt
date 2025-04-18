@@ -4,6 +4,7 @@
 2 rarity: fixed
 ##
 
-#CuteAlien 2-2
+#Catherine 2-2
 1 rarity: 10
+2 rarity: 30
 ##

@@ -1,13 +1,9 @@
-
-using System.ComponentModel.Design.Serialization;
 using System.Linq;
-using System.Numerics;
 using Unity.Cinemachine;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
-
 
 public class MovementLogic : MonoBehaviour
 {
@@ -16,22 +12,23 @@ public class MovementLogic : MonoBehaviour
     private int jumpsAvailable = 1;
     private bool aiming = false;
 
-
     private Rigidbody rb;
     private Collider col;
 
-    // movement event manager 
     [SerializeField] private EffectsDispatcher dispatcher;
     [SerializeField] private ControlEventManager controlEventManager;
     [SerializeField] private float maxSlopeAngle = 45f;
+    [SerializeField] private float groundCheckDistance = 1.0f;
+    [SerializeField] private float defaultSpeed = 5f;
+    [SerializeField] private float defaultRotationSpeed = 8f;
+    [SerializeField] private float acceleration = 8f;
+    [SerializeField] private float deceleration = 12f; // <-- nuova variabile!
+
     private Vector3 moveDirection = Vector3.zero;
     private bool isGrounded = true;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        // connect to movement event manager
         controlEventManager.AddListenerMove(Move);
         controlEventManager.AddListenerJump(Jump);
         controlEventManager.AddListenerAiming((value) => Aiming = value);
@@ -40,7 +37,6 @@ public class MovementLogic : MonoBehaviour
     void Start()
     {
         jumpsAvailable = dispatcher.GetAllFeatureByType<int>(FeatureType.maxJumps).Sum();
-
         col = GetComponent<Collider>();
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -48,18 +44,12 @@ public class MovementLogic : MonoBehaviour
         Application.targetFrameRate = 120;
     }
 
-
-
-    // Dichiara una distanza per il controllo del terreno (valore da settare in base alle esigenze)
-    [SerializeField] public float groundCheckDistance = 1.0f;
     private void FixedUpdate()
     {
-
-        Vector3 direction = Vector3.zero;
-
         if (rb.isKinematic)
             return;
 
+        Vector3 direction = Vector3.zero;
         direction += camera.transform.forward * moveDirection.y;
         direction += camera.transform.right * moveDirection.x;
         direction.y = 0;
@@ -77,6 +67,7 @@ public class MovementLogic : MonoBehaviour
             }
         }
 
+        // Gestiamo la rotazione in modo separato
         Quaternion targetRotation = Quaternion.LookRotation(transform.forward);
 
         if (aiming)
@@ -85,31 +76,45 @@ public class MovementLogic : MonoBehaviour
             aimForward.y = 0;
             targetRotation = Quaternion.LookRotation(aimForward);
         }
+        else if (direction != Vector3.zero)
+        {
+            // Solo quando ci si sta muovendo, ruotiamo il personaggio
+            targetRotation = Quaternion.LookRotation(direction);
+        }
 
         float rotSpeed = dispatcher.GetAllFeatureByType<float>(
             aiming ? FeatureType.aimRotationSpeed : FeatureType.rotationSpeed
-        ).Sum();
+        ).DefaultIfEmpty(defaultRotationSpeed).Sum();
 
-
-        if (direction != Vector3.zero)
+        if (allowMovement && isGrounded)
         {
-            if (!aiming)
-            {
-                targetRotation = Quaternion.LookRotation(direction);
-            }
+            float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed)
+                .DefaultIfEmpty(defaultSpeed).Sum();
 
-            if (allowMovement && isGrounded)
-            {
-                Vector3 linear = direction.normalized * dispatcher.GetAllFeatureByType<float>(FeatureType.speed).Sum();
-                linear.y = rb.linearVelocity.y;
-                rb.linearVelocity = linear;
-            }
+            Vector3 targetVelocity = Vector3.zero;
 
+            if (direction != Vector3.zero)
+            {
+                // Muovendosi → target velocity è nella direzione dell'input
+                targetVelocity = direction.normalized * moveSpeed;
+                targetVelocity.y = rb.linearVelocity.y;
+
+                // Applichiamo accelerazione
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, acceleration);
+            }
+            else
+            {
+                // Nessun input → target velocity verso zero
+                targetVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+
+                // Applichiamo decelerazione
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, deceleration);
+            }
         }
 
+        // Gestiamo la rotazione
         rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed));
     }
-
 
     void OnTriggerExit(Collider other)
     {
@@ -133,21 +138,21 @@ public class MovementLogic : MonoBehaviour
     {
         if (jumpsAvailable <= 0) return;
 
-        // Calculate movement direction based on camera orientation
         Vector3 direction = Vector3.zero;
         direction += camera.transform.forward * moveDirection.y;
         direction += camera.transform.right * moveDirection.x;
-        direction.y = 0; // Ensure direction is horizontal only
-        direction = direction.normalized; // Normalize for direction only
+        direction.y = 0;
+        direction = direction.normalized;
 
-        // Get jump speeds from dispatcher
-        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy).Sum();
-        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx).Sum();
+        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy)
+            .DefaultIfEmpty(5f).Sum();
+        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx)
+            .DefaultIfEmpty(0f).Sum();
 
         rb.linearVelocity = new Vector3(
-            rb.linearVelocity.x,
+            rb.linearVelocity.x + direction.x * jumpForceHorizontal,
             jumpForceVertical,
-            rb.linearVelocity.z);
+            rb.linearVelocity.z + direction.z * jumpForceHorizontal);
 
         jumpsAvailable--;
     }
@@ -163,3 +168,4 @@ public class MovementLogic : MonoBehaviour
         set { aiming = value; }
     }
 }
+
