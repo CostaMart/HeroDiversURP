@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e325af0568b3f08298ac2c9ce449923, type: 3}
+  m_Name: SandStorm
+  m_EditorClassIdentifier: 
+  sandstorm: {fileID: 5499412366136645911, guid: 039a612b4e7ecf6e386ecdcd8f5d4642, type: 3}
+  offsety: 4.05
+  minDistance: 0.5
+  maxDistance: 1
+  targetRate: 200
+  growTime: 20
+  fogtarget: 0.2
+  vignettetarget: 0.399

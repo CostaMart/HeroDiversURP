@@ -4,7 +4,7 @@
 2 rarity: fixed
 ##
 
-#Catherine 2-2
+#Catherine 10-10
 1 rarity: 10
 2 rarity: 30
 ##

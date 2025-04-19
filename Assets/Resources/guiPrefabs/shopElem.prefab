@@ -92,7 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d19a138093a0a1b19a125e2a3fb5d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  economyManager: {fileID: 0}
   highlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  dispatcher: {fileID: 0}
+  seller: {fileID: 0}
 --- !u!114 &9032062727247895369
 MonoBehaviour:
   m_ObjectHideFlags: 0

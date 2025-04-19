@@ -43,7 +43,7 @@ public class InteractiveShopMan : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        shopMenu.SetActive(false);
+        this.gameObject.SetActive(false);
     }
 
     public void SetupItemList(Modifier[] givenItems, Seller seller)
