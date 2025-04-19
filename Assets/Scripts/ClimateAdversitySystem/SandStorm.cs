@@ -53,6 +53,7 @@ public class SandStorm : Adversity
         randomDirection.y = 0; // lavoriamo solo sul piano XZ
         randomDirection.Normalize();
 
+        player = playerPos;
         float randomDistance = Random.Range(minDistance, maxDistance);
 
         Vector3 spawnPosition = playerPos.transform.position + randomDirection * randomDistance;
