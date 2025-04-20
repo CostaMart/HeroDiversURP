@@ -4,6 +4,10 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    strafeCooldown,
+    maxStrafes,
+    strafeBurstDuration,
+    strafePower,
     keys,
     maxHealth,
     health,

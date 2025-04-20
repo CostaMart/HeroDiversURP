@@ -40,7 +40,7 @@ public class ClimateEffectController : MonoBehaviour
         if (adversity != null)
         {
             adversity.Disable();
-            Destroy(adversity);
+            DestroyImmediate(adversity);
         }
 
         adversity = newAdversity;

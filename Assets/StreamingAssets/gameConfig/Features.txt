@@ -1,7 +1,7 @@
 #Player-CharStats
 maxHealth = 200.0 ID:9
 health = 200.0  ID:1
-speed = 7.0 ID:2
+speed = 10.0 ID:2
 rotationSpeed = 10.0  ID:13
 aimRotationSpeed = 100.0 ID:14
 jumpSpeedy = 30.0  ID:3
@@ -9,6 +9,7 @@ jumpSpeedx = 10.0 ID:4
 jumpSpeedz = 10.0 ID:5
 speedLimitBeforeRagdolling = 1000.0 ID:6
 maxJumps = 1 ID:7
+
 ##
 
 #PlayerPrimary-WeaponStats
