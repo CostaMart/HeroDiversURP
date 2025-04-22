@@ -21,7 +21,7 @@ public class StrafeBars : MonoBehaviour
         var strafes = dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).
                 DefaultIfEmpty(movementLogic.maxStrafes).Sum();
 
-        for (int i = 0; i <= strafes; i++)
+        for (int i = 0; i <= strafes * 2; i++)
         {
             Instantiate(indicator, indicatorContainer.transform);
         }
@@ -35,6 +35,27 @@ public class StrafeBars : MonoBehaviour
         maxStrafes = dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).
                 DefaultIfEmpty(movementLogic.maxStrafes).Sum();
 
+
+        if (maxStrafes > indicatorContainer.transform.childCount)
+        {
+            for (int i = 0; i < (maxStrafes - indicatorContainer.transform.childCount) * 2; i++)
+            {
+                Instantiate(indicator, indicatorContainer.transform);
+            }
+        }
+
+        indicatorIndex = 0;
+        foreach (Transform indicator in indicatorContainer.transform)
+        {
+            Debug.Log("this is used " + movementLogic.usedStrafes);
+            if (indicatorIndex <= maxStrafes - movementLogic.usedStrafes - 1)
+                indicator.gameObject.SetActive(true);
+            else
+                indicator.gameObject.SetActive(false);
+
+            indicatorIndex++;
+        }
+
         if (movementLogic.usedStrafes > 0)
         {
             cooldown = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeCooldown).
@@ -44,16 +65,6 @@ public class StrafeBars : MonoBehaviour
             return;
         }
 
-        indicatorIndex = 0;
-        foreach (Transform indicator in indicatorContainer.transform)
-        {
-            if (indicatorIndex <= maxStrafes - movementLogic.usedStrafes)
-                indicator.gameObject.SetActive(true);
-            else
-                indicator.gameObject.SetActive(false);
-
-            indicatorIndex++;
-        }
 
         img.fillAmount = 1;
     }

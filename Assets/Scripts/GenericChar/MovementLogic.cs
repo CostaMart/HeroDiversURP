@@ -175,7 +175,7 @@ public class MovementLogic : MonoBehaviour
 
     public void TryStrafe()
     {
-        if (usedStrafes <= dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
+        if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
             isBursting = true;
             burstTimer = 0f;
