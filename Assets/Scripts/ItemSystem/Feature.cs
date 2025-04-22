@@ -4,6 +4,9 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    coolingRate,
+    overHeatLimit,
+    heat,
     strafeCooldown,
     maxStrafes,
     strafeBurstDuration,

@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Unity.Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -31,6 +33,8 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] public float strafeCooldown = 5f;         // Tempo per ricaricare uno strafe
     [SerializeField] public float burstDuration = 0.2f;        // Durata del burst (scatto rapido)
     [SerializeField] public float burstSpeedMultiplier = 2.0f; // Moltiplicatore velocità durante il burst
+    [SerializeField] public float overHeatLimit = 100f; // Limite di surriscaldamento per lo strafe
+    public float temperature;
 
     private Vector3 moveDirection = Vector3.zero;
     private bool isGrounded = true;
@@ -41,6 +45,7 @@ public class MovementLogic : MonoBehaviour
     public float strafeTimer;
     public bool isBursting = false;
     public float burstTimer = 0f;
+
 
 
     void Awake()
@@ -63,6 +68,10 @@ public class MovementLogic : MonoBehaviour
     private void FixedUpdate()
     {
         if (rb.isKinematic) return;
+
+        // compute temperature as sum of all sources of heat
+        temperature = Math.Clamp(dispatcher.GetAllFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum(),
+        0, dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).Sum());
 
         HandleMovement();
         HandleStrafeCooldown();
@@ -111,6 +120,7 @@ public class MovementLogic : MonoBehaviour
             float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed)
                 .DefaultIfEmpty(defaultSpeed).Sum();
 
+
             // se non specificato multiplicatore nelle faturre ➡ defaultBurstSpeedMultiplier 
             float speedMultiplier = isBursting ? dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower)
             .DefaultIfEmpty(burstSpeedMultiplier).Sum() : 1f;
@@ -122,7 +132,7 @@ public class MovementLogic : MonoBehaviour
                 targetVelocity = direction * moveSpeed * speedMultiplier;
                 targetVelocity.y = rb.linearVelocity.y;
 
-                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, speedMultiplier * acceleration * Time.fixedDeltaTime);
             }
             else
             {
@@ -175,6 +185,12 @@ public class MovementLogic : MonoBehaviour
 
     public void TryStrafe()
     {
+        if (temperature > overHeatLimit / 2)
+        {
+            Debug.Log("Non puoi strafeare, armatura surriscaldata!");
+            return;
+        }
+
         if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
             isBursting = true;
@@ -184,7 +200,7 @@ public class MovementLogic : MonoBehaviour
         }
         else
         {
-            Debug.Log("Non puoi strafare adesso, devi aspettare il cooldown!");
+            Debug.Log("Non puoi strafeare adesso, devi aspettare il cooldown!");
         }
     }
 

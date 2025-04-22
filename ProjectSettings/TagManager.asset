@@ -8,6 +8,7 @@ TagManager:
   - terrain
   - FxTemporaire
   - NPC
+  - Sun
   layers:
   - Default
   - TransparentFX

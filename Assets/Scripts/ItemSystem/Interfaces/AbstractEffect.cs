@@ -206,9 +206,10 @@ public abstract class AbstractEffect
         var x = 0;
         object[] resolved = new object[statusClass.Length];
 
-        foreach (var refClass in statusClass)
+        foreach (AbstractStatus refClass in statusClass)
         {
             resolved[x] = refClass.GetStatByID<object>(paramIndexes[x][1]);
+            x++;
         }
 
         return resolved;

@@ -9,7 +9,11 @@ jumpSpeedx = 10.0 ID:4
 jumpSpeedz = 10.0 ID:5
 speedLimitBeforeRagdolling = 1000.0 ID:6
 maxJumps = 1 ID:7
-
+coolingRate = 1.0 ID:11
+heat = 0.0 ID:8
+overHeatLimit = 100.0 ID:10
+strafeBurstDuration = 0.3 ID:12
+strafePower = 5.0 ID:15
 ##
 
 #PlayerPrimary-WeaponStats
