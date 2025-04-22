@@ -3,7 +3,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class SandStormMan : MonoBehaviour
+public class SandStormDispatcher : MonoBehaviour
 {
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private float MaximpulseInterval = 0.1f; // Intervallo tra gli impulsi
