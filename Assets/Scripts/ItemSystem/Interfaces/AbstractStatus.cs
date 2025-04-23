@@ -35,7 +35,6 @@ public abstract class AbstractStatus : MonoBehaviour
         bool found = false;
         bool hasBeenFound = false;
         Dictionary<int, Feature> features = new();
-        var ind = 0;
 
         /// semplice parsing del file Features.txt per recuperare le features
         foreach (var thisLine in lines)
@@ -69,8 +68,21 @@ public abstract class AbstractStatus : MonoBehaviour
                     Debug.Log("starting parsing ");
                     parts = parts[1].Split("ID:");
 
+                    string value = parts[0].Trim();
+                    int ID = int.Parse(parts[1].Split("range:")[0].Trim());
+
+
+                    string rangeString = (parts[1].Split("range:").Length > 1) ? parts[1].Split("range:")[1].Trim() : null;
+                    string maxVal = null;
+                    string minVal = null;
+
+                    if (rangeString != null)
+                    {
+                        maxVal = rangeString.Split("-")[1].Trim();
+                        minVal = rangeString.Split("-")[0].Trim();
+                    }
+
                     var splittedComment = parts[1].Split('\\');
-                    ind = int.Parse(splittedComment[0]);
 
                     if (int.TryParse(parts[0], out _))
                     {
@@ -79,7 +91,12 @@ public abstract class AbstractStatus : MonoBehaviour
 
                         Feature f = new Feature(featureType, int.Parse(parts[0]), typeof(int));
                         f.SetValue(int.Parse(parts[0]));
-                        features.Add(ind, f);
+                        if (maxVal != null)
+                        {
+                            f.maxVal = int.Parse(maxVal);
+                            f.minVal = int.Parse(minVal);
+                        }
+                        features.Add(ID, f);
                     }
                     else if (float.TryParse(parts[0], System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out _))
@@ -91,7 +108,15 @@ public abstract class AbstractStatus : MonoBehaviour
                         System.Globalization.CultureInfo.InvariantCulture), typeof(float));
                         f.SetValue(float.Parse(parts[0].Replace(" ", ""),
                         System.Globalization.CultureInfo.InvariantCulture));
-                        features.Add(ind, f);
+
+                        if (maxVal != null)
+                        {
+                            f.maxVal = float.Parse(maxVal, System.Globalization.CultureInfo.InvariantCulture);
+
+                            f.minVal = float.Parse(minVal, System.Globalization.CultureInfo.InvariantCulture);
+                        }
+
+                        features.Add(ID, f);
                     }
                     else
                     {
@@ -100,7 +125,7 @@ public abstract class AbstractStatus : MonoBehaviour
 
                         Feature f = new Feature(featureType, bool.Parse(parts[0]), typeof(bool));
                         f.SetValue(bool.Parse(parts[0]));
-                        features.Add(ind, f);
+                        features.Add(ID, f);
                     }
 
                 }

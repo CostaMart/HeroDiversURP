@@ -82,90 +82,99 @@ public abstract class AbstractEffect
     /// <param name="itemID"></param>
     public AbstractEffect(Dictionary<string, string> data, int itemID, bool inABullet)
     {
-
-        string targetClassString = data["target"];
-        string s = data["expr"];
-
-
-        // search for parameters to resolve locally
-        MatchCollection internalRefs = Regex.Matches(data["expr"], @"@\w+\.\d+");
-        MatchCollection external = Regex.Matches(data["expr"], @"!\w+\.\d+");
-
-        if (targetClassString.Contains("@"))
+        try
         {
-            localTargetClassID = ItemManager.statClassToIdRegistry[targetClassString.Split(".")[0].Replace("@", "")];
-        }
-        else if (targetClassString.Contains("!"))
-        {
-            externalTargetClassID = ItemManager.statClassToIdRegistry[targetClassString.Split(".")[0].Replace("!", "")];
-        }
-
-        targetAttributeID = (int)Enum.Parse(typeof(FeatureType), targetClassString.Split(".")[1]);
+            string targetClassString = data["target"];
+            string s = data["expr"];
 
 
-        char c = 'A';
-        int len = internalRefs.Count;
-        localParametersRef = new int[len][];
-        localParametersKey = new char[len];
-        Debug.Log("this is the numebr of local parameters " + len + "for item " + itemID);
+            // search for parameters to resolve locally
+            MatchCollection internalRefs = Regex.Matches(data["expr"], @"@\w+\.\d+");
+            MatchCollection external = Regex.Matches(data["expr"], @"!\w+\.\d+");
 
-        len = external.Count;
-
-        externParametersRef = new int[len][];
-        externParametersKey = new char[len];
-
-        Debug.Log("this is the numebr of external parameters " + len + "for item " + itemID);
-        int i = 0;
-
-        // cerchiamo nella stringa tutti i riferimenti a variabili di altre classi, nel caso se ne trovino vengono sostituite con un ID alfabetico nella stringa dell'espression
-        // contemporaneamente il nome viene tradotto in ID numerico e inserito nell'array dei riferimenti da risolvere. I valori vengono risolti 
-        // ad ogni invocazione di DoEffect in modo che siano sempre aggiornati
-        foreach (var match in internalRefs)
-        {
-            s = s.Replace(match.ToString(), c.ToString());
-            string laClass = match.ToString().Split('.')[0].Substring(1);
-            string laAttribute = match.ToString().Split('.')[1];
-
-            localParametersRef[i] = new int[2];
-            localParametersRef[i][0] = ItemManager.statClassToIdRegistry[laClass];
-            localParametersRef[i][1] = int.Parse(laAttribute);
-            localParametersKey[i] = c;
-
-            Debug.Log("it is just been assigned key " + c.ToString() + " for item " + itemID);
-            c += (char)1;
-            i++;
-        }
-
-        i = 0;
-
-        foreach (var match in external)
-        {
-            s = s.Replace(match.ToString(), c.ToString());
-            string laClass = match.ToString().Split('.')[0].Substring(1);
-            string laAttribute = match.ToString().Split('.')[1];
-
-            externParametersRef[i] = new int[2];
-            externParametersRef[i][0] = ItemManager.statClassToIdRegistry[laClass];
-            externParametersRef[i][1] = int.Parse(laAttribute);
-            externParametersKey[i] = c;
-
-            c += (char)1;
-            i++;
-        }
-
-        if (!inABullet)
-        {
-            if (external.Count > 0)
+            if (targetClassString.Contains("@"))
             {
-                if (!data.ContainsKey("targetType") || data["targetType"] == "local")
+                localTargetClassID = ItemManager.statClassToIdRegistry[targetClassString.Split(".")[0].Replace("@", "")];
+            }
+            else if (targetClassString.Contains("!"))
+            {
+                externalTargetClassID = ItemManager.statClassToIdRegistry[targetClassString.Split(".")[0].Replace("!", "")];
+            }
+
+            targetAttributeID = (int)Enum.Parse(typeof(FeatureType), targetClassString.Split(".")[1]);
+
+
+            char c = 'A';
+            int len = internalRefs.Count;
+            localParametersRef = new int[len][];
+            localParametersKey = new char[len];
+            Debug.Log("this is the numebr of local parameters " + len + "for item " + itemID);
+
+            len = external.Count;
+
+            externParametersRef = new int[len][];
+            externParametersKey = new char[len];
+
+            Debug.Log("this is the numebr of external parameters " + len + "for item " + itemID);
+            int i = 0;
+
+            // cerchiamo nella stringa tutti i riferimenti a variabili di altre classi, nel caso se ne trovino vengono sostituite con un ID alfabetico nella stringa dell'espression
+            // contemporaneamente il nome viene tradotto in ID numerico e inserito nell'array dei riferimenti da risolvere. I valori vengono risolti 
+            // ad ogni invocazione di DoEffect in modo che siano sempre aggiornati
+            foreach (var match in internalRefs)
+            {
+                s = s.Replace(match.ToString(), c.ToString());
+                string laClass = match.ToString().Split('.')[0].Substring(1);
+                string laAttribute = match.ToString().Split('.')[1];
+
+                localParametersRef[i] = new int[2];
+                localParametersRef[i][0] = ItemManager.statClassToIdRegistry[laClass];
+                localParametersRef[i][1] = int.Parse(laAttribute);
+                localParametersKey[i] = c;
+
+                Debug.Log("it is just been assigned key " + c.ToString() + " for item " + itemID);
+                c += (char)1;
+                i++;
+            }
+
+            i = 0;
+
+            foreach (var match in external)
+            {
+                s = s.Replace(match.ToString(), c.ToString());
+                string laClass = match.ToString().Split('.')[0].Substring(1);
+                string laAttribute = match.ToString().Split('.')[1];
+
+                externParametersRef[i] = new int[2];
+                externParametersRef[i][0] = ItemManager.statClassToIdRegistry[laClass];
+                externParametersRef[i][1] = int.Parse(laAttribute);
+                externParametersKey[i] = c;
+
+                c += (char)1;
+                i++;
+            }
+
+            if (!inABullet)
+            {
+                if (external.Count > 0)
                 {
-                    Debug.LogError("External parameters found but no target type specified. This effect will not be applied.");
-                    return;
+                    if (!data.ContainsKey("targetType") || data["targetType"] == "local")
+                    {
+                        Debug.LogError("External parameters found but no target type specified. This effect will not be applied.");
+                        return;
+                    }
                 }
             }
-        }
 
-        ex = new Expression(s);
+            ex = new Expression(s);
+        }
+        catch (Exception e)
+        {
+            if (e.Message.Contains("The given key"))
+                Debug.LogError("Error in effect creation: " + e.Message +
+                " this effect is trying to access type class which is not registered in the item system manager");
+            throw;
+        }
     }
 
     public AbstractEffect() { }

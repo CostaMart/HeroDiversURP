@@ -10,7 +10,7 @@ public class Heatindicator : MonoBehaviour
     [SerializeField] private MovementLogic logic;
     [SerializeField] private EffectsDispatcher dispatcher;
     [SerializeField] private Image indicator;
-    [SerializeField] private HeatDetector heatDetector;
+    [SerializeField] private HeatStats heatDetector;
     [SerializeField] private TMP_Text heatText;
 
     // Update is called once per frame

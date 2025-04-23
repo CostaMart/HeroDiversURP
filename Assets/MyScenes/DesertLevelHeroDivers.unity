@@ -1439,6 +1439,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 49940884535759432, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
+      propertyPath: flames
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 49940884535759432, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
+      propertyPath: trailL
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 49940884535759432, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
+      propertyPath: trailR
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 49940884535759432, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -2543,7 +2555,7 @@ PrefabInstance:
       addedObject: {fileID: 1502827383}
     - targetCorrespondingSourceObject: {fileID: 5386299134405541004, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1502827393}
+      addedObject: {fileID: 1502827403}
     - targetCorrespondingSourceObject: {fileID: 4433106923788246555, guid: 3c04eb98ed07037ed92ccbde956e86f2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1679467603}
@@ -4882,7 +4894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messageCanvas: {fileID: 1155349337}
---- !u!114 &1502827393
+--- !u!114 &1502827403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4891,13 +4903,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1502827323}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4237b964eec69cb4cbabcef6db8d8735, type: 3}
+  m_Script: {fileID: 11500000, guid: d3914105a144aad47833c0b600bdc797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dirty: 0
   isExposedToSun: 0
   heatsorce: {fileID: 1233827057}
-  leftRayOffset: {x: -0.77, y: 1.57, z: 0.35}
-  rightRayOffset: {x: 0.25, y: 1.64, z: -0.49}
+  leftRayOffset: {x: -0.5, y: 0, z: 0}
+  rightRayOffset: {x: 0.5, y: 0, z: 0}
   centerRayOffset: {x: 0, y: 0, z: 0}
   dispatcher: {fileID: 1502827342}
 --- !u!1 &1505147025
@@ -5366,7 +5379,7 @@ MonoBehaviour:
   logic: {fileID: 1502827354}
   dispatcher: {fileID: 1502827342}
   indicator: {fileID: 2090728430}
-  heatDetector: {fileID: 1502827393}
+  heatDetector: {fileID: 1502827403}
   heatText: {fileID: 63343113}
 --- !u!114 &1618091140
 MonoBehaviour:

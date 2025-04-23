@@ -3,7 +3,7 @@ using UnityEditor.Search;
 using UnityEngine;
 using static ItemManager;
 
-public class HeatDetector : MonoBehaviour
+public class HeatStats : AbstractStatus
 {
     RaycastHit[] hitl = new RaycastHit[1];
     RaycastHit[] hitr = new RaycastHit[1];
@@ -37,7 +37,7 @@ public class HeatDetector : MonoBehaviour
                     { "inGamePrice", "0" },
                     { "gameIconId", "0" },
                     { "target","@CharStats.8"},
-                    {"expr","@CharStats.8 + 0.5"}
+                    {"expr","@CharStats.8 + @HeatStats.0"}
 
                 }, 0, 0, false));
 
@@ -113,5 +113,8 @@ public class HeatDetector : MonoBehaviour
         }
     }
 
-
+    protected override int ComputeID()
+    {
+        return ItemManager.statClassToIdRegistry["HeatStats"];
+    }
 }

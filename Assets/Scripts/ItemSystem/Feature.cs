@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    heatingPerSecond,
     coolingRate,
     overHeatLimit,
     heat,
@@ -56,6 +57,9 @@ public class Feature
     public Type type;
     public object baseValue;
     public object currentValue;
+    public object maxVal { get; set; }
+
+    public object minVal { get; set; }
     public float lastModifiedTime;
 
     public Feature(FeatureType id, object baseValue, Type type)
@@ -72,9 +76,14 @@ public class Feature
         return currentValue;
     }
 
+
     public void SetValue(object value)
     {
-        this.currentValue = value;
+        if (maxVal != null)
+            this.currentValue = Mathf.Clamp(Convert.ToSingle(value), Convert.ToSingle(minVal), Convert.ToSingle(maxVal));
+        else
+            this.currentValue = value;
+
         lastModifiedTime = Time.time;
     }
 

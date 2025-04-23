@@ -46,6 +46,8 @@ public class MovementLogic : MonoBehaviour
     public bool isBursting = false;
     public float burstTimer = 0f;
 
+    [Header("Visual effect")]
+    [SerializeField] ParticleSystem thrusterEffect;
 
 
     void Awake()
@@ -70,8 +72,8 @@ public class MovementLogic : MonoBehaviour
         if (rb.isKinematic) return;
 
         // compute temperature as sum of all sources of heat
-        temperature = Math.Clamp(dispatcher.GetAllFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum(),
-        0, dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).Sum());
+        temperature = dispatcher.GetAllFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum();
+
 
         HandleMovement();
         HandleStrafeCooldown();
@@ -142,6 +144,10 @@ public class MovementLogic : MonoBehaviour
         }
 
         rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime));
+
+        // effects
+        if (thrusterEffect != null)
+            thrusterEffect.Play();
     }
 
     private void HandleStrafeCooldown()

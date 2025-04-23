@@ -34,6 +34,7 @@ public class ItemManager
             {"BulletPoolStatsPrimary",5},
             {"BulletPoolStatsSecondary", 6},
             {"PhysicsStats", 7},
+            {"HeatStats", 8}
         };
 
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);

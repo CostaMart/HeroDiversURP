@@ -68,7 +68,6 @@ public class StrafeBars : MonoBehaviour
         indicatorIndex = 0;
         foreach (Transform indicator in indicatorContainer.transform)
         {
-            Debug.Log("this is used " + movementLogic.usedStrafes);
             if (indicatorIndex <= maxStrafes - movementLogic.usedStrafes - 1)
                 indicator.gameObject.SetActive(true);
             else
