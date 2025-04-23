@@ -13,12 +13,13 @@ coolingRate = 10.0 ID:11
 heat = 0.0 ID:8 range: 0.0-100.0
 overHeatLimit = 100.0 ID:10
 strafeBurstDuration = 0.3 ID:12
-strafePower = 5.0 ID:15
+strafePower = 50.0 ID:15
+maxStrafes = 4 ID:16
 ##
 
 #Player-HeatStats
 coolingRate = 1.0 ID:1
-heatingPerSecond = 10.0 ID:0 
+heatingPerSecond = 0.5 ID:0 
 ##
 
 #PlayerPrimary-WeaponStats

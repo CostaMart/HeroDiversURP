@@ -99,7 +99,7 @@ Material:
     - _Colour: {r: 1, g: 1, b: 1, a: 1}
     - _Colour_Toggle: {r: 100, g: 100, b: 100, a: 0}
     - _Colour_Weights: {r: 1, g: 1, b: 1, a: 0}
-    - _DayColour: {r: 0.67058825, g: 0.31885067, b: 0.28235295, a: 1}
+    - _DayColour: {r: 0.047659304, g: 0.066178426, b: 0.1981132, a: 1}
     - _DensityRemap: {r: 0.1, g: 2, b: 0, a: 0}
     - _EveningColour: {r: 0.735849, g: 0.3182007, b: 0.079832695, a: 1}
     - _ScatteringCoefficients: {r: 5.8, g: 13.5, b: 33.1, a: 0}

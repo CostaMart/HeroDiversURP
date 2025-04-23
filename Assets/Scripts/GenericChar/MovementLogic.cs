@@ -47,7 +47,10 @@ public class MovementLogic : MonoBehaviour
     public float burstTimer = 0f;
 
     [Header("Visual effect")]
-    [SerializeField] ParticleSystem thrusterEffect;
+    [SerializeField] ParticleSystem thrusterEffect1;
+    [SerializeField] ParticleSystem thrusterEffect2;
+    [SerializeField] ParticleSystem thrusterEffect3;
+    [SerializeField] ParticleSystem thrusterEffect4;
 
 
     void Awake()
@@ -119,19 +122,34 @@ public class MovementLogic : MonoBehaviour
 
         if (allowMovement) // 🔥 NON controlliamo più isGrounded
         {
-            float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed)
-                .DefaultIfEmpty(defaultSpeed).Sum();
+            float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed).DefaultIfEmpty(defaultSpeed).Sum();
+            float speedMultiplier = 1f;
 
+            if (isBursting)
+            {
+                moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum();
+                speedMultiplier = 10f;
+                thrusterEffect1.Play();
+                thrusterEffect2.Play();
+                thrusterEffect3.Play();
+                thrusterEffect4.Play();
+
+            }
+            else
+            {
+                thrusterEffect1.Stop();
+                thrusterEffect2.Stop();
+                thrusterEffect3.Stop();
+                thrusterEffect4.Stop();
+            }
 
             // se non specificato multiplicatore nelle faturre ➡ defaultBurstSpeedMultiplier 
-            float speedMultiplier = isBursting ? dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower)
-            .DefaultIfEmpty(burstSpeedMultiplier).Sum() : 1f;
 
             Vector3 targetVelocity;
 
             if (direction != Vector3.zero)
             {
-                targetVelocity = direction * moveSpeed * speedMultiplier;
+                targetVelocity = direction * moveSpeed;
                 targetVelocity.y = rb.linearVelocity.y;
 
                 rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, speedMultiplier * acceleration * Time.fixedDeltaTime);
@@ -145,9 +163,6 @@ public class MovementLogic : MonoBehaviour
 
         rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime));
 
-        // effects
-        if (thrusterEffect != null)
-            thrusterEffect.Play();
     }
 
     private void HandleStrafeCooldown()

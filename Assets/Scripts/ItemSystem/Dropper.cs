@@ -22,6 +22,7 @@ public class Dropper : MonoBehaviour
     [SerializeField] Color usedColor = Color.red;
     [SerializeField] Animator anim;
     [SerializeField] PlayerInput playerInput;
+    private Transform player;
 
 
     /// <summary>
@@ -95,6 +96,7 @@ public class Dropper : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             inRange = true;
+            player = other.transform;
             material.SetColor("_EmissionColor", Color.Lerp(material.color, emissionColor, 2f));
         }
     }
@@ -107,9 +109,15 @@ public class Dropper : MonoBehaviour
         Modifier it = null;
         used = true;
 
+
+        // launch on open effect!
+        var direction = (transform.position - player.position).normalized;
+        var torqueAxis = Vector3.Cross(direction, Vector3.up);
+
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f - Vector3.forward * 10f, ForceMode.Impulse);
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddTorque(Vector3.right * (-10f), ForceMode.Impulse);
+
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddForce(direction * 10f - Vector3.forward * 10f, ForceMode.Impulse);
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
 
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));

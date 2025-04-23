@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.VFX;
 using static ItemManager;
 
 public class HeatStats : AbstractStatus
@@ -10,6 +11,8 @@ public class HeatStats : AbstractStatus
     RaycastHit[] hitc = new RaycastHit[1];
     public bool isExposedToSun = false;
     [SerializeField] Transform heatsorce;
+    [SerializeField] Transform rayCastRSource;
+    [SerializeField] Transform rayCastLSource;
 
     // Offset fields for the rays
     [SerializeField] Vector3 leftRayOffset = new Vector3(-0.5f, 0, 0);
@@ -61,8 +64,9 @@ public class HeatStats : AbstractStatus
 
     float dispatchTimer = 0f; // Aggiungilo come variabile fuori da Update
 
-    void Update()
+    private void Update()
     {
+        base.Update();
         // Timer per il Dispatch
 
         float distance = Vector3.Distance(transform.position, heatsorce.position);
@@ -70,29 +74,28 @@ public class HeatStats : AbstractStatus
         // Left ray with offset
         Vector3 leftOrigin = transform.position + leftRayOffset;
         Vector3 leftDirection = (heatsorce.position - leftOrigin).normalized;
-        Ray rl = new Ray(leftOrigin, leftDirection);
+
+        Ray rl = new Ray(rayCastLSource.position, leftDirection);
         Physics.RaycastNonAlloc(rl, hitl, distance);
 
-        Debug.DrawRay(leftOrigin, leftDirection * distance, Color.green); // Disegno ray sinistro
+        Debug.DrawRay(rayCastLSource.position, leftDirection * distance, Color.green); // Disegno ray sinistro
 
         // Right ray with offset
         Vector3 rightOrigin = transform.position + rightRayOffset;
         Vector3 rightDirection = (heatsorce.position - rightOrigin).normalized;
-        Ray rr = new Ray(rightOrigin, rightDirection);
+        Ray rr = new Ray(rayCastRSource.position, rightDirection);
         Physics.RaycastNonAlloc(rr, hitr, distance);
 
-        Debug.DrawRay(rightOrigin, rightDirection * distance, Color.blue); // Disegno ray destro
+        Debug.DrawRay(rayCastRSource.position, rightDirection * distance, Color.blue); // Disegno ray destro
 
         if (hitl[0].collider != null && hitl[0].collider.CompareTag("Sun"))
         {
-            Debug.Log("it's hot here!");
             isExposedToSun = true;
             HeatPlayer();
             return;
         }
         if (hitr[0].collider != null && hitr[0].collider.CompareTag("Sun"))
         {
-            Debug.Log("it's hot here!");
             isExposedToSun = true;
             HeatPlayer();
             return;
