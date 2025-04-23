@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static ItemManager;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -12,6 +13,7 @@ public class InteractiveShopMan : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
     [SerializeField] GameObject shopMenu;
     [SerializeField] GameObject itemRow;
+    [SerializeField] GameObject holdProgressPanel;
     [SerializeField] EffectsDispatcher dispatcher;
     [SerializeField] EconomyManager economyManager;
     Modifier[] items;
@@ -69,6 +71,7 @@ public class InteractiveShopMan : MonoBehaviour
             newRow.GetComponent<ShopItemPanel>().dispatcher = dispatcher;
             newRow.GetComponent<ShopItemPanel>().economyManager = economyManager;
             newRow.GetComponent<ShopItemPanel>().seller = seller;
+            newRow.GetComponent<ShopItemPanel>().SetupProgressPanel(holdProgressPanel);
 
         }
     }

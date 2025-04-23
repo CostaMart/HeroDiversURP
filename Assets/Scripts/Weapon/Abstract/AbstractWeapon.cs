@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.InputSystem.InputAction;
 
 public abstract class AbstractWeaponLogic : ScriptableObject
 {
@@ -11,7 +12,7 @@ public abstract class AbstractWeaponLogic : ScriptableObject
     public abstract void Disable();
     public abstract void Shoot();
     public abstract void Updating();
-    public abstract void Reload();
+    public abstract void Reload(CallbackContext ctx);
     public virtual void SetWeaponState(WeaponStats weaponState)
     {
         weaponStat = weaponState;

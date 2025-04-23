@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GameObject _weaponsSecondary;
     [SerializeField] private EquipmentEventManager _equipmentEventManager;
     [SerializeField] private ControlEventManager _controlEventManager;
+
 
     void Awake()
     {

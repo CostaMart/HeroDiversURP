@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
 public class PlayerAnimatorLogic : MonoBehaviour
 {
@@ -71,6 +72,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
     private InputAction move;
     private InputAction throwAction;
     private InputAction reload;
+    public bool reloading = false;
     public bool toggleAim = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -87,6 +89,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
         reload = playerInput.actions["Reload"];
         throwAction = playerInput.actions["Throw"];
 
+        reload.performed += ReloadAnimate;
         throwAction.performed += ctx => { Debug.Log("throwing"); animator.SetTrigger("throw"); };
 
         if (!toggleAim)
@@ -101,7 +104,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         move.performed += ctx => { animator.SetBool("walking", true); };
         move.canceled += ctx => { animator.SetBool("walking", false); };
-        reload.performed += ctx => { animator.SetTrigger("reloading"); };
         animator = GetComponent<Animator>();
 
 
@@ -127,12 +129,21 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     }
 
+    void ReloadAnimate(CallbackContext ctx)
+    {
+        animator.SetTrigger("reloading");
+        reloading = true;
+    }
+
+    void OnReloadOver()
+    {
+        reloading = false;
+    }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("terrain"))
         {
-            Debug.Log("collision");
             animator.SetBool("jump", false);
         }
     }

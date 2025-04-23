@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using UnityEngine;
+using static ItemManager;
+using static UnityEngine.InputSystem.InputAction;
 
 [CreateAssetMenu(fileName = "FireWeaponBehaviour", menuName = "Scriptable Objects/weaponLogics/FireWeaponBehaviour")]
 public class FireWeaponBehaviour : AbstractWeaponLogic
@@ -8,24 +11,48 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
     public bool shooting = false;
 
     [Tooltip("if animator is provided recharging synchronizes with 'Reload' animation")]
-    public Animator anim;
     public bool animatorSet = false;
     public float timer = 0f;
     public int magCount = 0;
+    Modifier ammoConsumption;
 
 
     public override void Disable()
     {
-        weaponStat.controlEventManager.RemoveListenerReload(Reload);
+
+        weaponStat.inputSys.actions["Reload"].performed -= ReloadAnimate;
+        weaponStat.inputSys.actions["Reload"].performed -= Reload;
         weaponStat.inputSys.actions["Attack"].performed -= context => { this.shooting = true; };
         weaponStat.inputSys.actions["Attack"].canceled -= context => { this.shooting = false; };
     }
 
     public override void Enable()
     {
+        // mag consumption primary
+        ammoConsumption = new Modifier();
+        ammoConsumption.effects = new List<AbstractEffect>();
+        ammoConsumption.name = "magConsumptionPrimary";
+
+
+        ammoConsumption.effects.Add(new SingleActivationEffect(
+                new Dictionary<string, string>
+                {
+                    { "effectType", "sa" },
+                    { "effectName", "ammoConsumption" },
+                    { "description", "consumes 1 ammo" },
+                    { "inGamePrice", "0" },
+                    { "gameIconId", "0" },
+                    { "target","@PrimaryWeaponStats.1"},
+                    {"expr","@PrimaryWeaponStats.1 - 1"}
+                }, 0, 0, false));
+
+
+
         magCount = _dispatcher.GetAllFeatureByType<int>(weaponStat.isPrimary ? FeatureType.pmagCount : FeatureType.smagCount).Sum();
+
         timer = 0;
-        weaponStat.controlEventManager.AddListenerReload(Reload);
+        weaponStat.inputSys.actions["Reload"].performed += ReloadAnimate;
+        weaponStat.inputSys.actions["Reload"].performed += Reload;
         weaponStat.inputSys.actions["Attack"].performed += context => { this.shooting = true; };
         weaponStat.inputSys.actions["Attack"].canceled += context => { this.shooting = false; };
     }
@@ -70,7 +97,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
     public override void Shoot()
     {
         // Non si spara se si sta ricaricando
-        if (animatorSet && anim.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+        if (weaponStat.playerAnimatorLogic.reloading)
             return;
 
         // Non si spara se abbiamo già sparato tutti i colpi del caricatore
@@ -106,19 +133,15 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
 
 
 
-    public override void Reload()
+    public override void Reload(CallbackContext ctx)
     {
         if (magCount > 0)
         {
-            if (animatorSet)
-            {
-                anim.SetTrigger("Reload");
-            }
 
             timer = 0;
 
             //TODO: gestire questo con il sistema di item
-            weaponStat.dispatcher.ItemDispatch(ItemManager.globalItemPool[-1]);
+            weaponStat.dispatcher.ItemDispatch(ammoConsumption);
             weaponStat.currentAmmo = 0;
         }
     }
@@ -149,6 +172,11 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
              FeatureType.plaserLength : FeatureType.slaserLength).Sum());// Lunghezza massima del laser
             weaponStat.lineRenderer.widthCurve = AnimationCurve.Linear(0, 0, 0.1f, 0.1f); // Imposta la larghezza del laser
         }
+    }
+
+    void ReloadAnimate(CallbackContext ctx)
+    {
+        weaponStat.animator.SetTrigger("reloading");
     }
 
 }

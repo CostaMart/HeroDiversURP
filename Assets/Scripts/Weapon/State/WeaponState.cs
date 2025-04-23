@@ -1,8 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using UnityEditor.EditorTools;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Weapon.State;
@@ -40,6 +36,8 @@ public class WeaponStats : AbstractStatus
     public PlayerInput inputSys;
     [SerializeField] public Transform muzzle;
     [HideInInspector] public LineRenderer lineRenderer;
+    [SerializeField] public Animator animator;
+    [SerializeField] public PlayerAnimatorLogic playerAnimatorLogic;
 
 
 

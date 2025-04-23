@@ -15,7 +15,6 @@ public class SingleActivationEffect : AbstractEffect
 
   public override object Activate(AbstractStatus target)
   {
-    Debug.Log("SingleActivationEffect: Activate");
     var result = base.DoEffect();
     this.DetachEffect();
     target.RemoveEffect(this);

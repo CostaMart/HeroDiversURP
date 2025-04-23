@@ -19,7 +19,7 @@ maxStrafes = 4 ID:16
 
 #Player-HeatStats
 coolingRate = 1.0 ID:1
-heatingPerSecond = 0.5 ID:0 
+heatingPerSecond = 5.0 ID:0 
 ##
 
 #PlayerPrimary-WeaponStats

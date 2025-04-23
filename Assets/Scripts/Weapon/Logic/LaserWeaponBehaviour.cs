@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 using Weapon.State;
+using static UnityEngine.InputSystem.InputAction;
 
 [CreateAssetMenu(fileName = "LaserWeaponBehaviour", menuName = "Scriptable Objects/weaponLogic/LaserWeaponBehaviour")]
 public class LaserWeaponBehaviour : AbstractWeaponLogic
@@ -17,7 +18,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
     public override void Disable()
     {
-        weaponStat.controlEventManager.RemoveListenerReload(Reload);
+        weaponStat.inputSys.actions["Reload"].performed -= Reload;
         weaponStat.inputSys.actions["Attack"].performed -= OnAttackPerformed;
         weaponStat.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
     }
@@ -34,7 +35,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
         ammo = weaponStat.bulletPool.Length;
 
-        weaponStat.controlEventManager.AddListenerReload(Reload);
+        weaponStat.inputSys.actions["Reload"].performed += Reload;
         weaponStat.inputSys.actions["Attack"].performed += OnAttackPerformed;
         weaponStat.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
@@ -49,7 +50,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         shooting = false;
     }
 
-    public override void Reload()
+    public override void Reload(CallbackContext ctx)
     {
         // Puoi implementare la logica di ricarica se necessaria
     }

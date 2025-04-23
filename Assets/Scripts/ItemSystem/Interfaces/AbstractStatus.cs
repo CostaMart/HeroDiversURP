@@ -276,7 +276,6 @@ public abstract class AbstractStatus : MonoBehaviour
 
                     floathelper = floathelper != -1 ? floathelper : (float)target.GetValue();
 
-                    Debug.Log("AbstractStatus effect activation: setting value to: " + floathelper);
                     target.SetValue(floathelper);
                 }
                 else if (target.type == typeof(bool))

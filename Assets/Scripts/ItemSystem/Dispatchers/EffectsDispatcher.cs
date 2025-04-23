@@ -65,7 +65,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
 
         foreach (AbstractEffect up in it.effects)
         {
-            Debug.Log("Dispatching item " + it.ToString());
             up.localParametersRefClasses = resolveReferences(up.localParametersRef);
             up.Attach(affectables, this);
         }
