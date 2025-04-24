@@ -43,6 +43,9 @@ public class MovementLogic : MonoBehaviour
     public float strafeTimer;
     public bool isBursting = false;
     public float burstDurationTimer = 0f;
+    private float smokeDuration = 2f;
+    private float smokeTimer = 0f;
+    private bool smokeActive = false;
 
     [Header("Visual effect")]
     [SerializeField] ParticleSystem thrusterEffect1;
@@ -53,6 +56,7 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] CFXR_Effect effect;
     [SerializeField] ParticleSystem explosion;
     [SerializeField] GameObject explosionPrefab;
+    [SerializeField] ParticleSystem smoke;
 
 
     void Awake()
@@ -194,11 +198,9 @@ public class MovementLogic : MonoBehaviour
 
     private void HandleBurstTimer()
     {
-        // recupera durata burst dai dati
         var burstDurationFeat = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeBurstDuration)
             .DefaultIfEmpty(burstDuration).Sum();
 
-        // Gestiamo la durata del burst
         if (isBursting)
         {
             burstDurationTimer += Time.fixedDeltaTime;
@@ -206,9 +208,25 @@ public class MovementLogic : MonoBehaviour
             {
                 isBursting = false;
                 burstDurationTimer = 0f;
+
+                // Avvia smoke subito dopo la fine del burst
+                smoke.Play();
+                smokeTimer = 0f;
+                smokeActive = true;
             }
 
             isGrounded = false;
+        }
+
+        // Gestione durata dello smoke
+        if (smokeActive)
+        {
+            smokeTimer += Time.fixedDeltaTime;
+            if (smokeTimer >= smokeDuration)
+            {
+                smoke.Stop();
+                smokeActive = false;
+            }
         }
     }
 
