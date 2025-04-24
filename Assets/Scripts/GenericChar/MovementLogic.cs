@@ -1,4 +1,5 @@
 using System.Linq;
+using CartoonFX;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,13 +42,17 @@ public class MovementLogic : MonoBehaviour
     public int usedStrafes;
     public float strafeTimer;
     public bool isBursting = false;
-    public float burstTimer = 0f;
+    public float burstDurationTimer = 0f;
 
     [Header("Visual effect")]
     [SerializeField] ParticleSystem thrusterEffect1;
     [SerializeField] ParticleSystem thrusterEffect2;
     [SerializeField] ParticleSystem thrusterEffect3;
     [SerializeField] ParticleSystem thrusterEffect4;
+
+    [SerializeField] CFXR_Effect effect;
+    [SerializeField] ParticleSystem explosion;
+    [SerializeField] GameObject explosionPrefab;
 
 
     void Awake()
@@ -126,10 +131,16 @@ public class MovementLogic : MonoBehaviour
             {
                 moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum();
                 speedMultiplier = 10f;
-                thrusterEffect1.Play();
-                thrusterEffect2.Play();
-                thrusterEffect3.Play();
-                thrusterEffect4.Play();
+                if (!thrusterEffect1.isPlaying)
+                {
+                    thrusterEffect1.Play();
+                    thrusterEffect2.Play();
+                    thrusterEffect3.Play();
+                    thrusterEffect4.Play();
+                    explosionPrefab.SetActive(true);
+                    effect.Animate(0.2f);
+                    explosion.Play();
+                }
 
             }
             else
@@ -190,11 +201,11 @@ public class MovementLogic : MonoBehaviour
         // Gestiamo la durata del burst
         if (isBursting)
         {
-            burstTimer += Time.fixedDeltaTime;
-            if (burstTimer >= burstDurationFeat)
+            burstDurationTimer += Time.fixedDeltaTime;
+            if (burstDurationTimer >= burstDurationFeat)
             {
                 isBursting = false;
-                burstTimer = 0f;
+                burstDurationTimer = 0f;
             }
 
             isGrounded = false;
@@ -212,9 +223,8 @@ public class MovementLogic : MonoBehaviour
         if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
             isBursting = true;
-            burstTimer = 0f;
+            burstDurationTimer = 0f;
             usedStrafes++;
-            strafeTimer = 0f;
         }
         else
         {

@@ -14,6 +14,7 @@ heat = 0.0 ID:8 range: 0.0-100.0
 overHeatLimit = 100.0 ID:10
 strafeBurstDuration = 0.3 ID:12
 strafePower = 50.0 ID:15
+strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
 ##
 

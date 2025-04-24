@@ -2,23 +2,18 @@ using UnityEngine;
 
 public class CompassBehaviour : MonoBehaviour
 {
-    GameObject terrain;
-    void Start()
-    {
-        terrain = GameObject.Find("Terrain");
+    [SerializeField] Transform compassRef;       // il riferimento al "nord"
+    [SerializeField] Transform playerTransform;  // la camera o il player
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        Vector3 direction = terrain.transform.position - transform.position;
-        direction.y = 0; // ignora l'altezza per la rotazione orizzontale
+        // Calcola la direzione nord proiettata sull'asse orizzontale
+        Vector3 northDirection = Vector3.ProjectOnPlane(compassRef.forward, Vector3.up).normalized;
+        Vector3 playerForward = Vector3.ProjectOnPlane(playerTransform.forward, Vector3.up).normalized;
 
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetRotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-        }
+        // Calcola l'angolo tra il forward del player e il nord
+        float angle = Vector3.SignedAngle(playerForward, northDirection, Vector3.up);
+
+        transform.localEulerAngles = new Vector3(0, 0, -angle);
     }
 }
