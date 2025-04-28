@@ -17,7 +17,6 @@ public class PlayerEffectDispatcher : EffectsDispatcher
 
     public static List<EffectsDispatcher> dispatchers = new List<EffectsDispatcher>();
     private List<EffectsDispatcher> toRemovesDisp = new List<EffectsDispatcher>();
-    private List<PermanentAreaEffect> toExternalDispatchAreaRemove = new List<PermanentAreaEffect>();
 
 
     void OnTriggerEnter(Collider collision)
@@ -37,14 +36,6 @@ public class PlayerEffectDispatcher : EffectsDispatcher
     void Update()
     {
 
-        foreach (var effect in toExternalDispatchArea)
-        {
-            foreach (var disp in dispatchers)
-            {
-                disp.DispatchFromOtherDispatcher(effect.GetEffectToDeploy(this));
-                toRemovesDisp.Add(disp);
-            }
-        }
 
         foreach (var disp in toRemovesDisp)
         {
@@ -52,14 +43,9 @@ public class PlayerEffectDispatcher : EffectsDispatcher
         }
 
         toRemovesDisp.Clear();
-        toExternalDispatchAreaRemove.Clear();
 
     }
 
-    public void RemoveFromAreaEffects(PermanentAreaEffect effect)
-    {
-        toExternalDispatchAreaRemove.Add(effect);
-    }
 
 
 }

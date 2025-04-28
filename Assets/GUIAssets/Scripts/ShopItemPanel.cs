@@ -121,6 +121,7 @@ public class ShopItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         dispatcher.modifierDispatch(item.modifier);
         seller.Sold(item);
         bought = true;
+        Destroy(gameObject);
     }
 
     private void ResetPressing()

@@ -73,7 +73,7 @@ public class Bullet : AbstractStatus
                     bulletPoolState.bulletEffects.effects[0].localParametersRefClasses =
                     bulletPoolState.effectsDispatcher.
                     resolveReferences(bulletPoolState.bulletEffects.effects[0].localParametersRef);
-                    d.TransactModifier(bulletPoolState.bulletEffects);
+                    d.AttachModifierFromOtherDispatcher(bulletPoolState.bulletEffects);
                 }
                 catch (Exception e)
                 {

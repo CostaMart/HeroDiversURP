@@ -92,7 +92,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
                     if (hit.collider.TryGetComponent<NPCDispatcher>(out var d))
                     {
-                        d.TransactModifier(weaponStat.bulletPoolState.bulletEffects);
+                        d.AttachModifierFromOtherDispatcher(weaponStat.bulletPoolState.bulletEffects);
                     }
                 }
             }

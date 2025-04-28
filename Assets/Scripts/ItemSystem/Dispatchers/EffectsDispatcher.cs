@@ -24,11 +24,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// </summary>
     private List<int> activatedItems = new List<int>();
 
-    public List<PermanentAreaEffect> toExternalDispatchArea = new List<PermanentAreaEffect>();
-
-
-
-
     void Start()
     {
         new ItemManager();
@@ -70,7 +65,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
         }
     }
 
-    public virtual void TransactModifier(Modifier it)
+    public virtual void AttachModifierFromOtherDispatcher(Modifier it)
     {
         foreach (AbstractEffect up in it.effects)
         {

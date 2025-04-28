@@ -99,14 +99,6 @@ public class ItemManager
                         case "ot":
                             newEffect = new OverTimeEffect(effect, itemFromData.id, effectID, isbullet);
                             break;
-
-                        case "area":
-                            newEffect = new PermanentAreaEffect(effect, itemFromData.id, effectID, isbullet);
-                            break;
-
-                        default:
-                            throw new Exception("Effect type object type: '" + type +
-                             "' not recognized for item: " + itemFromData.id);
                     }
 
                     if (newEffect == null)
