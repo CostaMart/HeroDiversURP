@@ -3824,7 +3824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   axis: 0
   targetAngle: -64
-  durationInSeconds: 90
+  durationInSeconds: 200
 --- !u!1 &837729047 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}

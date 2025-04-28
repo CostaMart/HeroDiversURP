@@ -10,6 +10,7 @@ public class WeaponBehaviourContainer : MonoBehaviour
     {
         if (activeLogic == null)
             return;
+
         activeLogic.Updating();
     }
 
@@ -18,13 +19,15 @@ public class WeaponBehaviourContainer : MonoBehaviour
 
         if (activeLogic == null)
             return;
+
         activeLogic.Enable();
     }
 
-    public void ODisable()
+    public void OnDisable()
     {
         if (activeLogic == null)
             return;
+
         activeLogic.Disable();
     }
 

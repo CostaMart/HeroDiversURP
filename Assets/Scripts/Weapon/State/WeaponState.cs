@@ -56,7 +56,7 @@ public class WeaponStats : AbstractStatus
         lineRenderer = muzzle.gameObject.GetComponent<LineRenderer>();
         lineRenderer.material = laserMaterial[laserType];
         lineRenderer.startWidth = laserThickness;
-        ReassingLogic();
+        ReasignLogic();
     }
     protected override void Update()
     {
@@ -64,7 +64,7 @@ public class WeaponStats : AbstractStatus
 
         if (dirty)
         {
-            ReassingLogic();
+            ReasignLogic();
             lineRenderer.material = laserMaterial[laserType];
             lineRenderer.startWidth = laserThickness;
             dirty = false;
@@ -85,12 +85,8 @@ public class WeaponStats : AbstractStatus
         }
     }
 
-    public void ReassingLogic()
+    public void ReasignLogic()
     {
-        foreach (var feature in features)
-        {
-            Debug.Log("WeaponState: feature: " + feature.Value.id + " value: " + feature.Value.GetValue());
-        }
 
         weaponContainer.activeLogic = weaponLogics[dispatcher.GetMostRecentFeatureValue<int>(isPrimary ?
         FeatureType.pactiveLogicIndex : FeatureType.sactiveLogicIndex)];

@@ -18,7 +18,7 @@ public class ItemManager
     ItemIconsList list;
 
 
-    public static Dictionary<int, Modifier> globalItemPool = new Dictionary<int, Modifier>(); /// this contains all the items created by the game from the JSON file
+    public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>(); /// this contains all the items created by the game from the JSON file 
 
     static ItemManager()
@@ -41,7 +41,6 @@ public class ItemManager
 
         Debug.Log("items compiled");
 
-        bulletPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/Bullets.json", true);
     }
 
     /// <summary>
@@ -51,7 +50,7 @@ public class ItemManager
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static Dictionary<int, Modifier> ComputeAllItems(string path, bool isbullet)
+    public static Dictionary<int, Item> ComputeAllItems(string path, bool isbullet)
     {
         Debug.Log("ComputeAnItem called");
 
@@ -60,72 +59,73 @@ public class ItemManager
         string text = File.ReadAllText(path);
 
         // Deserializza il JSON in ItemJson, che contiene la proprietà item
-        ModifierJson data = JsonConvert.DeserializeObject<ModifierJson>(text);
+        ItemJson data = JsonConvert.DeserializeObject<ItemJson>(text);
 
         // stadio molto prototipale, hardcoded la crezione di questo specifico tipo di effetto
         // ma i parametri sono presi dinamicaente dal file JSON
         // Accesso ai dati
-        Modifier i = null;
-        Dictionary<int, Modifier> items = new Dictionary<int, Modifier>();
+        Dictionary<int, Item> itemsCollection = new Dictionary<int, Item>();
 
 
         try
         {
-            foreach (var item in data.mods)  // per ogni item json
+            foreach (var itemFromData in data.mods)  // per ogni item json
             {
-                i = new Modifier
+                Item itemInCreation = new Item();
+                var modifier = new Modifier
                 {
                     effects = new List<AbstractEffect>()
                 };
 
-                i.name = item.name;
-                i.id = item.id;
-                i.gameIconId = item.gameIconId;
-                i.inGamePrice = item.inGamePrice;
-                i.description = item.description;
-                i.bullet = isbullet;
+                itemInCreation.name = itemFromData.name;
+                itemInCreation.id = itemFromData.id;
+                itemInCreation.gameIconId = itemFromData.gameIconId;
+                itemInCreation.inGamePrice = itemFromData.inGamePrice;
+                itemInCreation.description = itemFromData.description;
+                modifier.bullet = isbullet;
                 int effectID = 0;
 
-                foreach (var effect in item.effects) // per ogni effetto nella lista
+                foreach (var effect in itemFromData.effects) // per ogni effetto nella lista
                 {
                     var type = effect["effectType"].ToString();
-                    AbstractEffect e = null;
+                    AbstractEffect newEffect = null;
 
                     switch (type)
                     {
                         case "sa":
-                            e = new SingleActivationEffect(effect, item.id, effectID, isbullet);
+                            newEffect = new SingleActivationEffect(effect, itemFromData.id, effectID, isbullet);
                             break;
 
                         case "ot":
-                            e = new OverTimeEffect(effect, item.id, effectID, isbullet);
+                            newEffect = new OverTimeEffect(effect, itemFromData.id, effectID, isbullet);
                             break;
 
                         case "area":
-                            e = new PermanentAreaEffect(effect, item.id, effectID, isbullet);
+                            newEffect = new PermanentAreaEffect(effect, itemFromData.id, effectID, isbullet);
                             break;
 
                         default:
                             throw new Exception("Effect type object type: '" + type +
-                             "' not recognized for item: " + item.id);
+                             "' not recognized for item: " + itemFromData.id);
                     }
 
-                    if (e == null)
+                    if (newEffect == null)
                         continue;
 
-                    i.effects.Add(e);
+                    modifier.effects.Add(newEffect);
                     effectID++;
-                    Debug.Log("ItemManager: effect added to item: " + i.id + " with id: " + effectID + "and name: " + i.name);
                 }
 
-                if (items.ContainsKey(i.id))
+                itemInCreation.modifier = modifier;
+
+                if (itemsCollection.ContainsKey(itemInCreation.id))
                 {
-                    throw new Exception("Item with ID " + i.id +
+                    throw new Exception("Item with ID " + itemInCreation.id +
                     " already exists in the global pool. Skipping creation.");
                 }
                 else
                 {
-                    items.Add(i.id, i);
+                    itemsCollection.Add(itemInCreation.id, itemInCreation);
                 }
             }
         }
@@ -141,7 +141,7 @@ public class ItemManager
 
 
         // mag consumption primarySecondary
-        return items;
+        return itemsCollection;
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public class ItemManager
     /// </summary>
     /// <param name="poolIndexes"></param>
     /// <returns></returns>
-    public static Modifier DropFromPool(int[] indexes, int[] raritiesVals)
+    public static Item DropFromPool(int[] indexes, int[] raritiesVals)
     {
         Random rand = new Random();
         var total = raritiesVals.Sum();
@@ -175,27 +175,35 @@ public class ItemManager
     }
 
 
-    private class ModifierJson
+    private class ItemJson
     {
-        public List<ModifierIncomplete> mods;
+        public List<ItemDeserializing> mods;
     }
 
-    private class ModifierIncomplete
+    private class ItemDeserializing
+    {
+        public int id;
+        public string name;
+        public bool isBullet;
+        public int inGamePrice;
+        public string description;
+        public int gameIconId;
+        public List<Dictionary<string, string>> effects;
+    }
+
+    public class Item
     {
         public int id;
         public string name;
         public int inGamePrice;
         public string description;
         public int gameIconId;
-        public List<Dictionary<string, string>> effects;
+        public Modifier modifier;
     }
+
     public class Modifier
     {
-        public int gameIconId;
-        public int inGamePrice;
-        public string description;
         public bool bullet;
-        public string name;
         public int id;
         public List<AbstractEffect> effects;
 

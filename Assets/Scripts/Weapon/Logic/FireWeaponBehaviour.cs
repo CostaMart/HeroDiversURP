@@ -31,17 +31,10 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
         // mag consumption primary
         ammoConsumption = new Modifier();
         ammoConsumption.effects = new List<AbstractEffect>();
-        ammoConsumption.name = "magConsumptionPrimary";
-
-
         ammoConsumption.effects.Add(new SingleActivationEffect(
                 new Dictionary<string, string>
                 {
                     { "effectType", "sa" },
-                    { "effectName", "ammoConsumption" },
-                    { "description", "consumes 1 ammo" },
-                    { "inGamePrice", "0" },
-                    { "gameIconId", "0" },
                     { "target","@PrimaryWeaponStats.1"},
                     {"expr","@PrimaryWeaponStats.1 - 1"}
                 }, 0, 0, false));
@@ -141,7 +134,7 @@ public class FireWeaponBehaviour : AbstractWeaponLogic
             timer = 0;
 
             //TODO: gestire questo con il sistema di item
-            weaponStat.dispatcher.ItemDispatch(ammoConsumption);
+            weaponStat.dispatcher.modifierDispatch(ammoConsumption);
             weaponStat.currentAmmo = 0;
         }
     }

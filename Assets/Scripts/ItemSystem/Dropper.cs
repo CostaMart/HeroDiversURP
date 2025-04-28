@@ -106,7 +106,7 @@ public class Dropper : MonoBehaviour
     {
         Debug.Log("dropping");
         if (!inRange) return;
-        Modifier it = null;
+        Item it = null;
         used = true;
 
 
@@ -142,7 +142,7 @@ public class Dropper : MonoBehaviour
         material.SetColor("_EmissionColor", Color.Lerp(material.color, defaultColor, 2f));
     }
 
-    private void Drop(Modifier it)
+    private void Drop(Item it)
     {
         GameObject prefab = Resources.Load("prefabs/ItemContainer") as GameObject;
         GameObject container = Instantiate(prefab, spawn.position, Quaternion.identity);

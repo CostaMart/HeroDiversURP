@@ -184,7 +184,7 @@ public abstract class AbstractStatus : MonoBehaviour
     /// </summary>
     public void SetStatByID(int id, object newValue)
     {
-        features[id].SetValue(Convert.ChangeType(newValue, features[id].GetValue().GetType()));
+        features[id].SetValue(Convert.ChangeType(newValue, features[id].currentValue.GetType()));
         dirty = true;
     }
 
@@ -196,7 +196,7 @@ public abstract class AbstractStatus : MonoBehaviour
     {
         try
         {
-            return (T)features[id].GetValue();
+            return (T)features[id].currentValue;
         }
 
         catch (KeyNotFoundException)
@@ -208,7 +208,7 @@ public abstract class AbstractStatus : MonoBehaviour
         catch (InvalidCastException)
         {
             Debug.LogError("invoked GestStatByID with id: " + id + " and type: " + typeof(T) +
-            " but the value is of type: " + features[id].GetValue().GetType());
+            " but the value is of type: " + features[id].currentValue.GetType());
         }
 
         return default(T);
@@ -222,7 +222,7 @@ public abstract class AbstractStatus : MonoBehaviour
         {
             if (feature.Value.id == type)
             {
-                values.Add((T)feature.Value.GetValue());
+                values.Add((T)feature.Value.currentValue);
             }
         }
 
@@ -264,23 +264,23 @@ public abstract class AbstractStatus : MonoBehaviour
 
                 if (target.type == typeof(int))
                 {
-                    int inthelper = (int)features[targetID].GetValue();
+                    int inthelper = (int)features[targetID].currentValue;
                     inthelper = Convert.ToInt32(effect.Activate(this));
                     toApply = inthelper;
                     target.SetValue(inthelper);
                 }
                 else if (target.type == typeof(float))
                 {
-                    float? floathelper = (float)features[targetID].GetValue();
+                    float? floathelper = (float)features[targetID].currentValue;
                     floathelper = Convert.ToSingle(effect.Activate(this));
 
-                    floathelper = floathelper != -1 ? floathelper : (float)target.GetValue();
+                    floathelper = floathelper != -1 ? floathelper : (float)target.currentValue;
 
                     target.SetValue(floathelper);
                 }
                 else if (target.type == typeof(bool))
                 {
-                    bool boolhelper = (bool)features[targetID].GetValue();
+                    bool boolhelper = (bool)features[targetID].currentValue;
                     boolhelper = (bool)effect.Activate(this);
                     toApply = boolhelper;
                     target.SetValue(boolhelper);

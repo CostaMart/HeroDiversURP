@@ -49,7 +49,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// This method is called when an item is picked up by the player
     /// <paramref name="it"/> the item picked up
     /// </summary>
-    public void ItemDispatch(Modifier it)
+    public void modifierDispatch(Modifier it)
     {
         if (it.bullet)
         {
@@ -87,7 +87,8 @@ public abstract class EffectsDispatcher : MonoBehaviour
     }
 
     /// <summary>
-    /// If a member of effect class has a reference to an attribute in a status class, this method is called to resolve the current value of such reference
+    /// If a member of effect class has a reference to an attribute in a status class, this method is called to 
+    // resolve the current value of such reference
     /// <paramref name="calssID"/> the ID of the class to reference
     /// <paramref name="attributeID"/> the ID of the attribute to reference
     /// </summary>
@@ -185,7 +186,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     {
         var toRet = affectables.Values.SelectMany(stats => stats.features.Values.Where(feat => feat.id == f)).ToList();
         toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
-        return (T)toRet.FirstOrDefault().GetValue();
+        return (T)toRet.FirstOrDefault().currentValue;
     }
 }
 

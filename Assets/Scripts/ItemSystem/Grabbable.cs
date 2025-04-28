@@ -7,7 +7,7 @@ using static ItemManager;
 public class Grabbable : MonoBehaviour
 {
     public TMP_Text text;
-    public Modifier item;
+    public Item item;
     private bool active = false;
     public bool selling = false;
     bool grabbable = true;
@@ -74,7 +74,7 @@ public class Grabbable : MonoBehaviour
             if (grabbable)
                 panel.AppearPanel(item.name, item.description);
             grabbable = false;
-            other.gameObject.GetComponent<EffectsDispatcher>().ItemDispatch(item);
+            other.gameObject.GetComponent<EffectsDispatcher>().modifierDispatch(item.modifier);
             Destroy(transform.parent.gameObject);
         }
     }

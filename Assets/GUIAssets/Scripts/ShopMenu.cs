@@ -16,7 +16,7 @@ public class InteractiveShopMan : MonoBehaviour
     [SerializeField] GameObject holdProgressPanel;
     [SerializeField] EffectsDispatcher dispatcher;
     [SerializeField] EconomyManager economyManager;
-    Modifier[] items;
+    Item[] items;
     Seller seller;
 
 
@@ -48,7 +48,7 @@ public class InteractiveShopMan : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
-    public void SetupItemList(Modifier[] givenItems, Seller seller)
+    public void SetupItemList(Item[] givenItems, Seller seller)
     {
         this.seller = seller;
         this.items = givenItems;

@@ -40,7 +40,7 @@ public class WeapnYAimControl : MonoBehaviour
         targetRotation = Quaternion.Euler(rotationX, rotationY, 0);
 
         // Interpola verso la rotazione target per ottenere un movimento fluido
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, dispatcher.GetMostRecentFeatureValue<float>(FeatureType.rotationSpeed));
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 100);
     }
 
     void OnAiming(bool value)

@@ -9,8 +9,6 @@ public class CharStats : AbstractStatus
 {
 
 
-    private Action<float>[] updatabales;
-
     protected new void Awake()
     {
         base.Awake();

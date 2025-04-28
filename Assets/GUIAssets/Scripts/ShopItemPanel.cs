@@ -9,7 +9,7 @@ public class ShopItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private Image image;
     private Color originalColor;
     public Color highlightColor = Color.yellow;
-    public Modifier item;
+    public Item item;
     private bool bought = false;
     public EffectsDispatcher dispatcher;
     public Seller seller;
@@ -118,7 +118,7 @@ public class ShopItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             return;
         }
 
-        dispatcher.ItemDispatch(item);
+        dispatcher.modifierDispatch(item.modifier);
         seller.Sold(item);
         bought = true;
     }

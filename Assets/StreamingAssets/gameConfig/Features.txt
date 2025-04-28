@@ -1,6 +1,6 @@
 #Player-CharStats
 maxHealth = 200.0 ID:9
-health = 200.0  ID:1
+health = 200.0  ID:1 
 speed = 10.0 ID:2
 rotationSpeed = 10.0  ID:13
 aimRotationSpeed = 100.0 ID:14

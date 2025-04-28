@@ -55,8 +55,8 @@ public class Feature
 {
     public FeatureType id;
     public Type type;
-    public object baseValue;
-    public object currentValue;
+    public object baseValue { get; set; }
+    public object currentValue { get; set; }
     public object maxVal { get; set; }
 
     public object minVal { get; set; }
@@ -68,12 +68,6 @@ public class Feature
         this.baseValue = baseValue;
         this.currentValue = baseValue;
         this.type = type;
-    }
-
-
-    public object GetValue()
-    {
-        return currentValue;
     }
 
 

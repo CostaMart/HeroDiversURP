@@ -29,16 +29,10 @@ public class HeatStats : AbstractStatus
         // create an utility modifier to change temperature
         heat = new Modifier();
         heat.effects = new List<AbstractEffect>();
-        heat.name = "magConsumptionSecondary";
-
         heat.effects.Add(new SingleActivationEffect(
                 new Dictionary<string, string>
                 {
                     { "effectType", "sa" },
-                    { "effectName", "armor heating" },
-                    { "description", "heats player armor" },
-                    { "inGamePrice", "0" },
-                    { "gameIconId", "0" },
                     { "target","@CharStats.8"},
                     {"expr","@CharStats.8 + @HeatStats.0"}
 
@@ -46,16 +40,10 @@ public class HeatStats : AbstractStatus
 
         cooling = new Modifier();
         cooling.effects = new List<AbstractEffect>();
-        cooling.name = "magConsumptionSecondary";
-
         cooling.effects.Add(new SingleActivationEffect(
                 new Dictionary<string, string>
                 {
                     { "effectType", "sa" },
-                    { "effectName", "armor cooling" },
-                    { "description", "cools player's armor" },
-                    { "inGamePrice", "0" },
-                    { "gameIconId", "0" },
                     { "target","@CharStats.8"},
                     {"expr","@CharStats.8 - @CharStats.11"}
 
@@ -111,7 +99,7 @@ public class HeatStats : AbstractStatus
         dispatchTimer += Time.deltaTime;
         if (dispatchTimer >= 1f)
         {
-            dispatcher.ItemDispatch(isExposedToSun ? heat : cooling);
+            dispatcher.modifierDispatch(isExposedToSun ? heat : cooling);
             dispatchTimer = 0f; // Resetto il timer
         }
     }
