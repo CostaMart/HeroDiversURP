@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Search;
 using UnityEngine;
 using Weapon.State;
 using static ItemManager;
@@ -65,8 +66,17 @@ public abstract class EffectsDispatcher : MonoBehaviour
         }
     }
 
-    public virtual void AttachModifierFromOtherDispatcher(Modifier it)
+    /// <summary>
+    /// this metho allows a dispaptcher to attach a modifier to another dispatcher
+    /// </summary>
+    /// <param name="it"></param>
+    public virtual void AttachModifierFromOtherDispatcher(EffectsDispatcher dispatcher, Modifier it)
     {
+        foreach (AbstractEffect up in it.effects)
+        {
+            up.localParametersRefClasses = resolveReferences(up.localParametersRef);
+        }
+
         foreach (AbstractEffect up in it.effects)
         {
             Debug.Log("Dispatching external effect " + up.ToString());
@@ -75,11 +85,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
         }
     }
 
-    public virtual void DispatchFromOtherDispatcher(AbstractEffect up)
-    {
-        up.externParametersRefClasses = resolveReferences(up.externParametersRef);
-        up.Attach(affectables, this);
-    }
 
     /// <summary>
     /// If a member of effect class has a reference to an attribute in a status class, this method is called to 

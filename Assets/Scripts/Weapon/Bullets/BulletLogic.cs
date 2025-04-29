@@ -1,96 +1,72 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Weapon.State;
-using static ItemManager;
 
-public class Bullet : AbstractStatus
+/// <summary>
+/// this class represents a bullet logic. A bullet gets enabled when it's fired from the weapon.
+/// While inactive, it is moved in the position of the bullet pool.
+/// The bullet pool is a pool used to store disabled bullets, in order to avoid continously
+//  spawning and destroying of bullets.
+/// </summary>
+public class BulletLogic : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Vector3 initialPos;
     private Rigidbody rb;
     private Collider c;
-    public Modifier bulletEffets;
-    private bool started = false;
-
-
+    public EffectsDispatcher dispatcher;
+    public Modifier toDispatch;
     public BulletPoolStats bulletPoolState;
-    private float EnableTime;
+    public bool toReset = true;
 
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         c = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         initialPos = transform.position;
     }
 
-    protected override int ComputeID()
-    {
-        return -1;
-    }
 
-    new void Update()
-    {
-        {
-
-
-            if (bulletPoolState.dirty)
-            {
-                transform.localScale = new Vector3(bulletPoolState
-                .GetFeatureValuesByType<float>(FeatureType.widthScale).Sum(), bulletPoolState
-                .GetFeatureValuesByType<float>(FeatureType.heightScale).Sum(),
-                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.lengthScale).Sum());
-
-                rb.mass = bulletPoolState.GetFeatureValuesByType<float>(FeatureType.mass).Sum();
-            }
-        }
-    }
-
-    // Update is called once per frame
+    // if someone is hit dispatch the effects of the bullets in this itempool
     public void OnCollisionEnter(Collision collision)
     {
 
 
-        bulletPoolState.vfxPool[1].gameObject.SetActive(true);
-        bulletPoolState.vfxPool[1].transform.position = collision.contacts[0].point;
-        bulletPoolState.vfxPool[1].transform.rotation = Quaternion.LookRotation(collision.contacts[0].normal);
-        bulletPoolState.vfxPool[1].Play();
-
-        Collider[] colliders = Physics.OverlapSphere(collision.transform.position,
-        bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum());
-
-        foreach (Collider col in colliders)
+        try
         {
-            if (col.TryGetComponent<EffectsDispatcher>(out var d))
+            Collider[] colliders = Physics.OverlapSphere(collision.transform.position,
+            bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum());
+            if (colliders.Length != 0)
             {
-                try
+                foreach (Collider col in colliders)
                 {
-                    bulletPoolState.bulletEffects.effects[0].localParametersRefClasses =
-                    bulletPoolState.effectsDispatcher.
-                    resolveReferences(bulletPoolState.bulletEffects.effects[0].localParametersRef);
-                    d.AttachModifierFromOtherDispatcher(bulletPoolState.bulletEffects);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                    continue;
+                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                    {
+                        d.AttachModifierFromOtherDispatcher(dispatcher, toDispatch);
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
             }
         }
+        catch (Exception e)
+        {
+            Debug.LogWarning("no hit: " + e.Message);
+        }
 
-        if (bulletPoolState.GetFeatureValuesByType<bool>(FeatureType.destroyOnHit).Last())
-            resetItem();
+        if (toReset)
+            ResetBullet();
     }
 
 
-    void resetItem()
+    /// <summary>
+    /// restore this bullet position after hit
+    /// </summary>
+    void ResetBullet()
     {
-
         rb.linearVelocity = Vector3.zero; // Azzeriamo la velocità lineare
         rb.angularVelocity = Vector3.zero; // Azzeriamo la velocità angolare
         transform.position = initialPos; // Riportiamo il proiettile alla posizione iniziale

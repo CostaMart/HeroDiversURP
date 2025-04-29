@@ -19,7 +19,11 @@ public class ItemManager
 
 
     public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
-    public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>(); /// this contains all the items created by the game from the JSON file 
+    public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
+
+    public static object Collider { get; internal set; }
+
+    /// this contains all the items created by the game from the JSON file 
 
     static ItemManager()
     {
@@ -38,6 +42,7 @@ public class ItemManager
         };
 
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);
+        bulletPool = ComputeAllBullets(Application.streamingAssetsPath + "/gameConfig/Bullets.json");
 
         Debug.Log("items compiled");
 
@@ -45,8 +50,6 @@ public class ItemManager
 
     /// <summary>
     /// This method is called at the start of the game to create the item pool reading items form the JSON file
-    /// 
-    /// TODO: in questa fase viene chiamato dal dispatcher per prova
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
@@ -137,6 +140,81 @@ public class ItemManager
     }
 
     /// <summary>
+    /// This method is called at the start of the game to create the item pool reading items form the JSON file
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static Dictionary<int, Modifier> ComputeAllBullets(string path)
+    {
+        Debug.Log("ComputeAnItem called");
+
+        // Leggi il JSON dal file
+        // TODO: cambiare il path in modo che sia relativo al progetto
+        string text = File.ReadAllText(path);
+
+        // Deserializza il JSON in ItemJson, che contiene la proprietà item
+        BulletJson data = JsonConvert.DeserializeObject<BulletJson>(text);
+
+        // stadio molto prototipale, hardcoded la crezione di questo specifico tipo di effetto
+        // ma i parametri sono presi dinamicaente dal file JSON
+        // Accesso ai dati
+        Dictionary<int, Modifier> bulletCollection = new Dictionary<int, Modifier>();
+
+
+        try
+        {
+            foreach (var bulletFromData in data.buls)  // per ogni item json
+            {
+                BulletJson bulletInCreation = new();
+                var modifier = new Modifier
+                {
+                    effects = new List<AbstractEffect>()
+                };
+
+                int effectID = 0;
+
+                foreach (var effect in bulletFromData.effects) // per ogni effetto nella lista
+                {
+                    var type = effect["effectType"].ToString();
+                    AbstractEffect newEffect = null;
+
+                    switch (type)
+                    {
+                        case "sa":
+                            newEffect = new SingleActivationEffect(effect, bulletFromData.id, effectID, true);
+                            break;
+
+                        case "ot":
+                            newEffect = new OverTimeEffect(effect, bulletFromData.id, effectID, true);
+                            break;
+                    }
+
+                    if (newEffect == null)
+                        continue;
+
+                    modifier.effects.Add(newEffect);
+                    effectID++;
+                }
+
+                bulletCollection.Add(bulletFromData.id, modifier);
+            }
+        }
+
+        catch (KeyNotFoundException e)
+        {
+            Debug.LogError("Error in Item manager unable to create an item with error: " + e.Message
+            + " check the JSON item definition file" + e.StackTrace);
+
+        }
+
+        // create special items for system usages
+
+
+        // mag consumption primarySecondary
+        return bulletCollection;
+    }
+
+    /// <summary>
     /// given a pool of indexes, it returns a random item from the pool
     /// </summary>
     /// <param name="poolIndexes"></param>
@@ -167,11 +245,27 @@ public class ItemManager
     }
 
 
+    /// <summary>
+    /// used just to deserializing the JSON file
+    /// </summary>
     private class ItemJson
     {
         public List<ItemDeserializing> mods;
     }
 
+    private class BulletJson
+    {
+        public List<BulletDeserializing> buls;
+    }
+    private class BulletDeserializing
+    {
+        public int id;
+        public List<Dictionary<string, string>> effects;
+    }
+
+    /// <summary>
+    /// used just to deserializing the JSON file
+    /// </summary>
     private class ItemDeserializing
     {
         public int id;
@@ -183,6 +277,9 @@ public class ItemManager
         public List<Dictionary<string, string>> effects;
     }
 
+    /// <summary>
+    /// represents an item in the game
+    /// </summary>
     public class Item
     {
         public int id;
@@ -193,22 +290,27 @@ public class ItemManager
         public Modifier modifier;
     }
 
-    public class Modifier
-    {
-        public bool bullet;
-        public int id;
-        public List<AbstractEffect> effects;
-
-        public override string ToString()
-        {
-            string s = "Modifier: \n";
-            foreach (var effect in effects)
-            {
-                s += effect.ToString() + "\n";
-            }
-            return s;
-        }
-    }
 
 }
 
+
+/// <summary>
+/// represents a modifier, which is a collection of effects
+/// can be applied to a target.
+/// </summary>
+public class Modifier
+{
+    public bool bullet;
+    public int id;
+    public List<AbstractEffect> effects;
+
+    public override string ToString()
+    {
+        string s = "Modifier: \n";
+        foreach (var effect in effects)
+        {
+            s += effect.ToString() + "\n";
+        }
+        return s;
+    }
+}

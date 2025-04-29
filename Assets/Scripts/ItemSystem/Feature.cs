@@ -4,6 +4,8 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    coolingPerSecond,
+    heatingRate,
     heatingPerSecond,
     coolingRate,
     overHeatLimit,
@@ -42,10 +44,10 @@ public enum FeatureType
     linearDamping,
     mass,
     destroyOnHit,
-    widthScale,
-    heightScale,
-    lengthScale,
-    bulletEffects,
+    pwidthScale,
+    pheightScale,
+    plengthScale,
+    pbulletEffects,
     money,
     damage,
     receivedDamage,

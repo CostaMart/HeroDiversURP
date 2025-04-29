@@ -1,106 +1,120 @@
 using System.Collections.Generic;
-using UnityEditor.Search;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.VFX;
 using static ItemManager;
 
 public class HeatStats : AbstractStatus
 {
-    RaycastHit[] hitl = new RaycastHit[1];
-    RaycastHit[] hitr = new RaycastHit[1];
-    RaycastHit[] hitc = new RaycastHit[1];
     public bool isExposedToSun = false;
+
     [SerializeField] Transform heatsorce;
     [SerializeField] Transform rayCastRSource;
     [SerializeField] Transform rayCastLSource;
 
-    // Offset fields for the rays
     [SerializeField] Vector3 leftRayOffset = new Vector3(-0.5f, 0, 0);
     [SerializeField] Vector3 rightRayOffset = new Vector3(0.5f, 0, 0);
-    [SerializeField] Vector3 centerRayOffset = new Vector3(0, 0, 0);
     [SerializeField] EffectsDispatcher dispatcher;
+
+    [Header("Raycast Settings")]
+    private const float raycastInterval = 0.2f; // Fisso: 5 volte al secondo
+
+    [Header("Effect Timings")]
+
     private Modifier heat;
     private Modifier cooling;
 
-
+    private float raycastTimer = 0f;
+    private float timer = 0f;
 
     void Start()
     {
-        // create an utility modifier to change temperature
-        heat = new Modifier();
-        heat.effects = new List<AbstractEffect>();
-        heat.effects.Add(new SingleActivationEffect(
-                new Dictionary<string, string>
+        heat = new Modifier
+        {
+            effects = new List<AbstractEffect>
+            {
+                new SingleActivationEffect(new Dictionary<string, string>
                 {
                     { "effectType", "sa" },
                     { "target","@CharStats.8"},
                     {"expr","@CharStats.8 + @HeatStats.0"}
+                }, 0, 0, false)
+            }
+        };
 
-                }, 0, 0, false));
-
-        cooling = new Modifier();
-        cooling.effects = new List<AbstractEffect>();
-        cooling.effects.Add(new SingleActivationEffect(
-                new Dictionary<string, string>
+        cooling = new Modifier
+        {
+            effects = new List<AbstractEffect>
+            {
+                new SingleActivationEffect(new Dictionary<string, string>
                 {
                     { "effectType", "sa" },
                     { "target","@CharStats.8"},
                     {"expr","@CharStats.8 - @CharStats.11"}
-
-                }, 0, 0, false));
+                }, 0, 0, false)
+            }
+        };
     }
-
-    float dispatchTimer = 0f; // Aggiungilo come variabile fuori da Update
 
     private void Update()
     {
         base.Update();
-        // Timer per il Dispatch
+        var heatInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.heatingRate).Sum();
+        var coolingInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.coolingRate).Sum();
 
+        // Raycast 5 volte al secondo per aggiornare esposizione
+        raycastTimer += Time.deltaTime;
+        if (raycastTimer >= raycastInterval)
+        {
+            raycastTimer = 0f;
+            CheckExposure();
+        }
+
+        timer += Time.deltaTime;
+        if (isExposedToSun)
+        {
+            if (timer >= heatInterval)
+            {
+                dispatcher.modifierDispatch(heat);
+                timer = 0f;
+            }
+        }
+        else
+        {
+            if (timer >= coolingInterval)
+            {
+                dispatcher.modifierDispatch(cooling);
+                timer = 0f;
+            }
+        }
+    }
+
+    private void CheckExposure()
+    {
+        isExposedToSun = false;
         float distance = Vector3.Distance(transform.position, heatsorce.position);
 
-        // Left ray with offset
-        Vector3 leftOrigin = transform.position + leftRayOffset;
-        Vector3 leftDirection = (heatsorce.position - leftOrigin).normalized;
-
-        Ray rl = new Ray(rayCastLSource.position, leftDirection);
-        Physics.RaycastNonAlloc(rl, hitl, distance);
-
-        Debug.DrawRay(rayCastLSource.position, leftDirection * distance, Color.green); // Disegno ray sinistro
-
-        // Right ray with offset
-        Vector3 rightOrigin = transform.position + rightRayOffset;
-        Vector3 rightDirection = (heatsorce.position - rightOrigin).normalized;
-        Ray rr = new Ray(rayCastRSource.position, rightDirection);
-        Physics.RaycastNonAlloc(rr, hitr, distance);
-
-        Debug.DrawRay(rayCastRSource.position, rightDirection * distance, Color.blue); // Disegno ray destro
-
-        if (hitl[0].collider != null && hitl[0].collider.CompareTag("Sun"))
+        Vector3 leftOrigin = rayCastLSource.position;
+        Vector3 leftDir = (heatsorce.position - (transform.position + leftRayOffset)).normalized;
+        if (Physics.Raycast(leftOrigin, leftDir, out RaycastHit hitLeft, distance))
         {
-            isExposedToSun = true;
-            HeatPlayer();
-            return;
-        }
-        if (hitr[0].collider != null && hitr[0].collider.CompareTag("Sun"))
-        {
-            isExposedToSun = true;
-            HeatPlayer();
-            return;
+            Debug.DrawRay(leftOrigin, leftDir * distance, Color.green, raycastInterval);
+            if (hitLeft.collider.CompareTag("Sun"))
+            {
+                isExposedToSun = true;
+                return;
+            }
         }
 
-        // Nessun raggio ha colpito il sole
-        HeatPlayer();
-        isExposedToSun = false;
-    }
-    private void HeatPlayer()
-    {
-
-        dispatchTimer += Time.deltaTime;
-        if (dispatchTimer >= 1f)
+        Vector3 rightOrigin = rayCastRSource.position;
+        Vector3 rightDir = (heatsorce.position - (transform.position + rightRayOffset)).normalized;
+        if (Physics.Raycast(rightOrigin, rightDir, out RaycastHit hitRight, distance))
         {
-            dispatcher.modifierDispatch(isExposedToSun ? heat : cooling);
-            dispatchTimer = 0f; // Resetto il timer
+            Debug.DrawRay(rightOrigin, rightDir * distance, Color.blue, raycastInterval);
+            if (hitRight.collider.CompareTag("Sun"))
+            {
+                isExposedToSun = true;
+                return;
+            }
         }
     }
 

@@ -16,28 +16,26 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
     private Material passiveMaterial;
     private Material activeMaterial;
 
-    public override void Disable()
+    public override void DisableWeaponBehaviour()
     {
-        weaponStat.inputSys.actions["Reload"].performed -= Reload;
-        weaponStat.inputSys.actions["Attack"].performed -= OnAttackPerformed;
-        weaponStat.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
+        weaponContainer.inputSys.actions["Reload"].performed -= Reload;
+        weaponContainer.inputSys.actions["Attack"].performed -= OnAttackPerformed;
+        weaponContainer.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
     }
 
-    public override void Enable()
+    public override void EnableWeaponBehaviour()
     {
         timer = 0f;
 
         activeThickness = 0.1f;
-        passiveThickness = weaponStat.laserThickness;
+        ;
 
         activeMaterial = Resources.Load<Material>("RedGlow");
-        passiveMaterial = weaponStat.lineRenderer.material;
 
-        ammo = weaponStat.bulletPool.Length;
 
-        weaponStat.inputSys.actions["Reload"].performed += Reload;
-        weaponStat.inputSys.actions["Attack"].performed += OnAttackPerformed;
-        weaponStat.inputSys.actions["Attack"].canceled += OnAttackCanceled;
+        weaponContainer.inputSys.actions["Reload"].performed += Reload;
+        weaponContainer.inputSys.actions["Attack"].performed += OnAttackPerformed;
+        weaponContainer.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
 
     private void OnAttackPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -60,25 +58,24 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         DrawLaser();
     }
 
-    public override void Updating()
+    public override void UpdateWeaponBehaviour()
     {
         Shoot();
     }
 
     private void DrawLaser()
     {
-        Vector3 origineLaser = weaponStat.muzzle.position;
-        Vector3 direzioneLaser = weaponStat.muzzle.forward;
+        Vector3 origineLaser = weaponContainer.muzzle.position;
+        Vector3 direzioneLaser = weaponContainer.muzzle.forward;
 
         Ray ray = new Ray(origineLaser, direzioneLaser);
         RaycastHit hit;
 
         // Sempre disegna il laser
-        Vector3 endPoint = origineLaser + direzioneLaser * _dispatcher.GetAllFeatureByType<float>(weaponStat.isPrimary
+        Vector3 endPoint = origineLaser + direzioneLaser * _dispatcher.GetAllFeatureByType<float>(weaponContainer.isPrimary
         ? FeatureType.plaserLength : FeatureType.slaserLength).Sum();
 
-        if (Physics.Raycast(ray, out hit, _dispatcher.GetAllFeatureByType<float>(weaponStat.isPrimary
-        ? FeatureType.plaserLength : FeatureType.slaserLength).Sum(), weaponStat.laserMask))
+        if (Physics.Raycast(ray, out hit, 100))
         {
             endPoint = hit.point;
 
@@ -90,10 +87,6 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
                 {
                     timer -= 1f / laserFireRate;
 
-                    if (hit.collider.TryGetComponent<NPCDispatcher>(out var d))
-                    {
-                        d.AttachModifierFromOtherDispatcher(weaponStat.bulletPoolState.bulletEffects);
-                    }
                 }
             }
             else
@@ -102,20 +95,5 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
             }
         }
 
-        // Imposta sempre le posizioni del laser
-        weaponStat.lineRenderer.SetPosition(0, origineLaser);
-        weaponStat.lineRenderer.SetPosition(1, endPoint);
-
-        // Imposta sempre il materiale e spessore corretti
-        if (shooting)
-        {
-            weaponStat.lineRenderer.material = activeMaterial;
-            weaponStat.lineRenderer.startWidth = activeThickness;
-        }
-        else
-        {
-            weaponStat.lineRenderer.material = passiveMaterial;
-            weaponStat.lineRenderer.startWidth = passiveThickness;
-        }
     }
 }

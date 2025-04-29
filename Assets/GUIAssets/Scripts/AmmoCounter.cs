@@ -9,8 +9,8 @@ public class AmmoCounter : MonoBehaviour
     [SerializeField] private TMP_Text panel;
     [SerializeField] private PlayerInput playerInput;
     private bool isPirmarySelected = true;
-    [SerializeField] private WeaponStats primary;
-    [SerializeField] private WeaponStats secondary;
+    [SerializeField] private WeaponLogicContainer primary;
+    [SerializeField] private WeaponLogicContainer secondary;
 
     void Start()
     {

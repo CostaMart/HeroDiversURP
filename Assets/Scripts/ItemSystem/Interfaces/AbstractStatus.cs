@@ -10,6 +10,7 @@ using UnityEngine;
 /// </summary>
 public abstract class AbstractStatus : MonoBehaviour
 {
+    protected string symbolicName = null;
     public Dictionary<int, Feature> features = new();
 
     private List<AbstractEffect> activeEffects = new List<AbstractEffect>();
@@ -137,7 +138,8 @@ public abstract class AbstractStatus : MonoBehaviour
 
             }
 
-            if (line.Contains("#" + this.gameObject.name + "-" + this.GetType().Name))
+            var name = symbolicName != null ? symbolicName : this.GetType().Name;
+            if (line.Contains("#" + this.gameObject.name + "-" + name))
             {
                 found = true;
                 hasBeenFound = true;
@@ -170,9 +172,9 @@ public abstract class AbstractStatus : MonoBehaviour
 
     protected virtual void Awake()
     {
+        ID = ComputeID();
         features = LoadFeatures();
         Debug.Log("Assigning ID to status class " + this.GetType().Name);
-        ID = ComputeID();
         new ItemManager();
         this.dirty = true;
     }

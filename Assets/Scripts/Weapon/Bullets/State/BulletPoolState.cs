@@ -8,21 +8,13 @@ namespace Weapon.State
 {
     public class BulletPoolStats : AbstractStatus
     {
-        private Rigidbody rb;
         private bool isPrimary = true;
-        public Modifier bulletEffects;
-        [SerializeField] public EffectsDispatcher effectsDispatcher;
-        [SerializeField] public List<ParticleSystem> vfxPool;
-        public float directionx;
-        public float directiony;
-        public float directionz;
+        public int bulletEffects;
 
         protected override void Awake()
         {
             base.Awake();
-            bulletEffects = ItemManager.bulletPool[GetFeatureValuesByType<int>(FeatureType.bulletEffects).Last()];
         }
-
 
         protected override int ComputeID()
         {

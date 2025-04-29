@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WeapnYAimControl : MonoBehaviour
+public class WeapnAimControl : MonoBehaviour
 {
     private float rotationX = 0f;
     private float rotationY = 0f;

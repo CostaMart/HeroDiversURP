@@ -16,17 +16,20 @@ public class EconomyManager : MonoBehaviour
             stat = 101;
 
         Dictionary<string, string> data = new Dictionary<string, string> {
-            { "id", "100" },
             {"targetType", "ext"},
-            { "gameiconid", "9" },
-            { "name", "transaction" },
-            { "effecttype", "sa" },
-            { "target", $"!CharStats.{stat}" },
-            { "expr", $"!CharStats.{stat} + {amount}" }
+            { "target", $"@CharStats.{stat}" },
+            { "expr", $"@CharStats.{stat} + {amount}" }
         };
 
+
         AbstractEffect ef = new SingleActivationEffect(data, 100, 0, false);
-        dispatcher.DispatchFromOtherDispatcher(ef);
+        Modifier mod = new Modifier();
+        mod.effects = new List<AbstractEffect>
+        {
+            ef
+        };
+
+        dispatcher.modifierDispatch(mod);
 
         return true;
     }
@@ -40,6 +43,7 @@ public class EconomyManager : MonoBehaviour
         ModifyMoney(-cost, isKeyTransaction);
         return true;
     }
+
     public bool GetMoney(int cost, bool isKeyTransaction)
     {
         ModifyMoney(cost, isKeyTransaction);

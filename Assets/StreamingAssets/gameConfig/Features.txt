@@ -9,7 +9,7 @@ jumpSpeedx = 10.0 ID:4
 jumpSpeedz = 10.0 ID:5
 speedLimitBeforeRagdolling = 1000.0 ID:6
 maxJumps = 1 ID:7
-coolingRate = 10.0 ID:11
+coolingPerSecond = 1.0 ID:11
 heat = 0.0 ID:8 range: 0.0-100.0
 overHeatLimit = 100.0 ID:10
 strafeBurstDuration = 0.3 ID:12
@@ -20,10 +20,11 @@ maxStrafes = 4 ID:16
 
 #Player-HeatStats
 coolingRate = 1.0 ID:1
+heatingRate = 1.0 ID:2
 heatingPerSecond = 5.0 ID:0 
 ##
 
-#PlayerPrimary-WeaponStats
+#PlayerPrimary-PrimaryWeaponStats
 pmagCount = 10 ID:1
 pmagSize = 10 ID:2
 pfireRate = 0.5 ID:3
@@ -31,9 +32,17 @@ pfireStrength = 50.0 ID:4
 plaserLength = 100.0 ID:5
 pautomatic = true  ID:6
 pactiveLogicIndex = 1  ID:7
+mass = 2.0 ID:8
+explosionRadius = 2.0 ID:9
+destroyOnHit = true ID:10
+pwidthScale = 50.0 ID:11
+pheightScale =50.0 ID:12
+plengthScale = 50.0 ID:13
+pbulletEffects = 0  ID:14
+damage = 10.0 ID:15
 ##
 
-#PlayerSecondary-WeaponStats
+#PlayerSecondary-PrimaryWeaponStats
 smagCount = 10 ID:1
 smagSize = 10 ID:2
 sfireRate = 4.0 ID:3
@@ -41,17 +50,6 @@ sfireStrength = 50.0 ID:4
 slaserLength = 100.0 ID:5
 sautomatic = true  ID:6
 sactiveLogicIndex = 1  ID:7
-##
-
-#bulletPool-BulletPoolStats
-mass = 2.0 ID:1
-explosionRadius = 2.0 ID:2
-destroyOnHit = true ID:3
-widthScale = 100.0 ID:4
-heightScale =100.0 ID:5
-lengthScale = 100.0 ID:6
-bulletEffects = 0  ID:7
-damage = 10.0 ID:8
 ##
 
 #Cube-CharStats

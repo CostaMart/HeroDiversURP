@@ -17,7 +17,8 @@ class OverTimeEffect : AbstractEffect
     {
         if (!data.ContainsKey("totalDuration") || !data.ContainsKey("rate"))
         {
-            throw new System.Exception("OverTimeEffect: 'totalDuration' or 'rate' is null for effect " + effectID + " in item with ID: " + itemID + " check if the itemList.json file is well formatted");
+            throw new System.Exception("OverTimeEffect: 'totalDuration' or 'rate' is null for effect " + effectID +
+             " in item with ID: " + itemID + " check if the itemList.json file is well formatted");
         }
 
         float totald = float.Parse(data["totalDuration"]);

@@ -29,9 +29,9 @@ public class PhysicsStats : AbstractStatus
         base.Update();
 
         // update the rigidbody mass
-        transform.localScale = new Vector3(GetFeatureValuesByType<float>(FeatureType.lengthScale).Sum(),
-        GetFeatureValuesByType<float>(FeatureType.heightScale).Sum(),
-        GetFeatureValuesByType<float>(FeatureType.heightScale).Sum());
+        transform.localScale = new Vector3(GetFeatureValuesByType<float>(FeatureType.plengthScale).Sum(),
+        GetFeatureValuesByType<float>(FeatureType.pheightScale).Sum(),
+        GetFeatureValuesByType<float>(FeatureType.pheightScale).Sum());
 
         if (rb == null)
             return;
