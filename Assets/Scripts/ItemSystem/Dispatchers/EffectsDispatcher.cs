@@ -70,11 +70,11 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// this metho allows a dispaptcher to attach a modifier to another dispatcher
     /// </summary>
     /// <param name="it"></param>
-    public virtual void AttachModifierFromOtherDispatcher(EffectsDispatcher dispatcher, Modifier it)
+    public virtual void AttachModifierFromOtherDispatcher(EffectsDispatcher yourDispatcher, Modifier it)
     {
         foreach (AbstractEffect up in it.effects)
         {
-            up.localParametersRefClasses = resolveReferences(up.localParametersRef);
+            up.localParametersRefClasses = yourDispatcher.resolveReferences(up.localParametersRef);
         }
 
         foreach (AbstractEffect up in it.effects)
