@@ -29,6 +29,11 @@ public abstract class AbstractWeaponLogic : ScriptableObject
     public abstract void UpdateWeaponBehaviour();
 
     /// <summary>
+    /// called on late update to update the weapon behaviour
+    /// </summary>
+    public abstract void LateUpdateWeaponBehaviour();
+
+    /// <summary>
     /// called when the weapon is reloaded
     /// </summary>
     /// <param name="ctx"></param>

@@ -16,7 +16,7 @@ public class HeatStats : AbstractStatus
     [SerializeField] EffectsDispatcher dispatcher;
 
     [Header("Raycast Settings")]
-    private const float raycastInterval = 0.2f; // Fisso: 5 volte al secondo
+    public float raycastInterval = 0.2f; // Fisso: 5 volte al secondo
 
     [Header("Effect Timings")]
 

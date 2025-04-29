@@ -67,7 +67,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     }
 
     /// <summary>
-    /// this metho allows a dispaptcher to attach a modifier to another dispatcher
+    /// this method allows a dispatcher to attach a modifier to another dispatcher
     /// </summary>
     /// <param name="it"></param>
     public virtual void AttachModifierFromOtherDispatcher(EffectsDispatcher yourDispatcher, Modifier it)

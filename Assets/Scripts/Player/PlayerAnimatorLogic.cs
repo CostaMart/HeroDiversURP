@@ -4,6 +4,7 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
+[DefaultExecutionOrder(100)]
 public class PlayerAnimatorLogic : MonoBehaviour
 {
     public RigBuilder rb;
@@ -199,8 +200,8 @@ public class PlayerAnimatorLogic : MonoBehaviour
             else
             {
                 twoBoneIKConstraintR.weight = 0;
-                IKLeftHand.position = Vector3.Slerp(IKLeftHand.position, wpnFrontHandle.position, 0.5f);
-                IKLeftHand.rotation = Quaternion.Slerp(IKLeftHand.rotation, wpnFrontHandle.rotation, 0.5f);
+                IKLeftHand.position = wpnFrontHandle.position;
+                IKLeftHand.rotation = wpnFrontHandle.rotation;
             }
         }
 
@@ -242,6 +243,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         if (needsRigRebuild)
         {
+            Debug.Log("Rebuilding rig");
             rb.Build();
             needsRigRebuild = false;
         }

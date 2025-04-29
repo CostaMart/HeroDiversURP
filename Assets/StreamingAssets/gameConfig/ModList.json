@@ -57,6 +57,49 @@
                     "expr": "@CharStats.1 - 5"
                 }
             ]
+        },
+        {
+            "id": 4,
+            "gameIconId": 12,
+            "inGamePrice": 1,
+            "name": "Laser Morpher",
+            "description": "How would life get easier with a laser? Here it is for your morph gun",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.7",
+                    "expr": "1"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "gameIconId": 12,
+            "inGamePrice": 1,
+            "name": "Fire Weapon Morpher",
+            "description": "Good old energy bullets, the most reliable weapon in the galaxy",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.7",
+                    "expr": "0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.11",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.12",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.13",
+                    "expr": "50.0"
+                }
+            ]
         }
     ]
 }

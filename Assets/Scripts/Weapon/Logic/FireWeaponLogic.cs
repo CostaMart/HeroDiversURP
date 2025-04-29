@@ -168,4 +168,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         b.transform.localScale = newScale;
     }
 
+    public override void LateUpdateWeaponBehaviour()
+    {
+    }
 }

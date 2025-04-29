@@ -135,24 +135,12 @@ public class MovementLogic : MonoBehaviour
             {
                 moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum();
                 speedMultiplier = 10f;
-                if (!thrusterEffect1.isPlaying)
-                {
-                    thrusterEffect1.Play();
-                    thrusterEffect2.Play();
-                    thrusterEffect3.Play();
-                    thrusterEffect4.Play();
-                    explosionPrefab.SetActive(true);
-                    effect.Animate(0.2f);
-                    explosion.Play();
-                }
-
+                isGrounded = false;
+                StartVFX();
             }
             else
             {
-                thrusterEffect1.Stop();
-                thrusterEffect2.Stop();
-                thrusterEffect3.Stop();
-                thrusterEffect4.Stop();
+                StopVFX();
             }
 
             // se non specificato multiplicatore nelle faturre ➡ defaultBurstSpeedMultiplier 
@@ -175,6 +163,28 @@ public class MovementLogic : MonoBehaviour
 
         rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime));
 
+    }
+
+    public void StartVFX()
+    {
+        if (!thrusterEffect1.isPlaying)
+        {
+            thrusterEffect1.Play();
+            thrusterEffect2.Play();
+            thrusterEffect3.Play();
+            thrusterEffect4.Play();
+            explosionPrefab.SetActive(true);
+            effect.Animate(0.2f);
+            explosion.Play();
+        }
+    }
+
+    public void StopVFX()
+    {
+        thrusterEffect1.Stop();
+        thrusterEffect2.Stop();
+        thrusterEffect3.Stop();
+        thrusterEffect4.Stop();
     }
 
     private void HandleStrafeCooldown()

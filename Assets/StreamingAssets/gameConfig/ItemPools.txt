@@ -3,6 +3,6 @@
 ##
 
 #Catherine 10-10
-1 rarity: 10
-2 rarity: 30
+4 rarity: 30
+5 rarity: 30
 ##

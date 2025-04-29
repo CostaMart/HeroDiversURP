@@ -33,12 +33,15 @@ public class WeaponLogicContainer : MonoBehaviour
         if (activeLogic == null)
             return;
 
+        CheckForLogicReasignment();
         activeLogic.UpdateWeaponBehaviour();
     }
 
     public void LateUpdate()
     {
+
         DrawAimLaser();
+        activeLogic.LateUpdateWeaponBehaviour();
     }
 
     void OnEnable()
@@ -69,7 +72,10 @@ public class WeaponLogicContainer : MonoBehaviour
         if (lastActiveLogicId != currentActive)
         {
             activeLogic.DisableWeaponBehaviour();
-            activeLogic = logList[lastActiveLogicId];
+
+            // update current behaviour to match the valute of the corresponding feature    
+            activeLogic = logList[currentActive];
+            lastActiveLogicId = currentActive;
             activeLogic.weaponContainer = this;
             activeLogic.EnableWeaponBehaviour();
         }
