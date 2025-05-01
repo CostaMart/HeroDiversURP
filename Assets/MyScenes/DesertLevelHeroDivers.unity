@@ -2658,7 +2658,7 @@ GameObject:
   - component: {fileID: 1837554505}
   - component: {fileID: 1837554504}
   m_Layer: 6
-  m_Name: Canvas
+  m_Name: GuiCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2880,6 +2880,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: char & camera final 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6364148499386413397, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364148499386413397, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -876546973899608171, guid: 75ea989dce624be9a8b02fd3feab4967, type: 3}
+    - target: {fileID: 8353602663585044984, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -876546973899608171, guid: 75ea989dce624be9a8b02fd3feab4967, type: 3}
     - target: {fileID: 8361988607687149855, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 41.443672
@@ -2974,7 +2986,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5633688434124803676, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1270977778922382780, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7303813995686927997, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
       insertIndex: -1
@@ -3003,7 +3016,7 @@ GameObject:
   - component: {fileID: 2000449638}
   - component: {fileID: 2000449637}
   m_Layer: 6
-  m_Name: Canvas
+  m_Name: GuiCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
