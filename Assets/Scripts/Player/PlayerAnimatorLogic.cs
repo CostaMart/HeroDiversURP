@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
@@ -40,35 +41,29 @@ public class PlayerAnimatorLogic : MonoBehaviour
     // actions
     public PlayerInput playerInput;
 
-    private InputAction aim;
-    private InputAction move;
-    private InputAction throwAction;
-    private InputAction reload;
     public bool reloading = false;
     public bool toggleAim = false;
 
     public Rig rifleAimRig;
     public Rig relaxedRig;
+    public Rig pistolAimRig;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private bool pistol = false;
     private bool rebuildRequired;
+
+    public List<WeaponLogicContainer> weapons = new List<WeaponLogicContainer>();
+    public int equipped = 0;
 
     void Start()
     {
         if (headRotationConstraint == null)
             Debug.LogWarning("Head rotation constraint is null, head rotation will not be controlled");
 
-        // input system setup
-        move = playerInput.actions["Move"];
-        aim = playerInput.actions["Aim"];
-        reload = playerInput.actions["Reload"];
-        throwAction = playerInput.actions["Throw"];
 
         rigBuilder = playerInput.gameObject.GetComponent<RigBuilder>();
 
-        reload.performed += ReloadAnimate;
-        throwAction.performed += ctx => { Debug.Log("throwing"); animator.SetTrigger("throw"); };
+        playerInput.actions["Reload"].performed += ReloadAnimate;
 
         if (!toggleAim)
         {
@@ -80,8 +75,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
             playerInput.actions["Aim"].performed += ctx => { aiming = !aiming; animator.SetBool("aiming", aiming); };
         }
 
-        move.performed += ctx => { animator.SetBool("walking", true); };
-        move.canceled += ctx => { animator.SetBool("walking", false); };
+        playerInput.actions["Move"].performed += ctx => { animator.SetBool("walking", true); };
+        playerInput.actions["Move"].canceled += ctx => { animator.SetBool("walking", false); };
+
         animator = GetComponent<Animator>();
 
 
@@ -144,8 +140,13 @@ public class PlayerAnimatorLogic : MonoBehaviour
             pistolObject.transform.localRotation = Quaternion.identity;
 
 
-            rifleAimRig.weight = 1;
             relaxedRig.weight = 0;
+
+            if (pistol)
+                pistolAimRig.weight = 1;
+
+            if (!pistol)
+                rifleAimRig.weight = 1;
 
             if (lastWas == lastState.notAiming)
             {
@@ -168,6 +169,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
             pistolObject.transform.localPosition = Vector3.zero;
             pistolObject.transform.localRotation = Quaternion.identity;
 
+            pistolAimRig.weight = 0;
             rifleAimRig.weight = 0;
             relaxedRig.weight = 1;
 

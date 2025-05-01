@@ -11,7 +11,6 @@ public class MoveAimReference : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, layermask))
         {
-            Debug.Log("Hit: " + hit.collider.name);
             transform.position = hit.point;
         }
     }
