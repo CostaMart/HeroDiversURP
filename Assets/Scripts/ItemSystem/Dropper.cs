@@ -20,8 +20,8 @@ public class Dropper : MonoBehaviour
     [SerializeField] Color emissionColor = Color.green * 5.0f;
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color usedColor = Color.red;
-    [SerializeField] Animator anim;
-    [SerializeField] PlayerInput playerInput;
+    Animator anim;
+    PlayerInput playerInput;
     private Transform player;
 
 
@@ -30,6 +30,17 @@ public class Dropper : MonoBehaviour
     /// </summary>
     void Start()
     {
+
+        GameObject player = GameObject.Find("Player");
+
+
+        playerInput = player.GetComponent<PlayerInput>();
+        anim = player.GetComponent<Animator>();
+
+        if (playerInput == null || playerInput.actions == null)
+        {
+            Debug.LogError("component not found on player object.");
+        }
 
 
         playerInput.actions["Interact"].performed += Open;

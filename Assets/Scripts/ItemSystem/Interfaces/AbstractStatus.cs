@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+[DefaultExecutionOrder(-99)]
 /// <summary>
 /// A status class that wants to participate to the item upgrade system must implement this interface, 
 /// the effect dispatcher will look for these classes in the gameobject hierarchy.
@@ -170,6 +171,34 @@ public abstract class AbstractStatus : MonoBehaviour
         effectsToRemove.Clear();
     }
 
+    public EffectsDispatcher mydispatcher = null;
+    public virtual void OnEnable()
+    {
+        mydispatcher = FindEffectDispatcherInParents(transform);
+        if (mydispatcher != null)
+        {
+            mydispatcher.AttachStatusClass(this, true);
+            Debug.Log("dispatcher found and registered");
+        }
+        else
+        {
+            Debug.LogError("dispatcher not found in the hierarchy of " + this.gameObject.name);
+        }
+    }
+
+    //public virtual void OnDisable()
+    //{
+    //    if (mydispatcher != null)
+    //    {
+    //        mydispatcher.DetachStatusClass(this);
+    //        Debug.Log("dispatcher found and unregistered");
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("dispatcher not found in the hierarchy of " + this.gameObject.name);
+    //    }
+    //}
+
     protected virtual void Awake()
     {
         ID = ComputeID();
@@ -307,5 +336,19 @@ public abstract class AbstractStatus : MonoBehaviour
         }
 
 
+    }
+    private static EffectsDispatcher FindEffectDispatcherInParents(Transform start)
+    {
+        Transform current = start;
+        while (current != null)
+        {
+            EffectsDispatcher dispatcher = current.GetComponent<EffectsDispatcher>();
+            if (dispatcher != null)
+                return dispatcher;
+
+            current = current.parent;
+        }
+
+        return null; // Nessun EffectDispatcher trovato
     }
 }

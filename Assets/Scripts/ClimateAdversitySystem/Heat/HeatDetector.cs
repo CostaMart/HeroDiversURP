@@ -7,7 +7,7 @@ public class HeatStats : AbstractStatus
 {
     public bool isExposedToSun = false;
 
-    [SerializeField] Transform heatsorce;
+    Transform heatsorce;
     [SerializeField] Transform rayCastRSource;
     [SerializeField] Transform rayCastLSource;
 
@@ -28,6 +28,8 @@ public class HeatStats : AbstractStatus
 
     void Start()
     {
+        heatsorce = GameObject.Find("heatSource").transform;
+
         heat = new Modifier
         {
             effects = new List<AbstractEffect>

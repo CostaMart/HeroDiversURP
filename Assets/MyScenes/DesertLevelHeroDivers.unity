@@ -1628,7 +1628,7 @@ PrefabInstance:
       objectReference: {fileID: 231624938}
     - target: {fileID: 6797921887005558853, guid: 108b54091f3412496919ff71b153515c, type: 3}
       propertyPath: m_VersionIndex
-      value: 6809
+      value: 6812
       objectReference: {fileID: 0}
     - target: {fileID: 7652558506160503835, guid: 108b54091f3412496919ff71b153515c, type: 3}
       propertyPath: m_Mesh
@@ -1636,7 +1636,7 @@ PrefabInstance:
       objectReference: {fileID: 145494481}
     - target: {fileID: 7652558506160503835, guid: 108b54091f3412496919ff71b153515c, type: 3}
       propertyPath: m_VersionIndex
-      value: 1439
+      value: 1442
       objectReference: {fileID: 0}
     - target: {fileID: 8545933699510141536, guid: 108b54091f3412496919ff71b153515c, type: 3}
       propertyPath: m_Mesh
@@ -1723,7 +1723,7 @@ GameObject:
   - component: {fileID: 1233827057}
   - component: {fileID: 1233827058}
   m_Layer: 0
-  m_Name: sunRef
+  m_Name: heatSource
   m_TagString: Sun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2264,7 +2264,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5633688434124803676, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

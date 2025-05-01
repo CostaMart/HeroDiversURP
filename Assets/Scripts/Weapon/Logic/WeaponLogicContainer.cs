@@ -6,7 +6,6 @@ using Weapon.State;
 // manages weapon behaviours and provides them with access to most of necessary components
 public class WeaponLogicContainer : MonoBehaviour
 {
-
     public bool isPrimary;
     public EffectsDispatcher dispatcher;
     public WeaponStats weaponStats;
@@ -15,7 +14,7 @@ public class WeaponLogicContainer : MonoBehaviour
     public int lastActiveLogicId;
     public PlayerInput inputSys;
 
-    // reference to the  bullet pool gameobject
+    // reference to the bullet pool gameobject
     public GameObject pool;
 
     // anchor for the bullets
@@ -25,8 +24,6 @@ public class WeaponLogicContainer : MonoBehaviour
     private LineRenderer lineRenderer;
 
     public int currentAmmo = 0;
-
-
 
     public void Update()
     {
@@ -39,13 +36,15 @@ public class WeaponLogicContainer : MonoBehaviour
 
     public void LateUpdate()
     {
-
         DrawAimLaser();
         activeLogic.LateUpdateWeaponBehaviour();
     }
 
     void OnEnable()
     {
+        //activate 
+        dispatcher.SetActiveStatusClass(weaponStats.ID, true);
+
         // assign reference to this
         activeLogic.weaponContainer = this;
         activeLogic.EnableWeaponBehaviour();
@@ -55,6 +54,9 @@ public class WeaponLogicContainer : MonoBehaviour
 
     public void OnDisable()
     {
+        // deactivate
+        dispatcher.SetActiveStatusClass(weaponStats.ID, false);
+
         if (activeLogic == null)
             return;
 
@@ -62,18 +64,17 @@ public class WeaponLogicContainer : MonoBehaviour
     }
 
     /// <summary>
-    /// this method is called to reasing new logic corresponding to the current active logic in the weapon stats
+    /// this method is called to reassign new logic corresponding to the current active logic in the weapon stats
     /// </summary>
     public void CheckForLogicReasignment()
     {
-        var currentActive = dispatcher.
-        GetMostRecentFeatureValue<int>(isPrimary ? FeatureType.pactiveLogicIndex : FeatureType.sactiveLogicIndex);
+        var currentActive = dispatcher.GetMostRecentFeatureValue<int>(FeatureType.activeLogicIndex);
 
         if (lastActiveLogicId != currentActive)
         {
             activeLogic.DisableWeaponBehaviour();
 
-            // update current behaviour to match the valute of the corresponding feature    
+            // update current behaviour to match the value of the corresponding feature    
             activeLogic = logList[currentActive];
             lastActiveLogicId = currentActive;
             activeLogic.weaponContainer = this;
@@ -89,11 +90,11 @@ public class WeaponLogicContainer : MonoBehaviour
     // just draws the aim laser
     public void DrawAimLaser()
     {
-        lineRenderer.SetPosition(0, muzzle.transform.position); // origine
-        lineRenderer.SetPosition(1, muzzle.transform.position + muzzle.transform.forward * 100f); // direzione e lunghezza:w
-        lineRenderer.startWidth = 0.01f; // larghezza
-        lineRenderer.endWidth = 0.01f; // larghezza
-        lineRenderer.startColor = Color.red; // colore
-        lineRenderer.endColor = Color.red; // colore
+        lineRenderer.SetPosition(0, muzzle.transform.position); // origin
+        lineRenderer.SetPosition(1, muzzle.transform.position + muzzle.transform.forward * 100f); // direction and length
+        lineRenderer.startWidth = 0.01f; // width
+        lineRenderer.endWidth = 0.01f;   // width
+        lineRenderer.startColor = Color.red; // color
+        lineRenderer.endColor = Color.red;   // color
     }
 }

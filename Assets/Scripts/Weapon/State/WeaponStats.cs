@@ -56,5 +56,13 @@ public class WeaponStats : AbstractStatus
             return ItemManager.statClassToIdRegistry["SecondaryWeaponStats"];
         }
     }
+    public override void OnEnable()
+    {
+        base.OnEnable();
+
+        // se non è primary parte disattiva
+        if (!isPrimary)
+            mydispatcher.SetActiveStatusClass(ID, false);
+    }
 
 }

@@ -6,17 +6,24 @@ using UnityEngine;
 using Weapon.State;
 using static ItemManager;
 
+[DefaultExecutionOrder(-100)]
 /// <summary>
 /// This component is responsible for dispatching the effects to the correct classes, and serves as a
 /// bridge between the upgrades and all the gameobject components which could be useful to implement effects
-/// 
 /// this class shall manage overTime effects activation too
 /// </summary>
 public abstract class EffectsDispatcher : MonoBehaviour
 {
 
+    /// <summary>
+    /// list of all components (push to data components, e.g. statusclasses, not Unity's) in this gameobject (and its hierarchy)
+    /// </summary>
     [SerializeField] protected Dictionary<int, AbstractStatus> affectables = new Dictionary<int, AbstractStatus>();
-    [SerializeField] private ControlEventManager controlEventManager;
+
+    /// <summary>
+    /// disabled stat calsses are not used to compute stat values, they still recive modifiers
+    /// </summary>
+    Dictionary<int, bool> enabledStatClass = new Dictionary<int, bool>();
     [SerializeField] private BulletPoolStats bulletPoolPrimary;
     [SerializeField] private BulletPoolStats bulletPoolPoolSecondary;
 
@@ -36,7 +43,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
         if (bulletPoolPoolSecondary != null)
             this.affectables.Add(bulletPoolPoolSecondary.ID, bulletPoolPoolSecondary);
 
-        FindComponentsInChildren<AbstractStatus>(transform);
+        //   FindComponentsInChildren<AbstractStatus>(transform);
     }
 
 
@@ -67,7 +74,8 @@ public abstract class EffectsDispatcher : MonoBehaviour
     }
 
     /// <summary>
-    /// this method allows a dispatcher to attach a modifier to another dispatcher
+    /// send a modifier to this dispatcher resolving local parameters with yourDispatcher values 
+    // and external parameters (on which this method is called) with this dispatcher values
     /// </summary>
     /// <param name="it"></param>
     public virtual void AttachModifierFromOtherDispatcher(EffectsDispatcher yourDispatcher, Modifier it)
@@ -92,7 +100,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// <paramref name="calssID"/> the ID of the class to reference
     /// <paramref name="attributeID"/> the ID of the attribute to reference
     /// </summary>
-    public AbstractStatus[] resolveReferences(int[][] references)
+    private AbstractStatus[] resolveReferences(int[][] references)
     {
         AbstractStatus[] toret = new AbstractStatus[references.Length];
 
@@ -122,49 +130,63 @@ public abstract class EffectsDispatcher : MonoBehaviour
         return toret;
     }
 
-
     /// <summary>
-    /// search for all the components of type T in the hierarchy of the parent transform
+    /// used by status classes (alias for push to data components) to register themselves to the dispatcher
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="parent"></param>
-    private void FindComponentsInChildren<T>(Transform parent) where T : AbstractStatus
+    /// <param name="statusClass"></param>
+    /// <param name="isEnabled"></param>
+    public void AttachStatusClass(AbstractStatus statusClass, bool isEnabled)
     {
-        var components = parent.GetComponents<Component>();
-
-        foreach (var component in components)
+        if (affectables.ContainsKey(statusClass.ID))
         {
-            if (component is T upgradable)
+            if (statusClass != affectables[statusClass.ID])
             {
-                try
-                {
-                    Debug.Log("Found component added in affectables of type " + upgradable.GetType().Name + " in object: " + transform.gameObject.name + "in object" + parent.name + "with ID: " + upgradable.ID);
-                    affectables.Add(upgradable.ID, upgradable);
-                }
-                catch (ArgumentException e)
-                {
-                    if (upgradable.GetType().Name == "WeaponState")
-                    {
-                        Debug.LogError("This character has two Weapon of the same type  (primary or secondary), please check gameobject: " + transform.gameObject.name + "in object" + parent.name);
-                    }
-                    else
-                    {
-                        Debug.LogError(e.Message + " in gameobject: " + transform.gameObject.name + " in object "
-                        + parent.name);
-                    }
-                }
+                Debug.LogError("status with ID " + statusClass.ID + " already present in the dispatcher of object " +
+                 transform.name);
+                return;
+            }
+            else
+            {
+                return;
             }
         }
 
-        foreach (Transform child in parent)
+        affectables.Add(statusClass.ID, statusClass);
+        enabledStatClass.Add(statusClass.ID, isEnabled);
+    }
+
+    /// <summary>
+    /// used by status classes (alias for push to data components) to unregister themselves from the dispatcher
+    /// </summary>
+    /// <param name="status"></param>
+    public void DetachStatusClass(AbstractStatus status)
+    {
+        if (affectables.ContainsKey(status.ID))
         {
-            FindComponentsInChildren<T>(child);  // Chiamata ricorsiva per ogni figlio
+            affectables.Remove(status.ID);
+            enabledStatClass.Remove(status.ID);
+        }
+        else
+        {
+            Debug.LogError("status with ID " + status.ID + " not present in the dispatcher of object " +
+             transform.name);
         }
     }
 
     /// <summary>
-    /// returns a collection of each feature contribution by any stat type class in the game object hierarchy starting
-    /// from the position of the dispatcher
+    /// used by status classes (alias for push to data components) to set their status as enabled or disabled
+    /// to see what disabled means, see the description of the enabledStatClass dictionary
+    /// </summary>
+    /// <param name="ID"></param>
+    /// <param name="toSet"></param>
+    public void SetActiveStatusClass(int ID, bool toSet)
+    {
+        enabledStatClass[ID] = toSet;
+    }
+
+    /// <summary>
+    /// returns the list of all features values from all the components of this gameobject, 
+    // can be used to compute final value of a feature
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="f"></param>
@@ -172,6 +194,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     public T[] GetAllFeatureByType<T>(FeatureType f)
     {
         return affectables.Values
+            .Where(status => enabledStatClass.ContainsKey(status.ID) && enabledStatClass[status.ID])
             .SelectMany(status => status.GetFeatureValuesByType<T>(f))
             .ToArray();
     }
@@ -184,7 +207,10 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// <returns></returns>
     public T GetMostRecentFeatureValue<T>(FeatureType f)
     {
-        var toRet = affectables.Values.SelectMany(stats => stats.features.Values.Where(feat => feat.id == f)).ToList();
+        var toRet = affectables.Values
+            .Where(status => enabledStatClass.ContainsKey(status.ID) && enabledStatClass[status.ID])
+            .SelectMany(stats => stats.features.Values.Where(feat => feat.id == f))
+            .ToList();
         toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
         return (T)toRet.FirstOrDefault().currentValue;
     }

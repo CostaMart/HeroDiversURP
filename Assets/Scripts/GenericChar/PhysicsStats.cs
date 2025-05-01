@@ -1,13 +1,10 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PhysicsStats : AbstractStatus
 {
-
     private Rigidbody rb;
-
 
     protected override int ComputeID()
     {
@@ -25,13 +22,13 @@ public class PhysicsStats : AbstractStatus
 
     new void Update()
     {
-
         base.Update();
 
         // update the rigidbody mass
-        transform.localScale = new Vector3(GetFeatureValuesByType<float>(FeatureType.plengthScale).Sum(),
-        GetFeatureValuesByType<float>(FeatureType.pheightScale).Sum(),
-        GetFeatureValuesByType<float>(FeatureType.pheightScale).Sum());
+        transform.localScale = new Vector3(
+            GetFeatureValuesByType<float>(FeatureType.lengthScale).Sum(),
+            GetFeatureValuesByType<float>(FeatureType.heightScale).Sum(),
+            GetFeatureValuesByType<float>(FeatureType.heightScale).Sum());
 
         if (rb == null)
             return;
@@ -39,6 +36,13 @@ public class PhysicsStats : AbstractStatus
         rb.mass = this.GetFeatureValuesByType<float>(FeatureType.mass).Sum();
         rb.useGravity = this.GetFeatureValuesByType<bool>(FeatureType.affetedByGravity).Last();
         rb.linearDamping = this.GetFeatureValuesByType<float>(FeatureType.linearDamping).Sum();
-
     }
 }
+
+
+
+
+
+
+
+

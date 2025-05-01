@@ -28,8 +28,8 @@ public class InventoryManager : MonoBehaviour
 
             if (_currentWeaponIndex == 1)
             {
-                _weaponsPrimary.SetActive(true);
                 _weaponsSecondary.SetActive(false);
+                _weaponsPrimary.SetActive(true);
             }
             else if (_currentWeaponIndex == 2)
             {

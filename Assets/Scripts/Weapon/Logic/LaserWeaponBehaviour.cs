@@ -63,6 +63,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         if (!shooting) return;
         DrawLaser();
     }
+
     public override void LateUpdateWeaponBehaviour()
     {
         Shoot();
@@ -70,15 +71,15 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
     public override void UpdateWeaponBehaviour()
     {
-        //useless for laser
+        // useless for laser
     }
 
     private void DrawLaser()
     {
         Modifier toApplyOnHit = ItemManager.
-        bulletPool[weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.pbulletEffects)];
+        bulletPool[weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects)];
 
-        laserFireRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.pfireRate).Sum();
+        laserFireRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireRate).Sum();
         Vector3 origin = weaponContainer.muzzle.position;
         Vector3 direction = weaponContainer.muzzle.forward;
 
@@ -108,5 +109,4 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
             }
         }
     }
-
 }

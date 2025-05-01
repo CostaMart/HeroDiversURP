@@ -25,41 +25,37 @@ heatingPerSecond = 5.0 ID:0
 ##
 
 #PlayerPrimary-PrimaryWeaponStats
-pmagCount = 10 ID:1
-pmagSize = 10 ID:2
-pfireRate = 0.5 ID:3
-pfireStrength = 50.0 ID:4
-plaserLength = 100.0 ID:5
-pautomatic = true  ID:6
-pactiveLogicIndex = 0  ID:7
+magCount = 10 ID:1
+magSize = 10 ID:2
+fireRate = 0.5 ID:3
+fireStrength = 50.0 ID:4
+laserLength = 100.0 ID:5
+automatic = true  ID:6
+activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 2.0 ID:9
 destroyOnHit = true ID:10
-pwidthScale = 500.0 ID:11
-pheightScale = 500.0 ID:12
-plengthScale = 500.0 ID:13
-pbulletEffects = 0  ID:14
+widthScale = 500.0 ID:11
+heightScale = 500.0 ID:12
+lengthScale = 500.0 ID:13
+bulletEffects = 0  ID:14
 damage = 10.0 ID:15
 ##
 
-#PlayerSecondary-PrimaryWeaponStats
-smagCount = 10 ID:1
-smagSize = 10 ID:2
-sfireRate = 4.0 ID:3
-sfireStrength = 50.0 ID:4
-slaserLength = 100.0 ID:5
-sautomatic = true  ID:6
-sactiveLogicIndex = 1  ID:7
-##
-
-#Cube-CharStats
-maxHealth = 100.0 ID:9
-health = 100.0 ID:1
-receivedDamage = 0 ID:2
-##
-
-#Cube-PhysicsStats
-lengthScale = 10.0 ID:1
-heightScale = 10.0 ID:2
-widthScale = 10.0 ID:3
+#PlayerSecondary-SecondaryWeaponStats
+magCount = 10 ID:1
+magSize = 10 ID:2
+fireRate = 0.5 ID:3
+fireStrength = 50.0 ID:4
+laserLength = 100.0 ID:5
+automatic = true  ID:6
+activeLogicIndex = 0  ID:7
+mass = 2.0 ID:8
+explosionRadius = 2.0 ID:9
+destroyOnHit = true ID:10
+widthScale = 20.0 ID:11
+heightScale = 20.0 ID:12
+lengthScale = 20.0 ID:13
+bulletEffects = 1  ID:14
+damage = 10.0 ID:15
 ##

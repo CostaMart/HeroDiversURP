@@ -28,11 +28,9 @@ public class AmmoCounter : MonoBehaviour
     }
     void Update()
     {
-        int magCount = isPirmarySelected ? dispatcher.GetAllFeatureByType<int>(FeatureType.pmagCount).Sum()
-        : dispatcher.GetAllFeatureByType<int>(FeatureType.smagCount).Sum();
+        int magCount = dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
 
-        int magSize = isPirmarySelected ? dispatcher.GetAllFeatureByType<int>(FeatureType.pmagSize).Sum()
-        : dispatcher.GetAllFeatureByType<int>(FeatureType.pmagSize).Sum();
+        int magSize = dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
 
         int currentAmmoIndex = isPirmarySelected ? primary.currentAmmo : secondary.currentAmmo;
         int currentAmmo = magSize - currentAmmoIndex;
