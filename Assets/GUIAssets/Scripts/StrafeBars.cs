@@ -1,7 +1,9 @@
 using System.Linq;
 using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static UnityEngine.InputSystem.InputAction;
 
 public class StrafeBars : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class StrafeBars : MonoBehaviour
     [SerializeField] GameObject indicatorContainer;
     [SerializeField] Image burstIndicator;
     [SerializeField] TMPro.TMP_Text text;
+    [SerializeField] Transform restPosition;
+    [SerializeField] Transform fightModePosition;
     Color original;
     float cooldown;
     int maxStrafes;
@@ -29,19 +33,33 @@ public class StrafeBars : MonoBehaviour
             Instantiate(indicator, indicatorContainer.transform);
         }
 
+        GameObject.Find("Player").GetComponent<PlayerInput>().actions["Aim"].performed += ctx => MoveTo(fightModePosition);
+        GameObject.Find("Player").GetComponent<PlayerInput>().actions["Aim"].canceled += ctx => MoveTo(restPosition);
+
 
         original = img.color;
 
 
     }
 
+
+    void MoveTo(Transform target)
+    {
+        transform.parent.GetComponent<RectTransform>().SetParent(target);
+        transform.parent.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        transform.parent.GetComponent<RectTransform>().localRotation = Quaternion.identity;
+        transform.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        transform.GetComponent<RectTransform>().localRotation = Quaternion.identity;
+    }
+
     // Update is called once per frame
     void Update()
     {
+
         if (movementLogic.temperature > movementLogic.overHeatLimit / 2)
         {
             img.color = Color.red;
-            text.text = "Overtheat risk HIGH: engines disabled";
+            text.text = "OVERHEAT";
             text.color = Color.red;
             burstIndicator.color = Color.red;
         }
@@ -49,7 +67,7 @@ public class StrafeBars : MonoBehaviour
         {
             img.color = original;
             burstIndicator.color = original;
-            text.text = "engines enabled";
+            text.text = "";
             text.color = Color.cyan;
         }
 

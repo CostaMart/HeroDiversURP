@@ -74,6 +74,9 @@ public class MovementLogic : MonoBehaviour
         col = GetComponent<Collider>();
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+
+        StopVFX();
+        smoke.Stop();
     }
 
     private void FixedUpdate()
@@ -139,11 +142,6 @@ public class MovementLogic : MonoBehaviour
                 moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum();
                 speedMultiplier = 10f;
                 isGrounded = false;
-                StartVFX();
-            }
-            else
-            {
-                StopVFX();
             }
 
             Vector3 targetVelocity;
@@ -164,16 +162,13 @@ public class MovementLogic : MonoBehaviour
 
     public void StartVFX()
     {
-        if (!thrusterEffect1.isPlaying)
-        {
-            thrusterEffect1.Play();
-            thrusterEffect2.Play();
-            thrusterEffect3.Play();
-            thrusterEffect4.Play();
-            explosionPrefab.SetActive(true);
-            effect.Animate(0.2f);
-            explosion.Play();
-        }
+        thrusterEffect1.Play();
+        thrusterEffect2.Play();
+        thrusterEffect3.Play();
+        thrusterEffect4.Play();
+        explosionPrefab.SetActive(true);
+        effect.Animate(0.2f);
+        explosion.Play();
     }
 
     public void StopVFX()
@@ -217,6 +212,7 @@ public class MovementLogic : MonoBehaviour
                 burstDurationTimer = 0f;
 
                 // Avvia smoke subito dopo la fine del burst
+                StopVFX();
                 smoke.Play();
                 smokeTimer = 0f;
                 smokeActive = true;
@@ -239,6 +235,12 @@ public class MovementLogic : MonoBehaviour
 
     public void TryStrafe()
     {
+        if (isBursting)
+        {
+            Debug.Log("Non puoi strafeare, uno strafe è già in corso!");
+            return;
+        }
+
         if (temperature > overHeatLimit / 2)
         {
             Debug.Log("Non puoi strafeare, armatura surriscaldata!");
@@ -248,6 +250,8 @@ public class MovementLogic : MonoBehaviour
         if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
             isBursting = true;
+            smoke.Stop();
+            StartVFX(); // un po' di scenografia
             burstDurationTimer = 0f;
             usedStrafes++;
         }

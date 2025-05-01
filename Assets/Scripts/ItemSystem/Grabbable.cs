@@ -15,9 +15,10 @@ public class Grabbable : MonoBehaviour
 
     [SerializeField] private ItemIconsList itemIconsList;
     private InfoPanel panel;
-
+    private RectTransform rectTransform;
     public void Start()
     {
+
         text.text = item.name;
         if (selling)
             text.text += " " + item.inGamePrice.ToString() + "$";
@@ -43,6 +44,13 @@ public class Grabbable : MonoBehaviour
         active = false;
 
         panel = GameObject.Find("GUI").GetComponent<InfoPanel>();
+        rectTransform = text.GetComponent<RectTransform>();
+    }
+
+    void Update()
+    {
+        rectTransform.LookAt(Camera.main.transform);
+        rectTransform.Rotate(0, 180f, 0);
     }
 
     void OnTriggerEnter(Collider other)
