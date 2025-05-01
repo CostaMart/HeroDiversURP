@@ -32,11 +32,6 @@ public class Dropper : MonoBehaviour
     {
 
 
-        if (!playerInput)
-        {
-            Debug.LogError("PlayerInput not found");
-        }
-
         playerInput.actions["Interact"].performed += Open;
 
         material = GetComponent<Renderer>().material;

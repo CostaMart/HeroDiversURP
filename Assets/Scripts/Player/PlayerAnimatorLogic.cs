@@ -4,31 +4,10 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-[DefaultExecutionOrder(100)]
 public class PlayerAnimatorLogic : MonoBehaviour
 {
-    public RigBuilder rb;
+    RigBuilder rigBuilder;
     [SerializeField] private EquipmentEventManager equipmentEventManager;
-
-    // riferimetno alla posizione desiderata durante la mira
-    [Header("IK Settings")]
-    [Tooltip("in order to activate IK functinoalities, it is required to apply a constraint ad pass it to this cript. This is the constraint that will move the character upper body part")]
-    public MultiAimConstraint aimConstraint;
-
-
-    [Header("Lef Hand Settings")]
-    [Tooltip("this constraint is required to move the character left hand in order to grab the weapon")]
-    public TwoBoneIKConstraint twoBoneIKConstraintL;
-    [Tooltip("reference to the left hand Ik target transform")]
-    public Transform IKLeftHand;
-
-
-    [Header("Right Hand Settings")]
-    [Tooltip("this constraint is required to move the character right hand in order to grab the weapon")]
-    public TwoBoneIKConstraint twoBoneIKConstraintR;
-    [Tooltip("reference to the right hand Ik target transform")]
-    public Transform IKRightHand;
-
 
     [Header("Two handed weapon settings")]
     public GameObject weapon;
@@ -36,21 +15,10 @@ public class PlayerAnimatorLogic : MonoBehaviour
     public Transform relaxedWeaponStand;
     [Tooltip("represents the postion of the weapon when the character is aiming")]
     public Transform aimingWeaponStand;
-    [Tooltip("constraing applied to weapon to rotate it thowrds the aim direction")]
-    public MultiRotationConstraint weaponDirectionConstraint;
-
-    [Tooltip("reference to the transform representing where the left hand should be placed on the weapon when the character is not aiming")]
-    public Transform wpnBackHandle;
-
-    [Tooltip("reference to the transform representing where the left hand should be placed on the weapon when the character is aiming")]
-    public Transform wpnFrontHandle;
-
 
     [Header("Pistol Settings")]
     [SerializeField] private GameObject pistolObject;
     [Tooltip("reference to the transform representing where the left hand should be placed on the pistol when the character is aiming")]
-    [SerializeField] private Transform PistleHandle;
-    [SerializeField] private Transform PistolRightHandle;
     [SerializeField] private Transform PistolRelaxedPosition;
 
     [SerializeField] private Transform PistolAimingPosition;
@@ -62,12 +30,15 @@ public class PlayerAnimatorLogic : MonoBehaviour
     Animator animator;
 
     private bool aiming = false;
-    private bool lastWas = false;
+    private enum lastState
+    {
+        aiming, notAiming
+    };
+
+    private lastState lastWas = lastState.notAiming;
 
     // actions
     public PlayerInput playerInput;
-
-    private InputAction jump;
 
     private InputAction aim;
     private InputAction move;
@@ -76,9 +47,13 @@ public class PlayerAnimatorLogic : MonoBehaviour
     public bool reloading = false;
     public bool toggleAim = false;
 
+    public Rig rifleAimRig;
+    public Rig relaxedRig;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private bool pistol = false;
-    private bool needsRigRebuild = false;
+    private bool rebuildRequired;
+
     void Start()
     {
         if (headRotationConstraint == null)
@@ -89,6 +64,8 @@ public class PlayerAnimatorLogic : MonoBehaviour
         aim = playerInput.actions["Aim"];
         reload = playerInput.actions["Reload"];
         throwAction = playerInput.actions["Throw"];
+
+        rigBuilder = playerInput.gameObject.GetComponent<RigBuilder>();
 
         reload.performed += ReloadAnimate;
         throwAction.performed += ctx => { Debug.Log("throwing"); animator.SetTrigger("throw"); };
@@ -150,102 +127,64 @@ public class PlayerAnimatorLogic : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    public void LateUpdate()
     {
+
         if (aiming)
         {
-            if (!lastWas)
+
+
+            // move each kind of weapon in aiming position
+            weapon.transform.SetParent(aimingWeaponStand);
+            weapon.transform.localPosition = Vector3.zero;
+            weapon.transform.localRotation = Quaternion.identity;
+
+            pistolObject.transform.SetParent(PistolAimingPosition);
+            pistolObject.transform.localPosition = Vector3.zero;
+            pistolObject.transform.localRotation = Quaternion.identity;
+
+
+            rifleAimRig.weight = 1;
+            relaxedRig.weight = 0;
+
+            if (lastWas == lastState.notAiming)
             {
-                if (headRotationConstraint != null)
-                    headRotationConstraint.weight = 1;
-
-                lastWas = true;
-
-                if (!pistol)
-                {
-                    weapon.transform.SetParent(aimingWeaponStand);
-                    weapon.transform.localPosition = Vector3.zero;
-                    weapon.transform.localRotation = Quaternion.identity;
-                }
-                else
-                {
-                    pistolObject.transform.SetParent(PistolAimingPosition);
-                    pistolObject.transform.localPosition = Vector3.zero;
-                    pistolObject.transform.localRotation = Quaternion.identity;
-                }
-
-                var newSourceObject = aimConstraint.data.sourceObjects;
-                newSourceObject.SetWeight(0, 0);
-                newSourceObject.SetWeight(1, 1);
-
-                var newConstraintData = aimConstraint.data;
-                newConstraintData.offset = new Vector3(-27.3f, 0, 0);
-                aimConstraint.data = newConstraintData;
-                aimConstraint.data.sourceObjects = newSourceObject;
-
-                twoBoneIKConstraintL.weight = 1;
-                weaponDirectionConstraint.weight = 1;
-
-                needsRigRebuild = true;
+                rebuildRequired = true;
+                lastWas = lastState.aiming;
             }
 
-            if (pistol)
-            {
-                twoBoneIKConstraintR.weight = 1;
-                IKRightHand.position = PistolRightHandle.position;
-                IKRightHand.rotation = PistolRightHandle.rotation;
-                IKLeftHand.position = PistleHandle.position;
-                IKLeftHand.rotation = PistleHandle.rotation;
-            }
-            else
-            {
-                twoBoneIKConstraintR.weight = 0;
-                IKLeftHand.position = wpnFrontHandle.position;
-                IKLeftHand.rotation = wpnFrontHandle.rotation;
-            }
+
         }
 
-        if (!aiming && lastWas)
+        if (!aiming)
         {
-            if (headRotationConstraint != null)
-                headRotationConstraint.weight = 0;
 
-            lastWas = false;
+            // move each kind of weapon in rest position
+            weapon.transform.SetParent(relaxedWeaponStand);
+            weapon.transform.localPosition = Vector3.zero;
+            weapon.transform.localRotation = Quaternion.identity;
 
-            if (!pistol)
+            pistolObject.transform.SetParent(PistolRelaxedPosition);
+            pistolObject.transform.localPosition = Vector3.zero;
+            pistolObject.transform.localRotation = Quaternion.identity;
+
+            rifleAimRig.weight = 0;
+            relaxedRig.weight = 1;
+
+            if (lastWas == lastState.aiming)
             {
-                weapon.transform.SetParent(relaxedWeaponStand);
-                weapon.transform.localPosition = Vector3.zero;
-                weapon.transform.localRotation = Quaternion.identity;
-            }
-            else
-            {
-                pistolObject.transform.SetParent(PistolRelaxedPosition);
-                pistolObject.transform.localPosition = Vector3.zero;
-                pistolObject.transform.localRotation = Quaternion.identity;
+                rebuildRequired = true;
+                lastWas = lastState.notAiming;
             }
 
-            var newSourceObject = aimConstraint.data.sourceObjects;
-            newSourceObject.SetWeight(0, 1);
-            newSourceObject.SetWeight(1, 0);
-            aimConstraint.data.sourceObjects = newSourceObject;
-
-            var newConstraintData = aimConstraint.data;
-            newConstraintData.offset = Vector3.zero;
-            aimConstraint.data = newConstraintData;
-
-            twoBoneIKConstraintL.weight = 0;
-            twoBoneIKConstraintR.weight = 0;
-            weaponDirectionConstraint.weight = 0;
-
-            needsRigRebuild = true;
         }
 
-        if (needsRigRebuild)
+        if (rebuildRequired)
         {
             Debug.Log("Rebuilding rig");
-            rb.Build();
-            needsRigRebuild = false;
+            rigBuilder.Build();
+            rebuildRequired = false;
         }
+
     }
 }

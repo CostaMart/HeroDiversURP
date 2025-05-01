@@ -89,6 +89,8 @@ public class MovementLogic : MonoBehaviour
         HandleBurstTimer();
     }
 
+    [SerializeField] private Transform aimTarget; // aggiunta in alto
+
     private void HandleMovement()
     {
         Vector3 direction = camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
@@ -97,7 +99,6 @@ public class MovementLogic : MonoBehaviour
 
         bool allowMovement = true;
 
-        // Controllo inclinazione terreno
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance))
         {
             float angle = Vector3.Angle(hit.normal, Vector3.up);
@@ -109,24 +110,26 @@ public class MovementLogic : MonoBehaviour
 
         Quaternion targetRotation = transform.rotation;
 
-        // Rotazione verso la direzione
-        if (aiming)
+        if (aiming && aimTarget != null)
         {
-            Vector3 aimForward = camera.transform.forward;
-            aimForward.y = 0;
-            if (aimForward != Vector3.zero)
-                targetRotation = Quaternion.LookRotation(aimForward);
+            Vector3 targetDirection = aimTarget.position - transform.position;
+            targetDirection.y = 0f; // solo rotazione orizzontale
+            if (targetDirection != Vector3.zero)
+            {
+                targetRotation = Quaternion.LookRotation(targetDirection);
+                rb.MoveRotation(targetRotation); // rotazione immediata
+            }
         }
         else if (direction != Vector3.zero)
         {
+            float rotSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.rotationSpeed)
+                .DefaultIfEmpty(defaultRotationSpeed).Sum();
+
             targetRotation = Quaternion.LookRotation(direction);
+            rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime));
         }
 
-        float rotSpeed = dispatcher.GetAllFeatureByType<float>(
-            aiming ? FeatureType.aimRotationSpeed : FeatureType.rotationSpeed
-        ).DefaultIfEmpty(defaultRotationSpeed).Sum();
-
-        if (allowMovement) // 🔥 NON controlliamo più isGrounded
+        if (allowMovement)
         {
             float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed).DefaultIfEmpty(defaultSpeed).Sum();
             float speedMultiplier = 1f;
@@ -143,15 +146,12 @@ public class MovementLogic : MonoBehaviour
                 StopVFX();
             }
 
-            // se non specificato multiplicatore nelle faturre ➡ defaultBurstSpeedMultiplier 
-
             Vector3 targetVelocity;
 
             if (direction != Vector3.zero)
             {
                 targetVelocity = direction * moveSpeed;
                 targetVelocity.y = rb.linearVelocity.y;
-
                 rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, speedMultiplier * acceleration * Time.fixedDeltaTime);
             }
             else
@@ -160,9 +160,6 @@ public class MovementLogic : MonoBehaviour
                 rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, stopVelocity, deceleration * Time.fixedDeltaTime);
             }
         }
-
-        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime));
-
     }
 
     public void StartVFX()
