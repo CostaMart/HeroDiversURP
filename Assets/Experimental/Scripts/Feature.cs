@@ -5,15 +5,10 @@ namespace Experimental
         public enum FeatureType
         {
             SPEED,
-            AGILITY,
-            INTELLIGENCE,
-            ENDURANCE,
-            PERCEPTION,
-            HEALTH,
-            ENERGY,
-            ARMOR,
-            DAMAGE
-
+            HEALTH, 
+            X_COORD,
+            Y_COORD,
+            Z_COORD,
         }
 
         float m_baseValue;

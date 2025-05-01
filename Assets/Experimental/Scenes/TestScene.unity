@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 268291287}
   - component: {fileID: 268291286}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: EntityManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}

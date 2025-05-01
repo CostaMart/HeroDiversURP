@@ -92,40 +92,51 @@ using UnityEngine;
 
 public class Chase : Component
 {
-    public float speed = 1f;            // Velocità di inseguimento
-    public float viewRange = 5f;       // Raggio di visione
+    // public float speed = 1f;            // Velocità di inseguimento
+    public float viewRange = 30f;       // Raggio di visione
     public float viewAngle = 60f;       // Angolo di visione
     public float detectionRange = 2f;   // Raggio di rilevamento
     public float pathUpdateRate = 0.5f; // Frequenza di aggiornamento del percorso
+    public float waitAtLastKnownPosition = 1.0f; // Tempo di attesa all'ultima posizione nota
+    public float waitAtLastKnownPositionTimer = 0.0f; // Timer per l'attesa all'ultima posizione nota
     public LayerMask obstacleLayer;     // Layer degli ostacoli
     
-    private float lostTargetTimer;
-    private float pathUpdateTimer;
-    private Vector3 lastKnownPosition;
+    float lostTargetTimer;
+    float pathUpdateTimer;
+    Vector3 lastKnownPosition;
 
-    private AgentController agentController;
+    AgentController agentController;
 
-    private Transform targetTransform;
+    Transform targetTransform;
 
     // TODO: Cambiare il target in modo che possa essere un qualsiasi oggetto
     public Chase(AgentController agent, string target = "Player")
     {
         agentController = agent;
         targetTransform = EntityManager.Instance.GetEntity(target).transform;
-
-        agentController.speed = speed;
         
         lostTargetTimer = 0;
         pathUpdateTimer = 0;
 
-        lastKnownPosition = agentController.position;
+        Vector3 basePos = lastKnownPosition = agentController.position;
 
         obstacleLayer = LayerMask.GetMask("Default");
+
+        // Add features
+        AddFeature(new Experimental.Feature(0.0f, Experimental.Feature.FeatureType.SPEED));
+        AddFeature(new Experimental.Feature(basePos.x, Experimental.Feature.FeatureType.X_COORD));
+        AddFeature(new Experimental.Feature(basePos.y, Experimental.Feature.FeatureType.Y_COORD));
+        AddFeature(new Experimental.Feature(basePos.z, Experimental.Feature.FeatureType.Z_COORD));
     }
 
     public override void Update()
     {
+        Chasing();
         base.Update();
+    }
+
+    private void Chasing()
+    {
         pathUpdateTimer += Time.deltaTime;
         Vector3 targetPosition = targetTransform.position;
 
@@ -135,14 +146,21 @@ public class Chase : Component
         {
             if (IsTargetVisible(targetPosition))
             {
+                // Setta la velocità di inseguimento
+                AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, -9.0f));
+
                 // Resetta il timer se vediamo ancora il target
                 lostTargetTimer = 0;
+                waitAtLastKnownPositionTimer = 0;
                 lastKnownPosition = targetPosition;
                 
                 // Aggiorna il percorso con una certa frequenza
                 if (pathUpdateTimer >= pathUpdateRate)
                 {
-                    agentController.MoveTo(lastKnownPosition);
+                    // agentController.MoveTo(lastKnownPosition);
+                    GetFeature(Experimental.Feature.FeatureType.X_COORD).SetCurrentValue(lastKnownPosition.x);
+                    GetFeature(Experimental.Feature.FeatureType.Y_COORD).SetCurrentValue(lastKnownPosition.y);
+                    GetFeature(Experimental.Feature.FeatureType.Z_COORD).SetCurrentValue(lastKnownPosition.z);
                     pathUpdateTimer = 0;
                 }
             }
@@ -150,11 +168,23 @@ public class Chase : Component
             {
                 // Incrementa il timer di perdita target
                 lostTargetTimer += Time.deltaTime;
+
+                if (agentController.HasReachedDestination() || agentController.IsStuck())
+                {
+                    waitAtLastKnownPositionTimer += Time.deltaTime;
+                }
                 
                 // Se abbiamo appena perso il target, andiamo all'ultima posizione nota
-                if (lostTargetTimer < 0.5f)
+                // agentController.MoveTo(lastKnownPosition);
+                GetFeature(Experimental.Feature.FeatureType.X_COORD).SetCurrentValue(lastKnownPosition.x);
+                GetFeature(Experimental.Feature.FeatureType.Y_COORD).SetCurrentValue(lastKnownPosition.y);
+                GetFeature(Experimental.Feature.FeatureType.Z_COORD).SetCurrentValue(lastKnownPosition.z);
+
+                // Dopo un certo tempo senza vedere il target disattiviamo il comportamento
+                // settando la velocità a 0
+                if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
                 {
-                    agentController.MoveTo(lastKnownPosition);
+                    AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0f));
                 }
             }
         }

@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 public class Component : ObjectWithFeatures
 {
-    // Properties
-    public string Name { get; set; }
-    
-    // Fields
     List<Experimental.Modifier> m_mods;
     
     // Constructor
@@ -15,9 +11,9 @@ public class Component : ObjectWithFeatures
         m_mods = new List<Experimental.Modifier>();
     }
 
-    public Component(string name) : this()
+    public Component(string tag) : this()
     {
-        Name = name;
+        m_tag = tag;
     }
 
     public virtual void Update()
@@ -27,7 +23,7 @@ public class Component : ObjectWithFeatures
         {
             foreach (var modifier in m_mods)
             {
-                if (feature.GetFeatureType() == modifier.m_type)
+                if (feature.GetFeatureType() == modifier.GetFeatureType())
                 {
                     feature.SetCurrentValue(modifier.Apply(feature.GetBaseValue()));
                 }

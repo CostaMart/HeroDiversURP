@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: maxSpawnCount
-      value: 20
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: spawnContainer
@@ -46,7 +46,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: areaSettings.distribution
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: areaSettings.spawnAsBatch

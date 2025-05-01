@@ -6,7 +6,7 @@ using Utility.Positioning;
 
 public class Patrol : Component
 {
-    public float speed = 10f; // Speed of the patrol
+    // public float speed = 10f; // Speed of the patrol
     public float waitTime = 2f; // Time to wait at each waypoint
     private bool isWaiting = false;
     private float waitTimer = 0f;
@@ -14,11 +14,13 @@ public class Patrol : Component
     public int patrolCount = 5; // Number of patrol points to generate
     public float minDistance = 2f; // Minimum distance between patrol points
 
+    AgentController agentController; // Reference to the agent controller
 
-    private AgentController agentController;
 
-    private List<Vector3> waypoints = new(); // List of patrol points
-    private int currentPatrolIndex = 0; // Current index in the patrol points list
+    public readonly List<RandomPointGenerator.PointResult> patrolPoints = new(); // THIS LIST IS ONLY FOR DEBUGGING
+
+    List<Vector3> waypoints = new(); // List of patrol points
+    int currentPatrolIndex = 0; // Current index in the patrol points list
 
     public Patrol(AgentController agentController)
     {
@@ -40,13 +42,23 @@ public class Patrol : Component
             minDistance // Minimum distance between points
         );
 
+        patrolPoints = points; // Store the generated points for debugging
+        
         waypoints = points.Where(pointResult => pointResult.IsValid).Select(pointResult => pointResult.Position).ToList();
+
+        Vector3 basePos = agentController.position;
+        
+        // Add features
+        AddFeature(new Experimental.Feature(10.0f, Experimental.Feature.FeatureType.SPEED));
+        AddFeature(new Experimental.Feature(basePos.x, Experimental.Feature.FeatureType.X_COORD));
+        AddFeature(new Experimental.Feature(basePos.y, Experimental.Feature.FeatureType.Y_COORD));
+        AddFeature(new Experimental.Feature(basePos.z, Experimental.Feature.FeatureType.Z_COORD));
     }
 
     public override void Update()
     {
-        base.Update();
         Patrolling();
+        base.Update();
     }
 
     void Patrolling()
@@ -57,7 +69,11 @@ public class Patrol : Component
             if (waitTimer >= waitTime)
             {
                 isWaiting = false;
-                agentController.MoveTo(GetNextWaypoint());
+                Vector3 nextWp = GetNextWaypoint();
+                GetFeature(Experimental.Feature.FeatureType.X_COORD).SetCurrentValue(nextWp.x);
+                GetFeature(Experimental.Feature.FeatureType.Y_COORD).SetCurrentValue(nextWp.y);
+                GetFeature(Experimental.Feature.FeatureType.Z_COORD).SetCurrentValue(nextWp.z);
+                // agentController.MoveTo(GetNextWaypoint());
             }
         }
         else if (agentController.HasReachedDestination())
