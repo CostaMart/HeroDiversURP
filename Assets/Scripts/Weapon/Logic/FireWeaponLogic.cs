@@ -17,6 +17,9 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public float timer = 0f;
     public int magCount = 0;
     Modifier ammoConsumption;
+    private Transform muzzleFlash;
+    private ParticleSystem muzzleFlashPS;
+
 
     public override void DisableWeaponBehaviour()
     {
@@ -27,6 +30,9 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     public override void EnableWeaponBehaviour()
     {
+        muzzleFlash = GameObject.Find("muzzleflash").transform;
+        muzzleFlashPS = muzzleFlash.GetComponent<ParticleSystem>();
+
         // get bullets in the pool 
         bullets = new List<GameObject>();
         bulletRigids = new List<Rigidbody>();
@@ -110,6 +116,14 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
         weaponContainer.currentAmmo++;
 
+        // vfx call
+        MuzzleFlash();
+        // get recoil values
+        var vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
+        var horizontal = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthLateral).Sum();
+        weaponContainer.cameraController.ApplyRecoil(vertical, horizontal);
+
+
         // Se non è automatico, disattiviamo il flag di shooting
         if (!weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic))
             shooting = false;
@@ -157,6 +171,16 @@ public class FireWeaponLogic : AbstractWeaponLogic
         b.transform.localScale = newScale;
     }
 
+    public void MuzzleFlash()
+    {
+        muzzleFlash.position = weaponContainer.muzzle.position;
+        muzzleFlash.rotation = weaponContainer.muzzle.rotation;
+        muzzleFlashPS.Play();
+    }
+    public void MuzzleFlashStop()
+    {
+        muzzleFlashPS.Stop();
+    }
     public override void LateUpdateWeaponBehaviour()
     {
     }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    recoilStrengthVertical,
+    recoilStrengthLateral,
     coolingPerSecond,
     heatingRate,
     heatingPerSecond,

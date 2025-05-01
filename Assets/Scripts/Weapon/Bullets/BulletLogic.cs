@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Weapon.State;
@@ -6,8 +7,8 @@ using Weapon.State;
 /// <summary>
 /// this class represents a bullet logic. A bullet gets enabled when it's fired from the weapon.
 /// While inactive, it is moved in the position of the bullet pool.
-/// The bullet pool is a pool used to store disabled bullets, in order to avoid continously
-//  spawning and destroying of bullets.
+/// The bullet pool is a pool used to store disabled bullets, in order to avoid continuously
+/// spawning and destroying of bullets.
 /// </summary>
 public class BulletLogic : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class BulletLogic : MonoBehaviour
     public BulletPoolStats bulletPoolState;
     public bool toReset = true;
 
+    private Coroutine autoResetCoroutine;
 
     protected void Awake()
     {
@@ -27,28 +29,38 @@ public class BulletLogic : MonoBehaviour
         initialPos = transform.position;
     }
 
+    private void OnEnable()
+    {
+        autoResetCoroutine = StartCoroutine(AutoResetAfterTime(5f));
+    }
 
-    // if someone is hit dispatch the effects of the bullets in this itempool
+    private void OnDisable()
+    {
+        if (autoResetCoroutine != null)
+        {
+            StopCoroutine(autoResetCoroutine);
+        }
+    }
+
     public void OnCollisionEnter(Collision collision)
     {
-
+        if (autoResetCoroutine != null)
+        {
+            StopCoroutine(autoResetCoroutine);
+        }
 
         try
         {
-            Collider[] colliders = Physics.OverlapSphere(collision.transform.position,
-            bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum());
-            if (colliders.Length != 0)
+            Collider[] colliders = Physics.OverlapSphere(
+                collision.transform.position,
+                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
+            );
+
+            foreach (Collider col in colliders)
             {
-                foreach (Collider col in colliders)
+                if (col.TryGetComponent<EffectsDispatcher>(out var d))
                 {
-                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
-                    {
-                        d.AttachModifierFromOtherDispatcher(dispatcher, toDispatch);
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    d.AttachModifierFromOtherDispatcher(dispatcher, toDispatch);
                 }
             }
         }
@@ -61,16 +73,21 @@ public class BulletLogic : MonoBehaviour
             ResetBullet();
     }
 
-
     /// <summary>
-    /// restore this bullet position after hit
+    /// restore this bullet position after hit or timeout
     /// </summary>
     void ResetBullet()
     {
-        rb.linearVelocity = Vector3.zero; // Azzeriamo la velocità lineare
-        rb.angularVelocity = Vector3.zero; // Azzeriamo la velocità angolare
-        transform.position = initialPos; // Riportiamo il proiettile alla posizione iniziale
-        this.gameObject.SetActive(false); // Disattiviamo il proiettile
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        transform.position = initialPos;
+        gameObject.SetActive(false);
     }
 
+    private IEnumerator AutoResetAfterTime(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        if (toReset)
+            ResetBullet();
+    }
 }

@@ -6,6 +6,7 @@ using Weapon.State;
 // manages weapon behaviours and provides them with access to most of necessary components
 public class WeaponLogicContainer : MonoBehaviour
 {
+    [SerializeField] public MouseRotateCamera cameraController;
     public bool isPrimary;
     public EffectsDispatcher dispatcher;
     public WeaponStats weaponStats;
@@ -97,4 +98,5 @@ public class WeaponLogicContainer : MonoBehaviour
         lineRenderer.startColor = Color.red; // color
         lineRenderer.endColor = Color.red;   // color
     }
+
 }

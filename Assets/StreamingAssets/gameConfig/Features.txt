@@ -26,8 +26,8 @@ heatingPerSecond = 5.0 ID:0
 
 #PlayerPrimary-PrimaryWeaponStats
 magCount = 10 ID:1
-magSize = 10 ID:2
-fireRate = 0.5 ID:3
+magSize = 1000 ID:2
+fireRate = 100.0 ID:3
 fireStrength = 50.0 ID:4
 laserLength = 100.0 ID:5
 automatic = true  ID:6
@@ -35,11 +35,13 @@ activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 2.0 ID:9
 destroyOnHit = true ID:10
-widthScale = 500.0 ID:11
-heightScale = 500.0 ID:12
-lengthScale = 500.0 ID:13
+widthScale = 20.0 ID:11
+heightScale = 20.0 ID:12
+lengthScale = 20.0 ID:13
 bulletEffects = 0  ID:14
 damage = 10.0 ID:15
+recoilStrengthVertical = 0.02 ID:16
+recoilStrengthLateral = 0.0 ID:17
 ##
 
 #PlayerSecondary-SecondaryWeaponStats
@@ -58,4 +60,6 @@ heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
 bulletEffects = 1  ID:14
 damage = 10.0 ID:15
+recoilStrengthVertical = 0.009 ID:16
+recoilStrengthLateral = 0.009 ID:17
 ##
