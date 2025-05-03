@@ -21,6 +21,7 @@ public class WeaponLogicContainer : MonoBehaviour
 
     // reference to the bullet pool gameobject
     public GameObject pool;
+    public Queue<(GameObject, Rigidbody, BulletLogic)> bullets = new();
 
     // anchor for the bullets
     public Transform muzzle;
@@ -40,6 +41,20 @@ public class WeaponLogicContainer : MonoBehaviour
     {
         DrawAimLaser();
         activeLogic.LateUpdateWeaponBehaviour();
+    }
+
+    void Start()
+    {
+
+        while (pool.transform.childCount < 1000)
+        {
+            var bullet = Instantiate(weaponStats.bulletPrefab, pool.transform);
+            var bulletLogic = bullet.GetComponent<BulletLogic>();
+            bulletLogic.gameObject.SetActive(false);
+            bullets.Enqueue((bullet, bullet.GetComponent<Rigidbody>(), bulletLogic));
+        }
+
+        // da qui in poi è responsabilità delle singole logice delle amri gestire la pool
     }
 
     void OnEnable()

@@ -11,7 +11,6 @@ using static UnityEngine.InputSystem.InputAction;
 public class FireWeaponLogic : AbstractWeaponLogic
 {
     public bool shooting = false;
-    List<(GameObject, Rigidbody, BulletLogic)> bullets = new();
     List<Rigidbody> bulletRigids;
     public GameObject bulletPrefab;
     public bool animatorSet = false;
@@ -123,16 +122,17 @@ public class FireWeaponLogic : AbstractWeaponLogic
         // Sparo
         timer = Time.time;
 
-        GameObject bulletToShoot = bullets[weaponContainer.currentAmmo].Item1;
+        var bulletTrio = weaponContainer.bullets.Dequeue();
+        GameObject bulletToShoot = bulletTrio.Item1;
 
         bulletToShoot.SetActive(true);
         bulletToShoot.transform.position = weaponContainer.muzzle.position;
         bulletToShoot.transform.rotation = weaponContainer.muzzle.rotation;
 
         // setup bullet properties before shooting
-        BulletSetUp(bulletToShoot, bullets[weaponContainer.currentAmmo].Item3);
+        BulletSetUp(bulletToShoot, bulletTrio.Item2, bulletTrio.Item3);
 
-        bullets[weaponContainer.currentAmmo].Item2.linearVelocity = weaponContainer.muzzle.forward * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
+        bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
 
         weaponContainer.currentAmmo++;
 
@@ -180,22 +180,23 @@ public class FireWeaponLogic : AbstractWeaponLogic
         var currentMagCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
 
         // Se il pool di proiettili è più piccolo del numero totale di proiettili necessari
-        while (bullets.Count < singleMagSize * currentMagCount)
+        while (weaponContainer.bullets.Count < singleMagSize * currentMagCount)
         {
             var newBull = Instantiate(bulletPrefab, weaponContainer.pool.transform);
             newBull.transform.position = weaponContainer.pool.transform.position;
             newBull.SetActive(false);
-            bullets.Add((newBull, newBull.GetComponent<Rigidbody>(), newBull.GetComponent<BulletLogic>()));
+            weaponContainer.bullets.Enqueue((newBull, newBull.GetComponent<Rigidbody>(), newBull.GetComponent<BulletLogic>()));
         }
     }
 
-    public void BulletSetUp(GameObject b, BulletLogic bulletLogic)
+    public void BulletSetUp(GameObject b, Rigidbody rb, BulletLogic bulletLogic)
     {
         var component = bulletLogic;
         var key = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects);
 
         component.toDispatch = ItemManager.bulletPool[key];
         component.dispatcher = weaponContainer.dispatcher;
+        component.bulletLifeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletLifeTime).Sum();
 
         Vector3 newScale = new Vector3(
             weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.widthScale).Sum(),
@@ -203,6 +204,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
             weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.lengthScale).Sum());
 
         b.transform.localScale = newScale;
+
+
+        bulletLogic.ThisTrio = (b, rb, bulletLogic);
+        bulletLogic.originQueue = weaponContainer.bullets;
     }
 
     public void MuzzleFlash()

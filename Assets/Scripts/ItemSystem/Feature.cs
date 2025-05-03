@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum FeatureType
 {
+    bulletLifeTime,
     recoilStrengthVertical,
     recoilStrengthLateral,
     coolingPerSecond,
