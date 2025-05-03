@@ -250,6 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122d16a3f84d1e207a22b0d005b9d06e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraController: {fileID: 0}
+  weaponEffectControl: {fileID: 0}
   isPrimary: 0
   dispatcher: {fileID: 2924205468662601266}
   weaponStats: {fileID: 9200553926612357961}
@@ -5516,6 +5518,7 @@ MonoBehaviour:
   settings: {fileID: 11400000, guid: 31d2a7382f65db78aa1c3c64415f9fb2, type: 2}
   ControlEventManager: {fileID: 11400000, guid: a8c9cf2bc434199ecac824c6d78347ba, type: 2}
   ZoomSpeed: 5
+  recoilRecoverySpeed: 10
 --- !u!1 &634379908029143683
 GameObject:
   m_ObjectHideFlags: 0
@@ -5965,12 +5968,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 797205954350918761}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.04912005, y: 0.031061694, z: -0.8349397, w: -0.54726416}
-  m_LocalPosition: {x: -25.8, y: -13.6, z: -17.8}
+  m_LocalRotation: {x: -0.15575138, y: -0.6821612, z: 0.7038459, w: -0.12246863}
+  m_LocalPosition: {x: -17.10923, y: -65.117226, z: -93.165955}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4536223023498552422}
+  m_Father: {fileID: 4111163762466753734}
   m_LocalEulerAnglesHint: {x: -179.492, y: 173.693, z: 293.586}
 --- !u!1 &871588649045753312
 GameObject:
@@ -43841,8 +43844,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8081020654078447539}
   - {fileID: 2323447589292962185}
+  - {fileID: 8081020654078447539}
   - {fileID: 6320453988082542380}
   m_Father: {fileID: 8250476450277188739}
   m_LocalEulerAnglesHint: {x: 57.264, y: -163.274, z: -135.538}
@@ -43938,6 +43941,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122d16a3f84d1e207a22b0d005b9d06e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraController: {fileID: 0}
+  weaponEffectControl: {fileID: 0}
   isPrimary: 1
   dispatcher: {fileID: 2924205468662601266}
   weaponStats: {fileID: 4261037368931007804}
@@ -44174,7 +44179,6 @@ Transform:
   - {fileID: 8605300968366452732}
   - {fileID: 8250476450277188739}
   - {fileID: 346521848234956701}
-  - {fileID: 8097698459753840735}
   m_Father: {fileID: 8793043956034934066}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4440170144015465921
@@ -46668,6 +46672,8 @@ MonoBehaviour:
   indicatorContainer: {fileID: 7209086042991862684}
   burstIndicator: {fileID: 2540622067689866537}
   text: {fileID: 8467652855570558432}
+  restPosition: {fileID: 0}
+  fightModePosition: {fileID: 0}
 --- !u!1 &5639659400386782701
 GameObject:
   m_ObjectHideFlags: 0
@@ -58434,6 +58440,7 @@ Transform:
   - {fileID: 4031573214907670819}
   - {fileID: 4743374979080681395}
   - {fileID: 8970141244635127356}
+  - {fileID: 8097698459753840735}
   - {fileID: 3918240144771802408}
   m_Father: {fileID: 4503140774976905499}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

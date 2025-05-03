@@ -13,31 +13,37 @@ public class Heatindicator : MonoBehaviour
     [SerializeField] private Image indicator;
     [SerializeField] private HeatStats heatDetector;
     [SerializeField] private TMP_Text heatText;
-    bool play = false;
-
     [Header("Effects")]
     [SerializeField] private VisualEffect steam1;
     [SerializeField] private VisualEffect steam2;
 
-    // Update is called once per frame
+    private bool play = false;
+    private float currentFill = 0f;
+
     void Start()
     {
         steam1.Stop();
         steam2.Stop();
     }
+
     void Update()
     {
         float maxHeat = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).DefaultIfEmpty(100).Sum();
         float heatPercent = logic.temperature / maxHeat;
-        indicator.fillAmount = heatPercent;
 
-        // Cambio colore: dal verde, al giallo, al rosso
-        Color heatColor = Color.Lerp(Color.cyan, Color.red, heatPercent);
+        // Smooth fill amount
+        currentFill = Mathf.Lerp(currentFill, heatPercent, Time.deltaTime * 5f);
+        indicator.fillAmount = currentFill;
+
+        // If exposed to sun, set to yellow. Otherwise use gradient from blue to red
+        Color heatColor = !heatDetector.isExposedToSun ? Color.Lerp(Color.cyan, Color.red, heatPercent)
+        : Color.Lerp(Color.yellow, Color.red, heatPercent);
+
         indicator.color = heatColor;
 
         if (heatDetector.isExposedToSun)
         {
-            heatText.text = "Heat: " + logic.temperature.ToString("F1") + "°C EXPOSED";
+            heatText.text = $"Heat: {logic.temperature:F1}°C EXPOSED";
             heatText.color = heatColor;
 
             steam1.Stop();
@@ -46,8 +52,9 @@ public class Heatindicator : MonoBehaviour
         }
         else
         {
-            heatText.text = "Heat: " + logic.temperature.ToString("F1") + "°C COOLING";
+            heatText.text = $"Heat: {logic.temperature:F1}°C COOLING";
             heatText.color = heatColor;
+
             if (heatPercent > 0)
             {
                 if (!play)

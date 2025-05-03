@@ -193,7 +193,6 @@ public class MovementLogic : MonoBehaviour
             {
                 usedStrafes--;
                 strafeTimer = 0f;
-                Debug.Log("Available strafes: " + (maxStrafes - usedStrafes));
             }
         }
     }
@@ -292,7 +291,6 @@ public class MovementLogic : MonoBehaviour
     {
         if (other.CompareTag("terrain"))
         {
-            anim.SetBool("jump", true);
             isGrounded = false;
         }
     }

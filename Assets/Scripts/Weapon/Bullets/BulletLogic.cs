@@ -66,7 +66,6 @@ public class BulletLogic : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogWarning("no hit: " + e.Message);
         }
 
         if (toReset)

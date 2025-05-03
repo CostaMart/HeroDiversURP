@@ -12,6 +12,7 @@ public abstract class AbstractWeaponLogic : ScriptableObject
     /// called once when the weaponbehaviour is changed, use it to init e.g. attach to input sys
     /// </summary>
     public abstract void EnableWeaponBehaviour();
+    public abstract void FixedupdateWeaponBehaviour();
 
     /// <summary>
     /// called once before the weaponbehaviour is changed, use it to clean up e.g. detach from input sys

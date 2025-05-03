@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
@@ -7,7 +8,6 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class PlayerAnimatorLogic : MonoBehaviour
 {
-    RigBuilder rigBuilder;
     [SerializeField] private EquipmentEventManager equipmentEventManager;
 
     [Header("Two handed weapon settings")]
@@ -25,12 +25,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
     [SerializeField] private Transform PistolAimingPosition;
 
 
-    [Header("Other body parts settings")]
-    [SerializeField] private MultiRotationConstraint headRotationConstraint;
-
     Animator animator;
 
-    private bool aiming = false;
+    public bool aiming = false;
     private enum lastState
     {
         aiming, notAiming
@@ -50,33 +47,47 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private bool pistol = false;
-    private bool rebuildRequired;
 
     public List<WeaponLogicContainer> weapons = new List<WeaponLogicContainer>();
     public int equipped = 0;
+    [SerializeField] private EffectsDispatcher dispatcher;
+    [SerializeField] private MovementLogic logic;
+
+
+    // animator hashes
+    int reloadHash = Animator.StringToHash("reloading");
+    int pistolHash = Animator.StringToHash("pistol_eq");
+    int walkHash = Animator.StringToHash("walking");
+    int aimHash = Animator.StringToHash("aiming");
+
 
     void Start()
     {
-        if (headRotationConstraint == null)
-            Debug.LogWarning("Head rotation constraint is null, head rotation will not be controlled");
 
-
-        rigBuilder = playerInput.gameObject.GetComponent<RigBuilder>();
 
         playerInput.actions["Reload"].performed += ReloadAnimate;
 
         if (!toggleAim)
         {
-            playerInput.actions["Aim"].performed += ctx => { aiming = true; animator.SetBool("aiming", aiming); };
-            playerInput.actions["Aim"].canceled += ctx => { aiming = false; animator.SetBool("aiming", aiming); };
+            playerInput.actions["Aim"].performed += ctx =>
+            {
+                if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+                { aiming = true; animator.SetBool(aimHash, aiming); }
+            };
+
+            playerInput.actions["Aim"].canceled += ctx => { aiming = false; animator.SetBool(aimHash, aiming); };
         }
         else
         {
-            playerInput.actions["Aim"].performed += ctx => { aiming = !aiming; animator.SetBool("aiming", aiming); };
+            playerInput.actions["Aim"].performed += ctx =>
+            {
+                if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+                    aiming = !aiming; animator.SetBool(aimHash, aiming);
+            };
         }
 
-        playerInput.actions["Move"].performed += ctx => { animator.SetBool("walking", true); };
-        playerInput.actions["Move"].canceled += ctx => { animator.SetBool("walking", false); };
+        playerInput.actions["Move"].performed += ctx => { animator.SetBool(walkHash, true); };
+        playerInput.actions["Move"].canceled += ctx => { animator.SetBool(walkHash, false); };
 
         animator = GetComponent<Animator>();
 
@@ -89,7 +100,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
             if (index == 2)
             {
                 pistol = true;
-                animator.SetBool("pistol_eq", true);
+                animator.SetBool(pistolHash, true);
                 pistolObject.transform.SetParent(PistolRelaxedPosition);
                 pistolObject.transform.localPosition = Vector3.zero;
                 pistolObject.transform.localRotation = Quaternion.identity;
@@ -97,7 +108,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
             else if (index == 1)
             {
                 pistol = false;
-                animator.SetBool("pistol_eq", false);
+                animator.SetBool(pistolHash, false);
             }
         });
 
@@ -105,20 +116,38 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     void ReloadAnimate(CallbackContext ctx)
     {
-        animator.SetTrigger("reloading");
-        reloading = true;
+        if (dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum() <= 0)
+            return;
+
+        if (aiming)
+            return;
+
+        animator.SetTrigger(reloadHash);
     }
 
-    void OnReloadOver()
-    {
-        reloading = false;
-    }
 
+    int jumpHash = Animator.StringToHash("jump");
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("terrain"))
         {
-            animator.SetBool("jump", false);
+            animator.SetBool(jumpHash, false);
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("terrain"))
+        {
+            animator.SetBool(jumpHash, true);
+        }
+    }
+
+    void OnStrafeAnim(CallbackContext ctx)
+    {
+        if (logic.isBursting)
+        {
+            animator.SetBool(jumpHash, true);
         }
     }
 
@@ -150,7 +179,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
             if (lastWas == lastState.notAiming)
             {
-                rebuildRequired = true;
                 lastWas = lastState.aiming;
             }
 
@@ -175,18 +203,20 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
             if (lastWas == lastState.aiming)
             {
-                rebuildRequired = true;
                 lastWas = lastState.notAiming;
             }
 
         }
 
-        if (rebuildRequired)
-        {
-            Debug.Log("Rebuilding rig");
-            rigBuilder.Build();
-            rebuildRequired = false;
-        }
+    }
 
+    public void Reload()
+    {
+        reloading = true;
+    }
+
+    public void ReloadComplete()
+    {
+        reloading = false;
     }
 }

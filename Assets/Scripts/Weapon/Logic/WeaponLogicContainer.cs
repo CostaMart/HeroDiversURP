@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Weapon.State;
@@ -7,6 +8,9 @@ using Weapon.State;
 public class WeaponLogicContainer : MonoBehaviour
 {
     [SerializeField] public MouseRotateCamera cameraController;
+    [SerializeField] public WeaponEffectControl weaponEffectControl;
+    [SerializeField] public CinemachineImpulseSource impulseSource;
+    [SerializeField] public PlayerAnimatorLogic animations;
     public bool isPrimary;
     public EffectsDispatcher dispatcher;
     public WeaponStats weaponStats;
@@ -28,9 +32,6 @@ public class WeaponLogicContainer : MonoBehaviour
 
     public void Update()
     {
-        if (activeLogic == null)
-            return;
-
         CheckForLogicReasignment();
         activeLogic.UpdateWeaponBehaviour();
     }
@@ -51,6 +52,11 @@ public class WeaponLogicContainer : MonoBehaviour
         activeLogic.EnableWeaponBehaviour();
 
         lineRenderer = muzzle.GetComponent<LineRenderer>();
+    }
+
+    void FixedUpdate()
+    {
+        activeLogic.FixedupdateWeaponBehaviour();
     }
 
     public void OnDisable()
