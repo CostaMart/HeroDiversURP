@@ -180,7 +180,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         var currentMagCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
 
         // Se il pool di proiettili è più piccolo del numero totale di proiettili necessari
-        while (weaponContainer.bullets.Count < singleMagSize * currentMagCount)
+        while (weaponContainer.bullets.Count < singleMagSize * 5)
         {
             var newBull = Instantiate(bulletPrefab, weaponContainer.pool.transform);
             newBull.transform.position = weaponContainer.pool.transform.position;

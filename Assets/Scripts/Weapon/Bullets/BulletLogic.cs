@@ -49,15 +49,10 @@ public class BulletLogic : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log("Proiettile attivato");
         lifeTimer = 0f;
         isReset = false;
     }
 
-    private void OnDisable()
-    {
-        Debug.Log("Proiettile disattivato");
-    }
 
     private void Update()
     {
@@ -73,7 +68,6 @@ public class BulletLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Proiettile ha colliso con: " + collision.gameObject.name);
 
         try
         {
@@ -92,7 +86,6 @@ public class BulletLogic : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogWarning("Errore nell'effetto della collisione: " + e.Message);
         }
 
         if (toReset)
@@ -107,7 +100,6 @@ public class BulletLogic : MonoBehaviour
         if (isReset) return;
         isReset = true;
 
-        Debug.Log("Resetting bullet, with lifetime " + bulletLifeTime);
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         transform.position = initialPos;
