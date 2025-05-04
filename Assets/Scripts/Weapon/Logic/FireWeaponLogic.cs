@@ -106,7 +106,6 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public override void Shoot()
     {
         // non si spara se stiamo ricaricando, usiamo gli hash per performance
-
         if (weaponContainer.animations.reloading)
             return;
 
@@ -132,7 +131,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
         // setup bullet properties before shooting
         BulletSetUp(bulletToShoot, bulletTrio.Item2, bulletTrio.Item3);
 
-        bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
+        bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward *
+        weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
 
         weaponContainer.currentAmmo++;
 
@@ -142,7 +142,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         if (weaponContainer.weaponEffectControl != null)
             weaponContainer.weaponEffectControl.PlayShootEffect();
 
-        weaponContainer.impulseSource.GenerateImpulse(impulseForce);
+        weaponContainer.impulseSource.GenerateImpulse(new Vector3(0, 0, impulseForce));
 
         // get recoil values
         var vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();

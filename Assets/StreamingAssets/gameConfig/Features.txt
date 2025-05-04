@@ -43,6 +43,7 @@ damage = 10.0 ID:15
 recoilStrengthVertical = 0.02 ID:16
 recoilStrengthLateral = 0.0 ID:17
 bulletLifeTime = 5.0 ID:18
+reloadTime = 2.0 ID:19
 ##
 
 #PlayerSecondary-SecondaryWeaponStats
@@ -64,4 +65,5 @@ damage = 10.0 ID:15
 recoilStrengthVertical = 0.009 ID:16
 recoilStrengthLateral = 0.009 ID:17
 bulletLifeTime = 0.01 ID:18
+reloadTime = 0.5 ID:19
 ##

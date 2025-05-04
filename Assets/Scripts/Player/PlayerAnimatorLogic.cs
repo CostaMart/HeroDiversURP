@@ -60,6 +60,11 @@ public class PlayerAnimatorLogic : MonoBehaviour
     int walkHash = Animator.StringToHash("walking");
     int aimHash = Animator.StringToHash("aiming");
 
+    // animation clips useful to get info
+    [SerializeField] private AnimationClip reloadAnimation;
+
+
+
 
     void Start()
     {
@@ -114,6 +119,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     }
 
+    int reloadSpeedHash = Animator.StringToHash("ReloadMultiplier");
     void ReloadAnimate(CallbackContext ctx)
     {
         if (dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum() <= 0)
@@ -122,7 +128,11 @@ public class PlayerAnimatorLogic : MonoBehaviour
         if (aiming)
             return;
 
-        animator.SetTrigger(reloadHash);
+        var duration = reloadAnimation.averageDuration;
+        var speed = duration / dispatcher.GetAllFeatureByType<float>(FeatureType.reloadTime).Sum();
+        animator.SetFloat(reloadSpeedHash, speed);
+        animator.SetBool(reloadHash, true);
+        this.reloading = true;
     }
 
 
@@ -143,13 +153,6 @@ public class PlayerAnimatorLogic : MonoBehaviour
         }
     }
 
-    void OnStrafeAnim(CallbackContext ctx)
-    {
-        if (logic.isBursting)
-        {
-            animator.SetBool(jumpHash, true);
-        }
-    }
 
     // Update is called once per frame
     public void LateUpdate()
@@ -210,13 +213,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     }
 
-    public void Reload()
-    {
-        reloading = true;
-    }
-
     public void ReloadComplete()
     {
         reloading = false;
+        animator.SetBool(reloadHash, false);
     }
 }

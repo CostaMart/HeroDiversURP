@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CameraSettings
   m_EditorClassIdentifier: 
   sensitivity: 0.1
-  aimingFov: 50
+  aimingFov: 54
   zoom: 1.5
   ZoomSpeed: 20
   defaultFov: 60
