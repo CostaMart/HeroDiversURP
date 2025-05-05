@@ -27,11 +27,11 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] private float deceleration = 12f;
 
     [Header("Strafe Settings")]
-    [SerializeField] public int maxStrafes = 2;                // Numero massimo di strafe disponibili
-    [SerializeField] public float strafeCooldown = 5f;         // Tempo per ricaricare uno strafe
-    [SerializeField] public float burstDuration = 0.2f;        // Durata del burst (scatto rapido)
-    [SerializeField] public float burstSpeedMultiplier = 2.0f; // Moltiplicatore velocità durante il burst
-    [SerializeField] public float overHeatLimit = 100f; // Limite di surriscaldamento per lo strafe
+    [SerializeField] public int maxStrafes = 2;
+    [SerializeField] public float strafeCooldown = 5f;
+    [SerializeField] public float burstDuration = 0.2f;
+    [SerializeField] public float burstSpeedMultiplier = 2.0f;
+    [SerializeField] public float overHeatLimit = 100f;
     public float temperature;
 
     private Vector3 moveDirection = Vector3.zero;
@@ -47,6 +47,8 @@ public class MovementLogic : MonoBehaviour
     private float smokeTimer = 0f;
     private bool smokeActive = false;
 
+    private Vector3 burstDirection = Vector3.zero;
+
     [Header("Visual effect")]
     [SerializeField] ParticleSystem thrusterEffect1;
     [SerializeField] ParticleSystem thrusterEffect2;
@@ -57,11 +59,19 @@ public class MovementLogic : MonoBehaviour
     [SerializeField] ParticleSystem explosion;
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] ParticleSystem smoke;
+    [SerializeField] ParticleSystem jumpLeftThruster;
+    [SerializeField] ParticleSystem jumpRightThruster;
 
+    [Header("Jump Thruster Settings")]
+    [SerializeField] private float jumpThrusterDuration = 1.5f;
+
+    private float jumpThrusterTimer = 0f;
+    private bool jumpThrusterActive = false;
+
+    [SerializeField] private Transform aimTarget;
 
     void Awake()
     {
-        // Collegamenti agli eventi di input
         controlEventManager.AddListenerMove(Move);
         controlEventManager.AddListenerJump(Jump);
         controlEventManager.AddListenerAiming((value) => Aiming = value);
@@ -83,20 +93,31 @@ public class MovementLogic : MonoBehaviour
     {
         if (rb.isKinematic) return;
 
-        // compute temperature as sum of all sources of heat
         temperature = dispatcher.GetAllFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum();
-
 
         HandleMovement();
         HandleStrafeCooldown();
         HandleBurstTimer();
+        HandleJumpThrusterTimer();
     }
+    private void HandleJumpThrusterTimer()
+    {
+        if (!jumpThrusterActive) return;
 
-    [SerializeField] private Transform aimTarget; // aggiunta in alto
-
+        jumpThrusterTimer += Time.fixedDeltaTime;
+        if (jumpThrusterTimer >= jumpThrusterDuration)
+        {
+            jumpLeftThruster.Stop();
+            jumpRightThruster.Stop();
+            jumpThrusterActive = false;
+        }
+    }
     private void HandleMovement()
     {
-        Vector3 direction = camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
+        Vector3 direction = isBursting
+            ? burstDirection
+            : camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
+
         direction.y = 0;
         direction.Normalize();
 
@@ -116,11 +137,11 @@ public class MovementLogic : MonoBehaviour
         if (aiming && aimTarget != null)
         {
             Vector3 targetDirection = aimTarget.position - transform.position;
-            targetDirection.y = 0f; // solo rotazione orizzontale
+            targetDirection.y = 0f;
             if (targetDirection != Vector3.zero)
             {
                 targetRotation = Quaternion.LookRotation(targetDirection);
-                rb.MoveRotation(targetRotation); // rotazione immediata
+                rb.MoveRotation(targetRotation);
             }
         }
         else if (direction != Vector3.zero)
@@ -159,6 +180,33 @@ public class MovementLogic : MonoBehaviour
             }
         }
     }
+    public void Jump()
+    {
+        if (jumpsAvailable <= 0) return;
+
+        Vector3 direction = camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
+        direction.y = 0;
+        direction.Normalize();
+
+        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy)
+            .DefaultIfEmpty(5f).Sum();
+        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx)
+            .DefaultIfEmpty(0f).Sum();
+
+        rb.linearVelocity = new Vector3(
+            rb.linearVelocity.x + direction.x * jumpForceHorizontal,
+            jumpForceVertical,
+            rb.linearVelocity.z + direction.z * jumpForceHorizontal
+        );
+
+        jumpLeftThruster.Play();
+        jumpRightThruster.Play();
+
+        jumpThrusterActive = true;
+        jumpThrusterTimer = 0f;
+
+        jumpsAvailable--;
+    }
 
     public void StartVFX()
     {
@@ -181,11 +229,9 @@ public class MovementLogic : MonoBehaviour
 
     private void HandleStrafeCooldown()
     {
-        // recupera il valore di cooldown dai dati
         var strafeCooldownFeat = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeCooldown)
             .DefaultIfEmpty(strafeCooldown).Sum();
 
-        // Se non siamo al massimo degli strafes, facciamo scorrere il tempo
         if (usedStrafes > 0)
         {
             strafeTimer += Time.fixedDeltaTime;
@@ -210,7 +256,6 @@ public class MovementLogic : MonoBehaviour
                 isBursting = false;
                 burstDurationTimer = 0f;
 
-                // Avvia smoke subito dopo la fine del burst
                 StopVFX();
                 smoke.Play();
                 smokeTimer = 0f;
@@ -220,7 +265,6 @@ public class MovementLogic : MonoBehaviour
             isGrounded = false;
         }
 
-        // Gestione durata dello smoke
         if (smokeActive)
         {
             smokeTimer += Time.fixedDeltaTime;
@@ -250,9 +294,14 @@ public class MovementLogic : MonoBehaviour
         {
             isBursting = true;
             smoke.Stop();
-            StartVFX(); // un po' di scenografia
+            StartVFX();
             burstDurationTimer = 0f;
             usedStrafes++;
+
+            // Blocca la direzione iniziale dello strafe
+            burstDirection = camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
+            burstDirection.y = 0;
+            burstDirection.Normalize();
         }
         else
         {
@@ -265,27 +314,6 @@ public class MovementLogic : MonoBehaviour
         moveDirection = new Vector3(direction.x, direction.y, 0);
     }
 
-    public void Jump()
-    {
-        if (jumpsAvailable <= 0) return;
-
-        Vector3 direction = camera.transform.forward * moveDirection.y + camera.transform.right * moveDirection.x;
-        direction.y = 0;
-        direction.Normalize();
-
-        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy)
-            .DefaultIfEmpty(5f).Sum();
-        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx)
-            .DefaultIfEmpty(0f).Sum();
-
-        rb.linearVelocity = new Vector3(
-            rb.linearVelocity.x + direction.x * jumpForceHorizontal,
-            jumpForceVertical,
-            rb.linearVelocity.z + direction.z * jumpForceHorizontal
-        );
-
-        jumpsAvailable--;
-    }
 
     void OnTriggerExit(Collider other)
     {
@@ -310,5 +338,3 @@ public class MovementLogic : MonoBehaviour
         set { aiming = value; }
     }
 }
-
-

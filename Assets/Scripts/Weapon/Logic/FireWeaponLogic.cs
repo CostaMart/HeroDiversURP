@@ -142,7 +142,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         if (weaponContainer.weaponEffectControl != null)
             weaponContainer.weaponEffectControl.PlayShootEffect();
 
-        weaponContainer.impulseSource.GenerateImpulse(new Vector3(0, 0, impulseForce));
+        weaponContainer.impulseSource.GenerateImpulse();
 
         // get recoil values
         var vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
