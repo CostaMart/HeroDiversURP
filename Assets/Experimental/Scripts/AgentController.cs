@@ -58,4 +58,14 @@ public class AgentController : MonoBehaviour
         speed = newSpeed;
         agent.speed = newSpeed;
     }
+
+    public void StopAgent()
+    {
+        agent.isStopped = true;
+    }
+
+    public void ResumeAgent()
+    {
+        agent.isStopped = false;
+    }
 }

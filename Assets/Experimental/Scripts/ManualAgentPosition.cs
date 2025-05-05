@@ -2,13 +2,16 @@ using UnityEngine;
 
 namespace Utility
 {
-    public class ManualAgentPosition : MonoBehaviour
+    public class ManualAgentPosition : InteractiveObject
     {
         private AgentController agentController;
         
         private void Start()
         {
             agentController = GetComponent<AgentController>();
+
+            RegisterAction("MoveTo", MoveTo);
+            RegisterEvent("OnMoveToComplete");
         }
         
         private void Update()
@@ -20,6 +23,21 @@ namespace Utility
                 {
                     agentController.MoveTo(hit.point);
                 }
+            }
+        }
+
+        private void MoveTo(object[] parameters)
+        {
+            if (parameters.Length > 0 && parameters[0] is Vector3 targetPosition)
+            {
+                agentController.MoveTo(targetPosition);
+            }
+            else
+            {
+                Debug.LogWarning("Invalid parameters for MoveTo action.");
+                // Generate random position within a certain range
+                var randomPosition = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                agentController.MoveTo(randomPosition); 
             }
         }
     }
