@@ -16014,8 +16014,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845919434}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.21421559, y: 0.67231274, z: -0.13507374, w: 0.69560224}
-  m_LocalPosition: {x: 8.59, y: -27.79, z: -14.28}
+  m_LocalRotation: {x: -0.39682972, y: 0.58345413, z: -0.32759947, w: 0.62832004}
+  m_LocalPosition: {x: -25.36, y: -42.93, z: -4.29}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.19999993}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16182,8 +16182,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
-      minScalar: 0.5
+      scalar: 1.2
+      minScalar: 0.19
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -22208,14 +22208,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1400398576}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.21421559, y: 0.67231274, z: -0.13507374, w: 0.69560224}
-  m_LocalPosition: {x: 8.59, y: -27.79, z: -14.28}
+  m_LocalRotation: {x: -0.34850088, y: 0.6636113, z: -0.37860566, w: 0.5429778}
+  m_LocalPosition: {x: 25, y: -37.8, z: -13.8}
   m_LocalScale: {x: 0.23, y: 0.23, z: 0.19999993}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 17894737}
   m_Father: {fileID: 1555896008}
-  m_LocalEulerAnglesHint: {x: -6.684, y: 89.757, z: -28.634}
+  m_LocalEulerAnglesHint: {x: 7.125, y: 97.159, z: -61.701}
 --- !u!199 &1400398578
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -22376,8 +22376,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
-      minScalar: 0.5
+      scalar: 1.2
+      minScalar: 0.19
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -28320,6 +28320,10 @@ PrefabInstance:
       propertyPath: jumpRightThruster
       value: 
       objectReference: {fileID: 845919437}
+    - target: {fileID: 2391636743440751699, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
+      propertyPath: jumpThrusterDuration
+      value: 0.61
+      objectReference: {fileID: 0}
     - target: {fileID: 2540622067689866537, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -28622,7 +28626,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7171187639389062756, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
       propertyPath: toggleAim
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7171187639389062756, guid: 04c20c4b432727adbb6dd652b1eed95a, type: 3}
       propertyPath: dispatcher

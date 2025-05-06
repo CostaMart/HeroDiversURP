@@ -112,6 +112,5 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
     public override void FixedupdateWeaponBehaviour()
     {
-        throw new System.NotImplementedException();
     }
 }
