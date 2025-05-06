@@ -88,6 +88,9 @@ public class FireWeaponLogic : AbstractWeaponLogic
             Shoot();
         else
         {
+            // se non stiamo sparando, resetta il recoil a 0
+            weaponContainer.cameraController.ResetRecoil();
+
             // Incrementa il timer del fumo
             if (smokeActive)
             {
@@ -147,7 +150,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
         // get recoil values
         var vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
         var horizontal = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthLateral).Sum();
-        weaponContainer.cameraController.ApplyRecoil(vertical, horizontal);
+        var recoilRecvoerySp = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilRecoverySpeed).Sum();
+        var recoilMax = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilMax).Sum();
+
+        weaponContainer.cameraController.ApplyRecoil(vertical, horizontal, recoilMax, recoilRecvoerySp);
 
         // Fumiamo se non si è già in fumo
         if (!smokeActive)

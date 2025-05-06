@@ -40,10 +40,12 @@ heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
 bulletEffects = 0  ID:14
 damage = 10.0 ID:15
-recoilStrengthVertical = 0.1 ID:16
+recoilStrengthVertical = 0.01 ID:16
 recoilStrengthLateral = 0.0 ID:17
 bulletLifeTime = 5.0 ID:18
 reloadTime = 5.0 ID:19
+recoilRecoverySpeed = 0.1 ID:20
+recoilMax = 1.0 ID:21
 ##
 
 #GFX_AR-PrimaryWeaponStats
@@ -62,10 +64,12 @@ heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
 bulletEffects = 0  ID:14
 damage = 10.0 ID:15
-recoilStrengthVertical = 0.02 ID:16
+recoilStrengthVertical = 0.01 ID:16
 recoilStrengthLateral = 0.0 ID:17
 bulletLifeTime = 5.0 ID:18
 reloadTime = 2.0 ID:19
+recoilRecoverySpeed = 0.2 ID:20
+recoilMax = 0.2 ID:21
 ##
 
 #PlayerSecondary-SecondaryWeaponStats

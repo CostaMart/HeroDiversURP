@@ -112,10 +112,20 @@ public class MouseRotateCamera : MonoBehaviour
     /// </summary>
     /// <param name="verticalIntensity">Quanto spinge in alto</param>
     /// <param name="horizontalDeviation">Quanto devia lateralmente (+ destra, - sinistra)</param>
-    public void ApplyRecoil(float verticalIntensity, float horizontalDeviation)
+    public void ApplyRecoil(float verticalIntensity, float horizontalDeviation, float recoilMax, float reciolRecovery)
     {
+        recoilRecoverySpeed = reciolRecovery;
         currentVerticalRecoil += verticalIntensity;
         currentHorizontalRecoil += horizontalDeviation;
+
+        currentVerticalRecoil = Mathf.Clamp(currentVerticalRecoil, -recoilMax, recoilMax);
+        currentHorizontalRecoil = Mathf.Clamp(currentHorizontalRecoil, -recoilMax, recoilMax);
+    }
+
+    public void ResetRecoil()
+    {
+        currentVerticalRecoil = 0f;
+        currentHorizontalRecoil = 0f;
     }
 }
 

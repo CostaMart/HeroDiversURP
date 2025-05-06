@@ -5,6 +5,8 @@ using UnityEngine;
 public enum FeatureType
 {
     // weapon related
+    recoilMax,
+    recoilRecoverySpeed,
     reloadTime,
     magSize,
     magCount,

@@ -101069,7 +101069,7 @@ MonoBehaviour:
   settings: {fileID: 11400000, guid: 31d2a7382f65db78aa1c3c64415f9fb2, type: 2}
   ControlEventManager: {fileID: 11400000, guid: a8c9cf2bc434199ecac824c6d78347ba, type: 2}
   ZoomSpeed: 5
-  recoilRecoverySpeed: 10
+  recoilRecoverySpeed: 2
 --- !u!114 &8065894468273366895
 MonoBehaviour:
   m_ObjectHideFlags: 0
