@@ -8,6 +8,7 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class PlayerAnimatorLogic : MonoBehaviour
 {
+    [SerializeField] private RigBuilder rb;
     [SerializeField] private EquipmentEventManager equipmentEventManager;
 
     [Header("Two handed weapon settings")]
@@ -24,6 +25,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     [SerializeField] private Transform PistolAimingPosition;
 
+    [SerializeField] private Transform primaryWeapon;
+    [SerializeField] public Transform frontHandIK;
+    [SerializeField] public Transform backHandIK;
 
     Animator animator;
 
@@ -65,6 +69,10 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
 
 
+    void OnEnable()
+    {
+        AttachIKReferencesToWeapon(0);
+    }
 
     void Start()
     {
@@ -158,7 +166,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
     public void LateUpdate()
     {
 
-        if (aiming)
+        if (aiming && lastWas == lastState.notAiming)
         {
 
 
@@ -188,7 +196,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         }
 
-        if (!aiming)
+        if (!aiming && lastWas == lastState.aiming)
         {
 
             // move each kind of weapon in rest position
@@ -217,5 +225,15 @@ public class PlayerAnimatorLogic : MonoBehaviour
     {
         reloading = false;
         animator.SetBool(reloadHash, false);
+    }
+    public void AttachIKReferencesToWeapon(int childNumber)
+    {
+        frontHandIK.SetParent(primaryWeapon.GetChild(childNumber).Find("frontHandle"));
+        frontHandIK.localPosition = Vector3.zero;
+
+        backHandIK.SetParent(primaryWeapon.GetChild(childNumber).Find("backHandle"));
+        backHandIK.localPosition = Vector3.zero;
+
+        rb.Build();
     }
 }

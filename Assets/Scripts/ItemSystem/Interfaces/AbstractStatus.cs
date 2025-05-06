@@ -201,6 +201,10 @@ public abstract class AbstractStatus : MonoBehaviour
 
     protected virtual void Awake()
     {
+        // removes useless (Clone) from the name of the gameobject
+        if (gameObject.name.Contains("Clone"))
+            gameObject.name = gameObject.name.Replace("(Clone)", "");
+
         ID = ComputeID();
         features = LoadFeatures();
         Debug.Log("Assigning ID to status class " + this.GetType().Name);

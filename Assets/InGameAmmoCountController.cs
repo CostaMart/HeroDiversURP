@@ -7,11 +7,12 @@ public class InGameAmmoCountController : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private EffectsDispatcher dispatcher;
-    [SerializeField] private WeaponLogicContainer weaponLogicContainer;
+    private WeaponLogicContainer weaponLogicContainer;
     private TMP_Text text;
     void OnEnable()
     {
         dispatcher = GameObject.Find("Player").GetComponent<EffectsDispatcher>();
+        weaponLogicContainer = GameObject.Find("Container").GetComponent<WeaponLogicContainer>();
         text = GetComponent<TMP_Text>();
     }
     void Update()

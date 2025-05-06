@@ -37,7 +37,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public override void EnableWeaponBehaviour()
     {
         muzzleFlash = GameObject.Find("muzzleflash").transform;
-        smoke = GameObject.Find("Steam2").transform;
+        smoke = GameObject.Find("muzzleSteam").transform;
         smokePS = smoke.GetComponent<ParticleSystem>();
         muzzleFlashPS = muzzleFlash.GetComponent<ParticleSystem>();
 
@@ -132,7 +132,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         BulletSetUp(bulletToShoot, bulletTrio.Item2, bulletTrio.Item3);
 
         bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward *
-        weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireStrength).Sum();
+        weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
 
         weaponContainer.currentAmmo++;
 

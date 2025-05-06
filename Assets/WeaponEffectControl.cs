@@ -33,6 +33,18 @@ public class WeaponEffectControl : MonoBehaviour
         public Axis kickAxis = Axis.Z;   // Asse di movimento per il target
         public Direction kickDirection = Direction.Positive; // Direzione della spinta (positiva o negativa)
         public float kickDistance = 0.1f; // Kick distance personalizzata per ogni target
+        public TargetKickSettings(Transform target, Axis kickAxis = Axis.Z, Direction kickDirection = Direction.Positive, float kickDistance = 0.1f)
+        {
+            this.target = target;
+            this.kickAxis = kickAxis;
+            this.kickDirection = kickDirection;
+            this.kickDistance = kickDistance;
+        }
+    }
+
+    void OnEnable()
+    {
+        AttachToHands();
     }
 
     void Start()
@@ -46,7 +58,7 @@ public class WeaponEffectControl : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!isKicking) return;
 
@@ -126,5 +138,37 @@ public class WeaponEffectControl : MonoBehaviour
         }
 
         return dir;
+    }
+
+    public void AttachToHands()
+    {
+        kickTargets.Clear();
+        initialPositions.Clear(); // 🔑 Reset iniziale
+
+        AddTargetIfExists("Container", Axis.Y, Direction.Positive, 10f);
+        AddTargetIfExists("frontHandle", Axis.X, Direction.Positive, 0.0003f);
+        AddTargetIfExists("backHandle", Axis.X, Direction.Positive, 0.0003f);
+
+        // 🔄 Aggiorna initialPositions
+        foreach (var t in kickTargets)
+        {
+            if (t.target != null)
+            {
+                initialPositions[t.target] = t.target.localPosition;
+            }
+        }
+    }
+
+    private void AddTargetIfExists(string objectName, Axis axis, Direction direction, float distance)
+    {
+        GameObject obj = GameObject.Find(objectName);
+        if (obj != null)
+        {
+            kickTargets.Add(new TargetKickSettings(obj.transform, axis, direction, distance));
+        }
+        else
+        {
+            Debug.LogWarning($"[WeaponEffectControl] GameObject '{objectName}' not found in scene.");
+        }
     }
 }

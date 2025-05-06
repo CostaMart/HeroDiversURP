@@ -207,12 +207,29 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// <returns></returns>
     public T GetMostRecentFeatureValue<T>(FeatureType f)
     {
-        var toRet = affectables.Values
-            .Where(status => enabledStatClass.ContainsKey(status.ID) && enabledStatClass[status.ID])
-            .SelectMany(stats => stats.features.Values.Where(feat => feat.id == f))
-            .ToList();
-        toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
-        return (T)toRet.FirstOrDefault().currentValue;
+        try
+        {
+            var toRet = affectables.Values
+                .Where(status => enabledStatClass.ContainsKey(status.ID) && enabledStatClass[status.ID])
+                .SelectMany(stats => stats.features.Values.Where(feat => feat.id == f))
+                .ToList();
+            toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
+            return (T)toRet.FirstOrDefault().currentValue;
+        }
+        catch (NullReferenceException e)
+        {
+            Debug.LogError("a null reference exception was thrown in the EffectsDispatcher" +
+             " this might be caused by a miss configuration of the feature file, the following is the Exception thrown: "
+             + e.Message);
+
+            return default;
+        }
+    }
+
+    public void DetachStatClass(int ID)
+    {
+        affectables.Remove(ID);
+        enabledStatClass.Remove(ID);
     }
 }
 
