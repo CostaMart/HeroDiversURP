@@ -33,6 +33,14 @@ public class AgentController : MonoBehaviour
         currentDestination = destination;
     }
 
+    public void RotateToDirection(Vector3 direction, float rotationSpeed)
+    {
+        Vector3 targetDirection = direction - transform.position;
+        targetDirection.y = 0; // Keep the rotation on the Y axis only
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+    }
+
     public bool HasReachedDestination()
     {
         return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;

@@ -13,14 +13,13 @@ public class NPC : InteractiveObject
     List<Experimental.Feature> features;
     List<Modifier> mods;
 
-    Dictionary<State, Action> stateActionMap;
-
     public string objectId = "Enemy_0";
 
     public Action currAction;
     
     // Patrol Settings
     public float waitTime = 2f; // Time to wait at each waypoint
+    public float rotationSpeed = 3f; // Time to wait before rotating
     private bool isWaiting = false;
     private float waitTimer = 0f;
     public float patrolRadius = 10f; // Radius of the patrol area
@@ -46,14 +45,15 @@ public class NPC : InteractiveObject
 
     AgentController agentController; // Reference to the AgentController
 
-    Timer waitAtLastKnownPositionTimer; // Timer for waiting at last known position
+    float waitAtLastKnownPositionTimer; // Timer for waiting at last known position
 
     enum State
     {
         Idle,
         Patrol,
         Chase,
-        Attack
+        Attack,
+        WaitAtLastKnownPosition
     }
 
     void Awake()
@@ -61,15 +61,6 @@ public class NPC : InteractiveObject
         gameObject.name = objectId;
         agentController = GetComponent<AgentController>();
         targetTransform = EntityManager.Instance.GetEntity("Player").transform;
-        waitAtLastKnownPositionTimer = gameObject.AddComponent<Timer>();
-        waitAtLastKnownPositionTimer.OnComplete = OnStartPatrol;
-        stateActionMap = new Dictionary<State, Action>
-        {
-            { State.Idle, Idle },
-            { State.Patrol, Patrol },
-            { State.Chase, Chase },
-            { State.Attack, Attack }
-        };
         currAction = Idle; // Default action is Idle
     }
 
@@ -111,11 +102,11 @@ public class NPC : InteractiveObject
         obstacleLayer = LayerMask.GetMask("Default");
 
         // Registra le azioni disponibili
-        RegisterAction("SetAction", OnSetAction);
         RegisterAction("StartPatrol", OnStartPatrol);
-        RegisterAction("StartChase", OnStartChase);
+        RegisterAction("Chase", Chase);
         RegisterAction("Attack", OnAttack);
         RegisterAction("WaitAtLastKnownPosition", OnWaitAtLastKnownPosition);
+        RegisterAction("RotateToTarget", OnRotateToTarget);
         
         // Registra gli eventi disponibili
         RegisterEvent("StateChanged");
@@ -215,65 +206,24 @@ public class NPC : InteractiveObject
         components.Add(component);
     }
 
-    // Implementazioni delle azioni
-    private void OnSetAction(object[] parameters)
-    {
-        if (parameters != null && parameters.Length > 0 && parameters[0] is string stateName)
-        {
-            if (Enum.TryParse(stateName, out State newState))
-            {
-                currAction = stateActionMap[newState];
-                EmitEvent("StateChanged", new object[] { stateName });
-            }
-            else
-            {
-                Debug.LogWarning($"State '{stateName}' not found in stateActionMap.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Invalid parameters for SetAction.");
-        }
-    }
-    
+    // Implementazioni delle azioni    
     private void OnStartPatrol(object[] parameters)
     {
-        waitAtLastKnownPositionTimer.StopTimer();
-
         currAction = Patrol;
-        
-        // AddModifier(new Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, 9.0f));
-        
+        AddModifier(new Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, 9.0f));
         agentController.MoveTo(waypoints[currentPatrolIndex]);
-    }
-    
-    private void OnStartChase(object[] parameters)
-    {
-        // Prendi il target dai parametri, se fornito
-        // if (parameters != null && parameters.Length > 0 && parameters[0] is Transform target)
-        // {
-        //     targetTransform = target;
-        // }
-
-        if (targetTransform != null)
-        {
-            currAction = Chase;
-            // AddModifier(new Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, -9.0f));
-            agentController.MoveTo(targetTransform.position);
-        }
     }
     
     void OnWaitAtLastKnownPosition(object[] parameters)
     {
+        currAction = WaitAtLastKnownPosition;
         agentController.MoveTo(lastKnownPosition);
-        waitAtLastKnownPositionTimer.StartTimer(waitAtLastKnownPosition);
     }
     
     private void OnAttack(object[] parameters)
     {
         currAction = Attack;
         agentController.StopAgent();
-        
         
         EmitEvent("AttackStarted", new object[] { targetTransform });
 
@@ -284,6 +234,12 @@ public class NPC : InteractiveObject
         // StartCoroutine(AttackCooldown());
     }
 
+    void OnRotateToTarget(object[] parameters)
+    {        
+        // Ruota l'agente verso il target
+        agentController.RotateToDirection(targetTransform.position, rotationSpeed);
+    }
+    
     void Idle() {}
 
     void Patrol()
@@ -305,8 +261,10 @@ public class NPC : InteractiveObject
         } 
     }
 
-    void Chase()
+    void Chase(object[] parameters)
     {
+        currAction = Idle;
+        AddModifier(new Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, -9.0f));
         pathUpdateTimer += Time.deltaTime;
         Vector3 targetPosition = targetTransform.position;
         
@@ -329,70 +287,53 @@ public class NPC : InteractiveObject
         Debug.Log("Attacking target!");
     }
 
-    public bool IsTargetVisible(Vector3 targetPosition)
+    void WaitAtLastKnownPosition()
     {
-        if (targetPosition == null) return false;
-
-        float distance = Vector3.Distance(agentController.position, targetPosition);
-        if (distance <= detectionRange) return true;
-        if (distance > viewRange) return false;
-        
-        Vector3 direction = (targetPosition - agentController.position).normalized;
-        float angle = Vector3.Angle(agentController.forward, direction);
-        if (angle > viewAngle) return false;
-
-        if (Physics.Raycast(agentController.position + Vector3.up, direction, out RaycastHit hit, viewRange, obstacleLayer))
+        if (agentController.HasReachedDestination())
         {
-            if (hit.transform.position != targetPosition) return false;
+            waitAtLastKnownPositionTimer += Time.deltaTime;
+            if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
+            {
+                waitAtLastKnownPositionTimer = 0f;
+                OnStartPatrol(null);
+            }
         }
-
-        return true;
     }
 
     // Coroutine per il cooldown dell'attacco
-    private IEnumerator AttackCooldown()
-    {
-        // Attendiamo il tempo di recupero dell'attacco
-        yield return new WaitForSeconds(1.5f);
+    // private IEnumerator AttackCooldown()
+    // {
+    //     // Attendiamo il tempo di recupero dell'attacco
+    //     yield return new WaitForSeconds(1.5f);
         
-        EmitEvent("AttackEnded");
+    //     EmitEvent("AttackEnded");
         
-        // Torna a inseguire se il target esiste ancora
-        if (targetTransform != null)
-        {
-            currAction = Chase;
-            agentController.ResumeAgent();
+    //     // Torna a inseguire se il target esiste ancora
+    //     if (targetTransform != null)
+    //     {
+    //         currAction = Chase;
+    //         agentController.ResumeAgent();
             
-        }
-        else
-        {
-            // Altrimenti torna a casa
-            ExecuteAction("Patrol");
-        }
-    }
+    //     }
+    //     else
+    //     {
+    //         // Altrimenti torna a casa
+    //         ExecuteAction("Patrol");
+    //     }
+    // }
     
-    // Metodo per verificare se c'è line of sight verso un target
-    bool HasLineOfSightTo(Transform target)
+    void OnDrawGizmosSelected()
     {
-        if (target == null) return false;
-        
-        Vector3 directionToTarget = target.position - transform.position;
-        float distanceToTarget = directionToTarget.magnitude;
-        
-        // Lancia un raggio verso il target
-        if (Physics.Raycast(transform.position + Vector3.up, directionToTarget.normalized, out RaycastHit hit, distanceToTarget))
+        // Draw the patrol points
+        Gizmos.color = Color.red;
+        foreach (var point in patrolPoints)
         {
-            // Se colpisce il target, abbiamo line of sight
-            if (hit.transform == target)
+            if (point.IsValid)
             {
-                return true;
+                Gizmos.DrawSphere(point.Position, 0.5f);
             }
         }
-        
-        return false;
     }
-    
-    // visualizza il range di rilevamento in Editor
     // void OnDrawGizmosSelected()
     // {
     //     Gizmos.color = Color.yellow;

@@ -37,6 +37,7 @@ Transform:
   - {fileID: 3080948770096644016}
   - {fileID: 4730817590188204772}
   - {fileID: 8302224028410551107}
+  - {fileID: 3124213070252670717}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &2450760056504757862
@@ -88,6 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectId: Enemy_0
   waitTime: 5
+  rotationSpeed: 3
   patrolRadius: 10
   patrolCount: 5
   minDistance: 2
@@ -210,6 +212,64 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1 &4023157605978985523
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3124213070252670717}
+  - component: {fileID: 8095387176543271921}
+  m_Layer: 0
+  m_Name: TargetPerception
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3124213070252670717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023157605978985523}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 589290684296390043}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8095387176543271921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023157605978985523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEnterAction: 
+  OnEnterEvent: 
+  OnExitAction: 
+  OnExitEvent: 
+  OnStayAction: RotateToTarget
+  OnStayEvent: 
+  detectionRange: 12
+  detectionAngle: 160
+  tagsToDetect: Player
+  scanInterval: 0.2
+  ignoreObstacles: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &4151735203164730604
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +391,7 @@ GameObject:
   - component: {fileID: 3080948770096644016}
   - component: {fileID: 8071564618500912874}
   m_Layer: 2
-  m_Name: LongRangePerceptor
+  m_Name: LongRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -364,18 +424,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnEnterAction: StartChase
+  OnEnterAction: Chase
   OnEnterEvent: TargetDetected
   OnExitAction: WaitAtLastKnownPosition
   OnExitEvent: TargetLost
-  OnStayAction: StartChase
+  OnStayAction: Chase
   OnStayEvent: 
   detectionRange: 10
   detectionAngle: 23
-  tagToDetect: Player
+  tagsToDetect: Player
   scanInterval: 0.2
   ignoreObstacles: 0
-  useTriggerDetection: 1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -390,7 +449,7 @@ GameObject:
   - component: {fileID: 4730817590188204772}
   - component: {fileID: 5825382955654576976}
   m_Layer: 0
-  m_Name: ShortRangePerceptor
+  m_Name: ShortRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -418,23 +477,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7038108315851938053}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnEnterAction: StartChase
+  OnEnterAction: Chase
   OnEnterEvent: TargetDetected
-  OnExitAction: 
+  OnExitAction: WaitAtLastKnownPosition
   OnExitEvent: 
-  OnStayAction: 
+  OnStayAction: Chase
   OnStayEvent: 
   detectionRange: 5
   detectionAngle: 360
-  tagToDetect: Player
+  tagsToDetect: Player
   scanInterval: 0.2
-  ignoreObstacles: 0
-  useTriggerDetection: 1
+  ignoreObstacles: 1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -449,7 +507,7 @@ GameObject:
   - component: {fileID: 8302224028410551107}
   - component: {fileID: 8789840281464406965}
   m_Layer: 0
-  m_Name: AttackEffector
+  m_Name: AttackArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -490,10 +548,9 @@ MonoBehaviour:
   OnStayEvent: 
   detectionRange: 3
   detectionAngle: 360
-  tagToDetect: Player
+  tagsToDetect: Player
   scanInterval: 0.2
   ignoreObstacles: 0
-  useTriggerDetection: 1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
