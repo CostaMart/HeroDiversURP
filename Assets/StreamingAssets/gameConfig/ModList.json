@@ -100,6 +100,20 @@
                     "expr": "50.0"
                 }
             ]
+        },
+        {
+            "id": 6,
+            "gameIconId": 52,
+            "inGamePrice": 10,
+            "name": "Ammo",
+            "description": "Replanish any kind of weapon...How? Who knows? But it works",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.1",
+                    "expr": "@PrimaryWeaponStats.1 + 1"
+                }
+            ]
         }
     ]
 }

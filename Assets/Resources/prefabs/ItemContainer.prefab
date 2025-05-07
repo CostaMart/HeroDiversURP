@@ -179,7 +179,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 64
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
@@ -486,3 +486,4 @@ MonoBehaviour:
   selling: 0
   economyManager: {fileID: 0}
   itemIconsList: {fileID: 11400000, guid: 67230c964fa4cfe46a4f76b25bbb2ae8, type: 2}
+  helper: {fileID: 0}

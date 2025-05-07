@@ -26,7 +26,7 @@ public class InventoryManager : MonoBehaviour
 
     void Awake()
     {
-        playerInput.actions["Interact"].performed += ChangeWeapon;
+        //playerInput.actions["Interact"].performed += ChangeWeapon;
 
         _controlEventManager.AddListenerAiming((value) => { aiming = value; });
         _equipmentEventManager.AddListenerWeaponSelected((index) =>

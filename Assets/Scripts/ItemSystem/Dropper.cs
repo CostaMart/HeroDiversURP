@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Mono.Cecil;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -23,7 +24,8 @@ public class Dropper : MonoBehaviour
     Animator anim;
     PlayerInput playerInput;
     private Transform player;
-
+    private MessageHelper helper;
+    public EffectsDispatcher dispatcher;
 
     /// <summary>
     /// load itempool on start
@@ -31,6 +33,7 @@ public class Dropper : MonoBehaviour
     void Start()
     {
 
+        helper = GameObject.Find("InGameManagers").GetComponent<MessageHelper>();
         GameObject player = GameObject.Find("Player");
 
 
@@ -96,6 +99,11 @@ public class Dropper : MonoBehaviour
         rarities = ratrities.ToArray();
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if (!used)
+            helper.PostMessage("Press E to open");
+    }
     public void OnTriggerStay(Collider other)
     {
         if (used) return;
@@ -122,8 +130,10 @@ public class Dropper : MonoBehaviour
 
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>().isKinematic = false;
 
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddForce(direction * 10f - Vector3.forward * 10f, ForceMode.Impulse);
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().
+        AddForce(direction * 10f - Vector3.forward * 10f, ForceMode.Impulse);
+        transform.GetChild(1).gameObject.GetComponent<Rigidbody>()
+        .AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
 
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
@@ -146,13 +156,19 @@ public class Dropper : MonoBehaviour
     {
         inRange = false;
         material.SetColor("_EmissionColor", Color.Lerp(material.color, defaultColor, 2f));
+        helper.HideMessage();
     }
 
     private void Drop(Item it)
     {
         GameObject prefab = Resources.Load("prefabs/ItemContainer") as GameObject;
         GameObject container = Instantiate(prefab, spawn.position, Quaternion.identity);
-        container.transform.GetChild(0).GetComponent<Grabbable>().item = it;
+
+        var grabbable = container.transform.GetChild(0).GetComponent<Grabbable>();
+        grabbable.item = it;
+        grabbable.helper = helper;
+        grabbable.playerInput = playerInput;
+        grabbable.dispatcher = helper.dispatcher;
 
         if (container.TryGetComponent(out Rigidbody rb))
         {
@@ -163,7 +179,7 @@ public class Dropper : MonoBehaviour
                 Random.Range(-1f, 1f)  // Z random
             ).normalized; // Normalizzo così non è troppo forte su certi assi
 
-            rb.AddForce(randomDirection * 10f, ForceMode.Impulse);
+            rb.AddForce(randomDirection * 20f, ForceMode.Impulse);
         }
     }
 
