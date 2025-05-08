@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using Weapon.State;
+using static UnityEngine.InputSystem.InputAction;
 
 // manages weapon behaviours and provides them with access to most of necessary components
 public class WeaponLogicContainer : MonoBehaviour
 {
+    [SerializeField] RigBuilder rb;
     [SerializeField] public MouseRotateCamera cameraController;
     [SerializeField] public WeaponEffectControl weaponEffectControl;
     [SerializeField] public CinemachineImpulseSource impulseSource;
@@ -34,9 +37,14 @@ public class WeaponLogicContainer : MonoBehaviour
     private LineRenderer lineRenderer;
 
     // reference to the relaxed weapon container
-    [SerializeField] private Transform RelaxedWeaponContainer;
+    [SerializeField] private Transform PlayerPrimary;
+    [SerializeField] private Transform PlayerSecondary;
+    private GameObject[] weapons = new GameObject[2];
+    private int activeIndex = 0;
+
 
     public int currentAmmo = 0;
+    int[] currentAmmoForMag = { 0, 0 };
 
     public void Update()
     {
@@ -61,13 +69,29 @@ public class WeaponLogicContainer : MonoBehaviour
         }
     }
 
+    private void OnFire(CallbackContext ctx)
+    {
+        activeLogic.onFireStart();
+    }
+    private void OnFireStop(CallbackContext ctx)
+    {
+        activeLogic.onFireStop();
+    }
+    private void Reload(CallbackContext ctx)
+    {
+        Debug.Log("Reloading is good");
+        activeLogic.Reload(activeIndex == 0 ? true : false);
+    }
+
     void OnEnable()
     {
+        inputSys.actions["Reload"].performed += Reload;
+        inputSys.actions["Attack"].performed += OnFire;
+        inputSys.actions["Attack"].canceled += OnFireStop;
+        inputSys.actions["wpn1"].performed += OnWeaponSwap;
+
         // search for a active weapon and attach all necessary components
         SearchForWeapon();
-
-        //activate 
-        dispatcher.SetActiveStatusClass(weaponStats.ID, true);
 
         // assign reference to this
         activeLogic.weaponContainer = this;
@@ -76,6 +100,32 @@ public class WeaponLogicContainer : MonoBehaviour
         lineRenderer = muzzle.GetComponent<LineRenderer>();
     }
 
+    public void OnWeaponSwap(CallbackContext ctx)
+    {
+        var newWeaponIndex = (activeIndex + 1) % 2;
+
+        currentAmmoForMag[activeIndex] = currentAmmo;
+        currentAmmo = currentAmmoForMag[newWeaponIndex];
+
+        activeIndex = newWeaponIndex;
+
+        PhysicallyChangeWeapon();
+
+        weapon = weapons[newWeaponIndex].transform;
+
+        muzzle = weapon.Find("Muzzle");
+        weaponStats = weapon.GetComponent<WeaponStats>();
+        lineRenderer = muzzle.GetComponent<LineRenderer>();
+    }
+
+    private void PhysicallyChangeWeapon()
+    {
+        weapons[(activeIndex + 1) % 2].SetActive(false);
+        weapons[activeIndex].SetActive(true);
+        rb.Build();
+    }
+
+
     void FixedUpdate()
     {
         activeLogic.FixedupdateWeaponBehaviour();
@@ -83,8 +133,11 @@ public class WeaponLogicContainer : MonoBehaviour
 
     public void OnDisable()
     {
-        // deactivate
-        dispatcher.SetActiveStatusClass(weaponStats.ID, false);
+        inputSys.actions["Reload"].performed -= Reload;
+        inputSys.actions["Attack"].performed -= OnFire;
+        inputSys.actions["Attack"].canceled -= OnFireStop;
+        inputSys.actions["wpn1"].performed -= OnWeaponSwap;
+
 
         if (activeLogic == null)
             return;
@@ -136,18 +189,17 @@ public class WeaponLogicContainer : MonoBehaviour
     // seraches for a muzzle in the scene
     private void SearchForWeapon()
     {
-        if (isPrimary)
-        {
-            weapon = FindDeepChild(RelaxedWeaponContainer, "PlayerPrimary").GetChild(0);
-        }
-        else
-        {
+        weapons[0] = PlayerPrimary.GetChild(0).gameObject;
+        weapons[1] = PlayerSecondary.GetChild(0).gameObject;
 
-            weapon = FindDeepChild(RelaxedWeaponContainer, "PlayerSecondary").GetChild(0);
-        }
-
+        //activate primary weapon
+        weapon = weapons[0].transform;
         muzzle = weapon.Find("Muzzle");
         weaponStats = weapon.GetComponent<WeaponStats>();
+
+        // disable secondary weapon
+        weapons[1].SetActive(false);
+        PhysicallyChangeWeapon();
     }
 
     /// <summary>
@@ -158,7 +210,7 @@ public class WeaponLogicContainer : MonoBehaviour
     {
         pauseChecks = true;
         dispatcher.DetachStatClass(weaponStats.ID);
-        var newWeaponInstantiated = Instantiate(newWeapon, RelaxedWeaponContainer.GetChild(0));
+        var newWeaponInstantiated = Instantiate(newWeapon, PlayerPrimary.GetChild(0));
 
         if (isPrimary)
         {

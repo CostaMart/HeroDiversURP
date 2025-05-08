@@ -139,19 +139,16 @@ public abstract class EffectsDispatcher : MonoBehaviour
     {
         if (affectables.ContainsKey(statusClass.ID))
         {
-            if (statusClass != affectables[statusClass.ID])
-            {
-                Debug.LogError("status with ID " + statusClass.ID + " already present in the dispatcher of object " +
-                 transform.name);
-                return;
-            }
-            else
-            {
-                return;
-            }
+            return;
         }
 
         affectables.Add(statusClass.ID, statusClass);
+
+        if (enabledStatClass.ContainsKey(statusClass.ID))
+        {
+            return;
+        }
+
         enabledStatClass.Add(statusClass.ID, isEnabled);
     }
 

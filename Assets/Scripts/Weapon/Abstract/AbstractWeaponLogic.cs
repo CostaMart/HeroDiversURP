@@ -38,7 +38,12 @@ public abstract class AbstractWeaponLogic : ScriptableObject
     /// called when the weapon is reloaded
     /// </summary>
     /// <param name="ctx"></param>
-    public abstract void Reload(CallbackContext ctx);
+    public abstract void Reload(bool isPrimary);
+
+    public abstract void onFireStart();
+
+    public abstract void onFireStop();
+
 
 
 }

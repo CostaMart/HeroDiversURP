@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -7,6 +8,7 @@ using static UnityEngine.InputSystem.InputAction;
 public class InventoryManager : MonoBehaviour
 {
 
+    [SerializeField] private RigBuilder rb;
     [SerializeField] private EquipmentStatus _equipmentStatus;
     private int _currentWeaponIndex = 2;
     private bool aiming = false;
@@ -29,28 +31,9 @@ public class InventoryManager : MonoBehaviour
         //playerInput.actions["Interact"].performed += ChangeWeapon;
 
         _controlEventManager.AddListenerAiming((value) => { aiming = value; });
-        _equipmentEventManager.AddListenerWeaponSelected((index) =>
 
-        {
-            if (aiming) return;
-
-            if (index < 1 || index > 2) return;
-
-            _currentWeaponIndex = index;
-            _equipmentStatus.CurrentWeaponIndex = 1;
-
-            if (_currentWeaponIndex == 1)
-            {
-                _weaponsSecondary.SetActive(false);
-                _weaponsPrimary.SetActive(true);
-            }
-            else if (_currentWeaponIndex == 2)
-            {
-                _weaponsPrimary.SetActive(false);
-                _weaponsSecondary.SetActive(true);
-            }
-        });
     }
+
     void ChangeWeapon(CallbackContext context)
     {
 

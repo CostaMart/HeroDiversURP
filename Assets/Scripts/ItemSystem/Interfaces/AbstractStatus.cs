@@ -186,18 +186,9 @@ public abstract class AbstractStatus : MonoBehaviour
         }
     }
 
-    //public virtual void OnDisable()
-    //{
-    //    if (mydispatcher != null)
-    //    {
-    //        mydispatcher.DetachStatusClass(this);
-    //        Debug.Log("dispatcher found and unregistered");
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("dispatcher not found in the hierarchy of " + this.gameObject.name);
-    //    }
-    //}
+
+    public virtual void OnDisable() { }
+
 
     protected virtual void Awake()
     {

@@ -27,20 +27,6 @@ public class WeaponStats : AbstractStatus
 
 
 
-    // Update is called once per frame
-    protected override void Awake()
-    {
-        base.Awake();
-        if (!isPrimary) this.gameObject.SetActive(false);
-
-        Debug.Log("container found and assigned");
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-    }
-
     protected override int ComputeID()
     {
         if (isPrimary)
@@ -56,13 +42,16 @@ public class WeaponStats : AbstractStatus
             return ItemManager.statClassToIdRegistry["SecondaryWeaponStats"];
         }
     }
+
     public override void OnEnable()
     {
         base.OnEnable();
+        mydispatcher.SetActiveStatusClass(this.ID, true);
+    }
 
-        // se non è primary parte disattiva
-        if (!isPrimary)
-            mydispatcher.SetActiveStatusClass(ID, false);
+    public override void OnDisable()
+    {
+        mydispatcher.SetActiveStatusClass(this.ID, false);
     }
 
 }

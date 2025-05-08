@@ -16,7 +16,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public bool animatorSet = false;
     public float timer = 0f;
     public int magCount = 0;
-    Modifier ammoConsumption;
+    Modifier ammoConsumptionPrimary;
+    Modifier ammoConsumptionSecondary;
     private Transform muzzleFlash;
     private ParticleSystem muzzleFlashPS;
     private Transform smoke;
@@ -29,9 +30,16 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     public override void DisableWeaponBehaviour()
     {
-        weaponContainer.inputSys.actions["Reload"].performed -= Reload;
-        weaponContainer.inputSys.actions["Attack"].performed -= context => { this.shooting = true; };
-        weaponContainer.inputSys.actions["Attack"].canceled -= context => { this.shooting = false; smoke.transform.position = weaponContainer.muzzle.position; smokePS.Play(false); };
+    }
+
+    public override void onFireStart()
+    {
+        shooting = true;
+    }
+    public override void onFireStop()
+    {
+        shooting = false;
+        smoke.transform.position = weaponContainer.muzzle.position;
     }
 
     public override void EnableWeaponBehaviour()
@@ -44,37 +52,31 @@ public class FireWeaponLogic : AbstractWeaponLogic
         CheckbulletsConsistency();
 
         // mag consumption primary
-        ammoConsumption = new Modifier();
-        ammoConsumption.effects = new List<AbstractEffect>();
+        ammoConsumptionPrimary = new Modifier();
+        ammoConsumptionPrimary.effects = new List<AbstractEffect>();
 
-        if (weaponContainer.isPrimary)
-            ammoConsumption.effects.Add(new SingleActivationEffect(
-                    new Dictionary<string, string>
-                    {
+        ammoConsumptionSecondary = new Modifier();
+        ammoConsumptionSecondary.effects = new List<AbstractEffect>();
+
+        ammoConsumptionPrimary.effects.Add(new SingleActivationEffect(
+                new Dictionary<string, string>
+                {
                     { "effectType", "sa" },
                     { "target","@PrimaryWeaponStats.1"},
                     {"expr","@PrimaryWeaponStats.1 - 1"}
-                    }, 0, 0, false));
-        else
-            ammoConsumption.effects.Add(new SingleActivationEffect(
-                    new Dictionary<string, string>
-                    {
+                }, 0, 0, false));
+
+        ammoConsumptionSecondary.effects.Add(new SingleActivationEffect(
+                new Dictionary<string, string>
+                {
                     { "effectType", "sa" },
                     { "target","@SecondaryWeaponStats.1"},
                     {"expr","@SecondaryWeaponStats.1 - 1"}
-                    }, 0, 0, false));
+                }, 0, 0, false));
 
         magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
 
         timer = 0;
-        AttachToInput();
-    }
-
-    private void AttachToInput()
-    {
-        weaponContainer.inputSys.actions["Reload"].performed += Reload;
-        weaponContainer.inputSys.actions["Attack"].performed += context => { this.shooting = true; };
-        weaponContainer.inputSys.actions["Attack"].canceled += context => { this.shooting = false; };
     }
 
     public override void UpdateWeaponBehaviour()
@@ -167,7 +169,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
             shooting = false;
     }
 
-    public override void Reload(CallbackContext ctx)
+    public override void Reload(bool isPrimary)
     {
         if (weaponContainer.animations.aiming)
             return;
@@ -175,7 +177,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         if (magCount > 0)
         {
             timer = 0;
-            weaponContainer.dispatcher.modifierDispatch(ammoConsumption);
+            weaponContainer.dispatcher.modifierDispatch(isPrimary ? ammoConsumptionPrimary : ammoConsumptionSecondary);
             weaponContainer.currentAmmo = 0;
         }
     }
@@ -238,4 +240,6 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public override void FixedupdateWeaponBehaviour()
     {
     }
+
+
 }

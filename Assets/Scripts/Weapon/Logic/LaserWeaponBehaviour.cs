@@ -21,7 +21,6 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
     public override void DisableWeaponBehaviour()
     {
         Destroy(laserRender);
-        weaponContainer.inputSys.actions["Reload"].performed -= Reload;
         weaponContainer.inputSys.actions["Attack"].performed -= OnAttackPerformed;
         weaponContainer.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
     }
@@ -39,7 +38,6 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         laserRender.endWidth = activeThickness;
         laserRender.material = activeMaterial;
 
-        weaponContainer.inputSys.actions["Reload"].performed += Reload;
         weaponContainer.inputSys.actions["Attack"].performed += OnAttackPerformed;
         weaponContainer.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
@@ -56,7 +54,7 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         laserRender.enabled = false;
     }
 
-    public override void Reload(CallbackContext ctx) { }
+    public override void Reload(bool ispr) { }
 
     public override void Shoot()
     {
@@ -112,5 +110,15 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
     public override void FixedupdateWeaponBehaviour()
     {
+    }
+
+    public override void onFireStart()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void onFireStop()
+    {
+        throw new System.NotImplementedException();
     }
 }

@@ -48,7 +48,6 @@ public class PlayerControlManager : MonoBehaviour
         wpn2 = playerInput.actions["Wpn2"];
         lookAction = playerInput.actions["Look"];
         attackAction = playerInput.actions["Attack"];
-        reloadAction = playerInput.actions["Reload"];
 
         // movement controls
         aim.performed += ctx => { charMovementLogic.Aiming = true; };
@@ -64,9 +63,6 @@ public class PlayerControlManager : MonoBehaviour
         wpn1.performed += ctx => { EquipmentEventManager.RaiseWeaponSelected(1); };
         wpn2.performed += ctx => { EquipmentEventManager.RaiseWeaponSelected(2); };
 
-        // fight controls
-        reloadAction.performed += ctx => { ControlEventManager.raiseReloadEvent(); };
-        attackAction.performed += ctx => { ControlEventManager.raiseAttackEvent(); };
 
 
         // camera control 

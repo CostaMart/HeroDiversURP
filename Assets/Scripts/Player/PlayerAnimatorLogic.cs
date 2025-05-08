@@ -107,10 +107,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         // equipment event manager setup
         // si ascolta l'evento di cambio arma per cambiare la posizione della mano sinistra a seconda dell'arma impugnata. cambio possibile solo se non si sta mirando.
-        equipmentEventManager.AddListenerWeaponSelected((index) =>
+        playerInput.actions["wpn1"].performed += ((index) =>
         {
-            if (aiming) return;
-            if (index == 2)
+            if (!pistol)
             {
                 pistol = true;
                 animator.SetBool(pistolHash, true);
@@ -118,7 +117,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
                 pistolObject.transform.localPosition = Vector3.zero;
                 pistolObject.transform.localRotation = Quaternion.identity;
             }
-            else if (index == 1)
+            else if (pistol)
             {
                 pistol = false;
                 animator.SetBool(pistolHash, false);
@@ -169,6 +168,19 @@ public class PlayerAnimatorLogic : MonoBehaviour
         if (aiming && lastWas == lastState.notAiming)
         {
 
+            if (pistol)
+            {
+                pistolAimRig.weight = 1;
+                aimingWeaponStand.gameObject.SetActive(false);
+                PistolAimingPosition.gameObject.SetActive(true);
+            }
+
+            if (!pistol)
+            {
+                rifleAimRig.weight = 1;
+                PistolAimingPosition.gameObject.SetActive(false);
+                aimingWeaponStand.gameObject.SetActive(true);
+            }
 
             // move each kind of weapon in aiming position
             weapon.transform.SetParent(aimingWeaponStand);
@@ -182,11 +194,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
             relaxedRig.weight = 0;
 
-            if (pistol)
-                pistolAimRig.weight = 1;
 
-            if (!pistol)
-                rifleAimRig.weight = 1;
 
             if (lastWas == lastState.notAiming)
             {
