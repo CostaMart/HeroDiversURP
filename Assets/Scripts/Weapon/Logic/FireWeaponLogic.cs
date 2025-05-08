@@ -139,7 +139,14 @@ public class FireWeaponLogic : AbstractWeaponLogic
         bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward *
         weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
 
+
         weaponContainer.currentAmmo++;
+
+        if (weaponContainer.audioSource.isPlaying)
+            weaponContainer.audioSource.Stop();
+        weaponContainer.audioSource.PlayOneShot(weaponContainer.shootingSounds[Random.Range(0,
+
+         weaponContainer.shootingSounds.Length)]);
 
         // vfx call
         MuzzleFlash();

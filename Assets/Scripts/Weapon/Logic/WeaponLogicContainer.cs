@@ -42,6 +42,10 @@ public class WeaponLogicContainer : MonoBehaviour
     private GameObject[] weapons = new GameObject[2];
     private int activeIndex = 0;
 
+    [SerializeField] public AudioClip[] shootingSounds;
+    [HideInInspector] public AudioSource audioSource;
+
+
 
     public int currentAmmo = 0;
     int[] currentAmmoForMag = { 0, 0 };
@@ -114,6 +118,7 @@ public class WeaponLogicContainer : MonoBehaviour
         weapon = weapons[newWeaponIndex].transform;
 
         muzzle = weapon.Find("Muzzle");
+        audioSource = muzzle.GetComponent<AudioSource>();
         weaponStats = weapon.GetComponent<WeaponStats>();
         lineRenderer = muzzle.GetComponent<LineRenderer>();
     }
@@ -195,6 +200,7 @@ public class WeaponLogicContainer : MonoBehaviour
         //activate primary weapon
         weapon = weapons[0].transform;
         muzzle = weapon.Find("Muzzle");
+        audioSource = muzzle.GetComponent<AudioSource>();
         weaponStats = weapon.GetComponent<WeaponStats>();
 
         // disable secondary weapon

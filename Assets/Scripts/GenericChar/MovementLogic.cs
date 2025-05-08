@@ -67,10 +67,14 @@ public class MovementLogic : MonoBehaviour
 
     private float jumpThrusterTimer = 0f;
     private bool jumpThrusterActive = false;
-
     [SerializeField] private Transform aimTarget;
 
+    [Header("Audio effects")]
+    [SerializeField] private SoundManager thrustersAudio;
+
+
     void Awake()
+
     {
         controlEventManager.AddListenerMove(Move);
         controlEventManager.AddListenerJump(Jump);
@@ -109,6 +113,7 @@ public class MovementLogic : MonoBehaviour
         {
             jumpLeftThruster.Stop();
             jumpRightThruster.Stop();
+            thrustersAudio.StopFireSound();
             jumpThrusterActive = false;
         }
     }
@@ -205,6 +210,8 @@ public class MovementLogic : MonoBehaviour
         jumpThrusterActive = true;
         jumpThrusterTimer = 0f;
 
+        thrustersAudio.EmitFireSound();
+
         jumpsAvailable--;
     }
 
@@ -257,6 +264,7 @@ public class MovementLogic : MonoBehaviour
                 burstDurationTimer = 0f;
 
                 StopVFX();
+                thrustersAudio.StopFireSound();
                 smoke.Play();
                 smokeTimer = 0f;
                 smokeActive = true;
@@ -292,9 +300,14 @@ public class MovementLogic : MonoBehaviour
 
         if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
+
             isBursting = true;
+
+            // effects
             smoke.Stop();
             StartVFX();
+            thrustersAudio.EmitFireSound();
+            thrustersAudio.EmitThrusterExplosion();
             burstDurationTimer = 0f;
             usedStrafes++;
 
