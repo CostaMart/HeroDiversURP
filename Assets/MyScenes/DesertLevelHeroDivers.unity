@@ -45594,7 +45594,6 @@ MonoBehaviour:
   isBursting: 0
   burstDurationTimer: 0
   aimTarget: {fileID: 3747565794136787564}
-  thrustersAudio: {fileID: 8107912148221896024}
   eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
 --- !u!144 &2407222390043921205
 CharacterJoint:
@@ -101093,6 +101092,8 @@ GameObject:
   - component: {fileID: 7893444707089188964}
   - component: {fileID: 7893444707089188966}
   - component: {fileID: 7893444707089188965}
+  - component: {fileID: 7893444707089188967}
+  - component: {fileID: 7893444707089188968}
   m_Layer: 6
   m_Name: Backpack1
   m_TagString: Untagged
@@ -101323,7 +101324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ImpulseDefinition:
     ImpulseChannel: 1
-    ImpulseShape: 2
+    ImpulseShape: 3
     CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
@@ -101361,7 +101362,54 @@ MonoBehaviour:
     DissipationMode: 2
     DissipationDistance: 100
     PropagationSpeed: 343
-  DefaultVelocity: {x: 0, y: -1, z: 0}
+  DefaultVelocity: {x: 0.2, y: 0.2, z: 0.2}
+--- !u!114 &7893444707089188967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7893444707089188962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2924d14779c406a15976224d67e73cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  soundSource: {fileID: 7893444707089188964}
+  soundClips:
+  - {fileID: 8300000, guid: a812a3d9ad10a968dbf300f765adfd5b, type: 3}
+  - {fileID: 8300000, guid: 61b85a9f921d76faface6e1dfe190aa9, type: 3}
+  startEvent: Jump
+  stopEvent: 
+  temporized: 1
+  soundDuration: 1
+--- !u!114 &7893444707089188968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7893444707089188962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2924d14779c406a15976224d67e73cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  soundSource: {fileID: 7893444707089188963}
+  soundClips:
+  - {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
+  - {fileID: 8300000, guid: fc96116dc3c141440aabb5605744fea2, type: 3}
+  - {fileID: 8300000, guid: c2153dcd0edd22f40bdebf613271bae7, type: 3}
+  - {fileID: 8300000, guid: c1f8c36ebdb20024ea8a59ec457d582c, type: 3}
+  - {fileID: 8300000, guid: fd706038486fee041947a774223dc22e, type: 3}
+  - {fileID: 8300000, guid: d4aee29185389894b9cc0d8873904a49, type: 3}
+  - {fileID: 8300000, guid: f0bba60dd1813bd40af826dbaa99b983, type: 3}
+  startEvent: BurstOn
+  stopEvent: 
+  temporized: 0
+  soundDuration: 2
 --- !u!4 &7907012255210118064
 Transform:
   m_ObjectHideFlags: 0

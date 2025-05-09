@@ -52,10 +52,6 @@ public class MovementLogic : MonoBehaviour
 
     [SerializeField] private Transform aimTarget;
 
-
-    [Header("Audio effects")]
-    [SerializeField] private SoundManager thrustersAudio;
-
     [SerializeField] EventChannels eventChannels;
     UnityEvent burstOn = new UnityEvent();
     UnityEvent burstOff = new UnityEvent();
@@ -185,7 +181,6 @@ public class MovementLogic : MonoBehaviour
 
         jump.Invoke();
 
-        thrustersAudio.EmitFireSound();
 
         jumpsAvailable--;
     }
@@ -222,7 +217,6 @@ public class MovementLogic : MonoBehaviour
                 burstDurationTimer = 0f;
 
                 burstOff.Invoke();
-                thrustersAudio.StopFireSound();
                 smokeTimer = 0f;
                 smokeActive = true;
             }
@@ -261,8 +255,6 @@ public class MovementLogic : MonoBehaviour
 
             // effects
             burstOn.Invoke();
-            thrustersAudio.EmitFireSound();
-            thrustersAudio.EmitThrusterExplosion();
             burstDurationTimer = 0f;
             usedStrafes++;
 
