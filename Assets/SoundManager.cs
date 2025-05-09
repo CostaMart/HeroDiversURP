@@ -9,6 +9,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AudioSource fireSource;
     [SerializeField] AudioClip[] thrusterExplosions;
     [SerializeField] AudioClip[] fireSounds;
+
+
+
     public void EmitWalkingSound()
     {
         int index = Random.Range(0, walkingClips.Length);

@@ -2,6 +2,7 @@ using System.Linq;
 using CartoonFX;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
@@ -49,33 +50,25 @@ public class MovementLogic : MonoBehaviour
 
     private Vector3 burstDirection = Vector3.zero;
 
-    [Header("Visual effect")]
-    [SerializeField] ParticleSystem thrusterEffect1;
-    [SerializeField] ParticleSystem thrusterEffect2;
-    [SerializeField] ParticleSystem thrusterEffect3;
-    [SerializeField] ParticleSystem thrusterEffect4;
-
-    [SerializeField] CFXR_Effect effect;
-    [SerializeField] ParticleSystem explosion;
-    [SerializeField] GameObject explosionPrefab;
-    [SerializeField] ParticleSystem smoke;
-    [SerializeField] ParticleSystem jumpLeftThruster;
-    [SerializeField] ParticleSystem jumpRightThruster;
-
-    [Header("Jump Thruster Settings")]
-    [SerializeField] private float jumpThrusterDuration = 1.5f;
-
-    private float jumpThrusterTimer = 0f;
-    private bool jumpThrusterActive = false;
     [SerializeField] private Transform aimTarget;
+
 
     [Header("Audio effects")]
     [SerializeField] private SoundManager thrustersAudio;
+
+    [SerializeField] EventChannels eventChannels;
+    UnityEvent burstOn = new UnityEvent();
+    UnityEvent burstOff = new UnityEvent();
+    UnityEvent jump = new UnityEvent();
 
 
     void Awake()
 
     {
+        eventChannels.createEvent("BurstOn", burstOn);
+        eventChannels.createEvent("BurstOff", burstOff);
+        eventChannels.createEvent("Jump", jump);
+
         controlEventManager.AddListenerMove(Move);
         controlEventManager.AddListenerJump(Jump);
         controlEventManager.AddListenerAiming((value) => Aiming = value);
@@ -88,9 +81,6 @@ public class MovementLogic : MonoBehaviour
         col = GetComponent<Collider>();
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-
-        StopVFX();
-        smoke.Stop();
     }
 
     private void FixedUpdate()
@@ -102,21 +92,9 @@ public class MovementLogic : MonoBehaviour
         HandleMovement();
         HandleStrafeCooldown();
         HandleBurstTimer();
-        HandleJumpThrusterTimer();
     }
-    private void HandleJumpThrusterTimer()
-    {
-        if (!jumpThrusterActive) return;
 
-        jumpThrusterTimer += Time.fixedDeltaTime;
-        if (jumpThrusterTimer >= jumpThrusterDuration)
-        {
-            jumpLeftThruster.Stop();
-            jumpRightThruster.Stop();
-            thrustersAudio.StopFireSound();
-            jumpThrusterActive = false;
-        }
-    }
+
     private void HandleMovement()
     {
         Vector3 direction = isBursting
@@ -204,35 +182,15 @@ public class MovementLogic : MonoBehaviour
             rb.linearVelocity.z + direction.z * jumpForceHorizontal
         );
 
-        jumpLeftThruster.Play();
-        jumpRightThruster.Play();
 
-        jumpThrusterActive = true;
-        jumpThrusterTimer = 0f;
+        jump.Invoke();
 
         thrustersAudio.EmitFireSound();
 
         jumpsAvailable--;
     }
 
-    public void StartVFX()
-    {
-        thrusterEffect1.Play();
-        thrusterEffect2.Play();
-        thrusterEffect3.Play();
-        thrusterEffect4.Play();
-        explosionPrefab.SetActive(true);
-        effect.Animate(0.2f);
-        explosion.Play();
-    }
 
-    public void StopVFX()
-    {
-        thrusterEffect1.Stop();
-        thrusterEffect2.Stop();
-        thrusterEffect3.Stop();
-        thrusterEffect4.Stop();
-    }
 
     private void HandleStrafeCooldown()
     {
@@ -263,9 +221,8 @@ public class MovementLogic : MonoBehaviour
                 isBursting = false;
                 burstDurationTimer = 0f;
 
-                StopVFX();
+                burstOff.Invoke();
                 thrustersAudio.StopFireSound();
-                smoke.Play();
                 smokeTimer = 0f;
                 smokeActive = true;
             }
@@ -278,7 +235,6 @@ public class MovementLogic : MonoBehaviour
             smokeTimer += Time.fixedDeltaTime;
             if (smokeTimer >= smokeDuration)
             {
-                smoke.Stop();
                 smokeActive = false;
             }
         }
@@ -304,8 +260,7 @@ public class MovementLogic : MonoBehaviour
             isBursting = true;
 
             // effects
-            smoke.Stop();
-            StartVFX();
+            burstOn.Invoke();
             thrustersAudio.EmitFireSound();
             thrustersAudio.EmitThrusterExplosion();
             burstDurationTimer = 0f;

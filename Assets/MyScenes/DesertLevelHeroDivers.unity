@@ -11013,6 +11013,7 @@ GameObject:
   - component: {fileID: 845919435}
   - component: {fileID: 845919437}
   - component: {fileID: 845919436}
+  - component: {fileID: 845919438}
   m_Layer: 0
   m_Name: TrhusterR
   m_TagString: Untagged
@@ -15836,6 +15837,24 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &845919438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845919434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: Jump
+  stopEvent: 
+  temporized: 1
+  effectDuration: 1
 --- !u!1001 &860799789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17373,6 +17392,7 @@ GameObject:
   - component: {fileID: 1400398577}
   - component: {fileID: 1400398579}
   - component: {fileID: 1400398578}
+  - component: {fileID: 1400398580}
   m_Layer: 0
   m_Name: ThrusterL
   m_TagString: Untagged
@@ -22196,6 +22216,24 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &1400398580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1400398576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: Jump
+  stopEvent: 
+  temporized: 1
+  effectDuration: 1
 --- !u!1 &1405698031
 GameObject:
   m_ObjectHideFlags: 0
@@ -45301,6 +45339,7 @@ GameObject:
   - component: {fileID: 9070826350871476208}
   - component: {fileID: 5809931937055498949}
   - component: {fileID: 7069655100386298915}
+  - component: {fileID: 9070826350871476209}
   m_Layer: 0
   m_Name: Steam
   m_TagString: Untagged
@@ -45513,6 +45552,7 @@ GameObject:
   - component: {fileID: 9167819909582593422}
   - component: {fileID: 1832380061255076728}
   - component: {fileID: 5478496788335946898}
+  - component: {fileID: 9167819909582593423}
   m_Layer: 0
   m_Name: VFX_Fire (1)
   m_TagString: Untagged
@@ -45553,19 +45593,9 @@ MonoBehaviour:
   strafeTimer: 0
   isBursting: 0
   burstDurationTimer: 0
-  thrusterEffect1: {fileID: 4350005860815683072}
-  thrusterEffect2: {fileID: 1832380061255076728}
-  thrusterEffect3: {fileID: 3681402083839700684}
-  thrusterEffect4: {fileID: 5059763957165321773}
-  effect: {fileID: 4160125422651664864}
-  explosion: {fileID: 2687455590467541277}
-  explosionPrefab: {fileID: 7464389895874920550}
-  smoke: {fileID: 5809931937055498949}
-  jumpLeftThruster: {fileID: 1400398579}
-  jumpRightThruster: {fileID: 845919437}
-  jumpThrusterDuration: 0.61
   aimTarget: {fileID: 3747565794136787564}
   thrustersAudio: {fileID: 8107912148221896024}
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
 --- !u!144 &2407222390043921205
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -50897,6 +50927,7 @@ GameObject:
   - component: {fileID: 3601974723683567788}
   - component: {fileID: 3681402083839700684}
   - component: {fileID: 2260236240423256369}
+  - component: {fileID: 3681402083839700685}
   m_Layer: 0
   m_Name: VFX_Fire (2)
   m_TagString: Untagged
@@ -66046,6 +66077,24 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &3681402083839700685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3015154915295208265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: BurstOn
+  stopEvent: BurstOff
+  temporized: 0
+  effectDuration: 2
 --- !u!4 &3686810625755574585
 Transform:
   m_ObjectHideFlags: 0
@@ -71117,6 +71166,7 @@ GameObject:
   - component: {fileID: 6777568714124744406}
   - component: {fileID: 4350005860815683072}
   - component: {fileID: 2516739828715273947}
+  - component: {fileID: 6777568714124744407}
   m_Layer: 0
   m_Name: VFX_Fire
   m_TagString: Untagged
@@ -71690,7 +71740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9205bc1bbacc90040a998067b5643d16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearBehavior: 1
+  clearBehavior: 0
   cameraShake:
     enabled: 1
     useMainCamera: 1
@@ -83562,7 +83612,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -94392,6 +94442,24 @@ Transform:
   - {fileID: 3313687124268722268}
   m_Father: {fileID: 7303813995921017352}
   m_LocalEulerAnglesHint: {x: -3.471, y: 98.074, z: -33.347}
+--- !u!114 &6777568714124744407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3926253070639310744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: BurstOn
+  stopEvent: BurstOff
+  temporized: 0
+  effectDuration: 2
 --- !u!1 &6794325939658900706
 GameObject:
   m_ObjectHideFlags: 0
@@ -95559,6 +95627,7 @@ GameObject:
   - component: {fileID: 2687455590467541277}
   - component: {fileID: 1481859510729170333}
   - component: {fileID: 4160125422651664864}
+  - component: {fileID: 7464389895874920551}
   m_Layer: 0
   m_Name: CFXR3 Fire Explosion B
   m_TagString: Untagged
@@ -95566,6 +95635,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7464389895874920551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7464389895874920550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 4160125422651664864}
+  startEvent: BurstOn
+  stopEvent: BurstOff
+  temporized: 0
+  effectDuration: 2
 --- !u!4 &7510412740785684024
 Transform:
   m_ObjectHideFlags: 0
@@ -101004,6 +101091,8 @@ GameObject:
   - component: {fileID: 7212052739381870213}
   - component: {fileID: 7893444707089188963}
   - component: {fileID: 7893444707089188964}
+  - component: {fileID: 7893444707089188966}
+  - component: {fileID: 7893444707089188965}
   m_Layer: 6
   m_Name: Backpack1
   m_TagString: Untagged
@@ -101205,6 +101294,74 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7893444707089188965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7893444707089188962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7b02aaa360e7b118ddeeb353330bfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  impulseSource: {fileID: 7893444707089188966}
+  startEvent: BurstOn
+--- !u!114 &7893444707089188966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7893444707089188962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: -1, z: 0}
 --- !u!4 &7907012255210118064
 Transform:
   m_ObjectHideFlags: 0
@@ -102799,6 +102956,7 @@ GameObject:
   - component: {fileID: 7610544810984200632}
   - component: {fileID: 5059763957165321773}
   - component: {fileID: 687820490173811771}
+  - component: {fileID: 8873593333408759348}
   m_Layer: 0
   m_Name: VFX_Fire (3)
   m_TagString: Untagged
@@ -102806,6 +102964,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8873593333408759348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8873593333408759347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: BurstOn
+  stopEvent: BurstOff
+  temporized: 0
+  effectDuration: 2
 --- !u!1 &8876454698612147465
 GameObject:
   m_ObjectHideFlags: 0
@@ -107765,6 +107941,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7303813995921017352}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: -17.561}
+--- !u!114 &9070826350871476209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2224874346546286434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: BurstOff
+  stopEvent: BurstOn
+  temporized: 1
+  effectDuration: 2
 --- !u!4 &9116771558578068542
 Transform:
   m_ObjectHideFlags: 0
@@ -107835,6 +108029,24 @@ Transform:
   - {fileID: 4124274710403656842}
   m_Father: {fileID: 7303813995921017352}
   m_LocalEulerAnglesHint: {x: -4.305, y: 94.37, z: -12.589}
+--- !u!114 &9167819909582593423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2375401748873456591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a72d8c485f2fdac8e6b7c6c080ce05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannels: {fileID: 11400000, guid: 46622d1014b2ab143b80150706e594d8, type: 2}
+  cFXR_Effect: {fileID: 0}
+  startEvent: BurstOn
+  stopEvent: BurstOff
+  temporized: 0
+  effectDuration: 2
 --- !u!1 &9201285525022021270
 GameObject:
   m_ObjectHideFlags: 0
