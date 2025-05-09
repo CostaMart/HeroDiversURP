@@ -145,9 +145,9 @@ public class WeaponEffectControl : MonoBehaviour
         kickTargets.Clear();
         initialPositions.Clear(); // 🔑 Reset iniziale
 
-        AddTargetIfExists("Container", Axis.Y, Direction.Positive, 10f);
-        AddTargetIfExists("frontHandle", Axis.X, Direction.Positive, 0.0003f);
-        AddTargetIfExists("backHandle", Axis.X, Direction.Positive, 0.0003f);
+        AddTargetIfExists("Container", Axis.Y, Direction.Positive, 15f);
+        AddTargetIfExists("frontHandle", Axis.Y, Direction.Positive, 0.0003f);
+        AddTargetIfExists("backHandle", Axis.X, Direction.Positive, 0.0005f);
 
         // 🔄 Aggiorna initialPositions
         foreach (var t in kickTargets)
