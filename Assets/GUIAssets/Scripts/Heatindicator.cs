@@ -3,6 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.VFX;
 
@@ -16,11 +17,19 @@ public class Heatindicator : MonoBehaviour
     [Header("Effects")]
     [SerializeField] private VisualEffect steam1;
     [SerializeField] private VisualEffect steam2;
+    [SerializeField] private EventChannels eventChannels;
+    UnityEvent heatEvent = new UnityEvent();
+    bool alarmed = false;
 
     private bool play = false;
     private float currentFill = 0f;
 
+    void Awake()
+    {
+        eventChannels.createEvent("criticalHeat", heatEvent);
+    }
     void Start()
+
     {
         steam1.Stop();
         steam2.Stop();
@@ -30,6 +39,19 @@ public class Heatindicator : MonoBehaviour
     {
         float maxHeat = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).DefaultIfEmpty(100).Sum();
         float heatPercent = logic.temperature / maxHeat;
+
+        if (logic.temperature > maxHeat / 2 && !alarmed)
+        {
+            Debug.Log("Critical heat reached!");
+            heatEvent.Invoke();
+            alarmed = true;
+        }
+
+        if (logic.temperature < maxHeat / 2)
+        {
+            Debug.Log("Heat is back to normal.");
+            alarmed = false;
+        }
 
         // Smooth fill amount
         currentFill = Mathf.Lerp(currentFill, heatPercent, Time.deltaTime * 5f);

@@ -38,8 +38,6 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         laserRender.endWidth = activeThickness;
         laserRender.material = activeMaterial;
 
-        weaponContainer.inputSys.actions["Attack"].performed += OnAttackPerformed;
-        weaponContainer.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
 
     private void OnAttackPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -114,11 +112,12 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
 
     public override void onFireStart()
     {
-        throw new System.NotImplementedException();
+
+        weaponContainer.inputSys.actions["Attack"].performed += OnAttackPerformed;
     }
 
     public override void onFireStop()
     {
-        throw new System.NotImplementedException();
+        weaponContainer.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
 }

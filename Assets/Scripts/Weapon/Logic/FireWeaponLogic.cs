@@ -98,18 +98,23 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
         if (weaponContainer.audioSource.isPlaying)
             weaponContainer.audioSource.Stop();
+
         weaponContainer.audioSource.pitch = Random.Range(0.90f, 1.05f);
+
         weaponContainer.audioSource.PlayOneShot(
             weaponContainer.shootingSounds[Random.Range(0, weaponContainer.shootingSounds.Length)]);
 
         MuzzleFlash();
         if (weaponContainer.weaponEffectControl != null)
             weaponContainer.weaponEffectControl.PlayShootEffect();
+
         weaponContainer.impulseSource.GenerateImpulse();
+
         var vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
         var horizontal = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthLateral).Sum();
         var recoilRecvoerySp = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilRecoverySpeed).Sum();
         var recoilMax = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilMax).Sum();
+
         weaponContainer.cameraController.ApplyRecoil(vertical, horizontal, recoilMax, recoilRecvoerySp);
         if (!smokeActive)
         {

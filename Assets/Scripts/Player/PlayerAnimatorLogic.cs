@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -66,6 +68,9 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
     // animation clips useful to get info
     [SerializeField] private AnimationClip reloadAnimation;
+    [SerializeField] private EventChannels channel;
+    UnityEvent leftStepEvent = new UnityEvent();
+    UnityEvent rightStepEvent = new UnityEvent();
 
 
 
@@ -74,8 +79,14 @@ public class PlayerAnimatorLogic : MonoBehaviour
         AttachIKReferencesToWeapon(0);
     }
 
+    void Awake()
+    {
+        channel.createEvent("stepLeft", leftStepEvent);
+        channel.createEvent("stepRight", rightStepEvent);
+    }
     void Start()
     {
+
 
 
         playerInput.actions["Reload"].performed += ReloadAnimate;
@@ -243,5 +254,15 @@ public class PlayerAnimatorLogic : MonoBehaviour
         backHandIK.localPosition = Vector3.zero;
 
         rb.Build();
+    }
+
+    public void StepTakenLeft()
+    {
+        leftStepEvent.Invoke();
+    }
+
+    public void StepTakenRight()
+    {
+        rightStepEvent.Invoke();
     }
 }

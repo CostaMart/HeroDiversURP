@@ -26,12 +26,16 @@ public class Dropper : MonoBehaviour
     private Transform player;
     private MessageHelper helper;
     public EffectsDispatcher dispatcher;
+    private AudioSource audioSource;
+
 
     /// <summary>
     /// load itempool on start
     /// </summary>
     void Start()
     {
+
+        audioSource = GetComponent<AudioSource>();
 
         helper = GameObject.Find("InGameManagers").GetComponent<MessageHelper>();
         GameObject player = GameObject.Find("Player");
@@ -134,6 +138,8 @@ public class Dropper : MonoBehaviour
         AddForce(direction * 10f - Vector3.forward * 10f, ForceMode.Impulse);
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>()
         .AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
+
+        audioSource.Play();
 
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
