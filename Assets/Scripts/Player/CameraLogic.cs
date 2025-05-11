@@ -31,11 +31,21 @@ public class MouseRotateCamera : MonoBehaviour
     [Header("Recoil Settings")]
     [SerializeField] private float recoilRecoverySpeed = 10f;
 
+    [SerializeField] private EventChannels channel;
+
+
     private float currentVerticalRecoil = 0f;
     private float currentHorizontalRecoil = 0f;
 
+    private bool isBursting = false;
+
     void Awake()
     {
+
+        channel.Subscribe("BurstOn", CameraBurstReaction);
+        channel.Subscribe("BurstOff", CameraBurstEndReaction);
+
+
         if (settings == null)
             Debug.LogError("CameraSettings not found");
 
@@ -65,22 +75,24 @@ public class MouseRotateCamera : MonoBehaviour
         float targetFov = aiming ? settings.AimingFov : settings.DefaultFov;
         float targetDistance = aiming ? initialCameraDistance - settings.Zoom : initialCameraDistance;
 
+        if (isBursting)
+        {
+            targetFov += settings.BurstFov;
+            targetDistance += settings.BurstDistance;
+        }
+
         cineCam.Lens.FieldOfView = Mathf.Lerp(cineCam.Lens.FieldOfView, targetFov, Time.deltaTime * settings.ZoomSpeed);
         followCamera.CameraDistance = Mathf.Lerp(followCamera.CameraDistance, targetDistance, Time.deltaTime * settings.ZoomSpeed);
 
-        // Input del mouse
         rotationY += delta.x * settings.Sensitivity;
         rotationX -= delta.y * settings.Sensitivity;
 
-        // Applica rinculo
         rotationX -= currentVerticalRecoil;
         rotationY += currentHorizontalRecoil;
 
-        // Recupera rinculo
         currentVerticalRecoil = Mathf.Lerp(currentVerticalRecoil, 0f, Time.deltaTime * recoilRecoverySpeed);
         currentHorizontalRecoil = Mathf.Lerp(currentHorizontalRecoil, 0f, Time.deltaTime * recoilRecoverySpeed);
 
-        // Clamp verticale
         rotationX = Mathf.Clamp(rotationX, settings.LowerBoundYrotation, settings.UpperBoundYrotation);
 
         if (!ragdolling)
@@ -107,11 +119,6 @@ public class MouseRotateCamera : MonoBehaviour
         delta = rotation;
     }
 
-    /// <summary>
-    /// Applica un rinculo verticale e una deviazione orizzontale deterministica.
-    /// </summary>
-    /// <param name="verticalIntensity">Quanto spinge in alto</param>
-    /// <param name="horizontalDeviation">Quanto devia lateralmente (+ destra, - sinistra)</param>
     public void ApplyRecoil(float verticalIntensity, float horizontalDeviation, float recoilMax, float reciolRecovery)
     {
         recoilRecoverySpeed = reciolRecovery;
@@ -127,5 +134,15 @@ public class MouseRotateCamera : MonoBehaviour
         currentVerticalRecoil = 0f;
         currentHorizontalRecoil = 0f;
     }
-}
 
+    public void CameraBurstReaction()
+    {
+        if (!aiming)
+            isBursting = true;
+    }
+
+    public void CameraBurstEndReaction()
+    {
+        isBursting = false;
+    }
+}

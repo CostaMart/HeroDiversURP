@@ -13,6 +13,8 @@ public class CameraSettings : ScriptableObject
     [SerializeField] private float defaultFov = 60f;
     [SerializeField] private float lowerBoundYrotation = -50f;
     [SerializeField] private float upperBoundYrotation = 90f;
+    [SerializeField] public float BurstFov = 80f;
+    [SerializeField] public float BurstDistance = 10f;
 
     public float Sensitivity => sensitivity;
     public float AimingFov => aimingFov;

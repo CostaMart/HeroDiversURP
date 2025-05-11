@@ -19,3 +19,5 @@ MonoBehaviour:
   defaultFov: 60
   lowerBoundYrotation: -50
   upperBoundYrotation: 40
+  BurstFov: 10
+  BurstDistance: 1
