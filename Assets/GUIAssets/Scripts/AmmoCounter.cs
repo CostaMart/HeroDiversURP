@@ -1,20 +1,29 @@
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class AmmoCounter : MonoBehaviour
 {
-    [SerializeField] private EffectsDispatcher dispatcher;
+    private EffectsDispatcher dispatcher;
     [SerializeField] private TMP_Text panel;
-    [SerializeField] private PlayerInput playerInput;
+    private PlayerInput playerInput;
     private WeaponLogicContainer weaponLogicContainer;
+    GameObject player;
     private bool isPirmarySelected = true;
 
-    void Start()
+    void Awake()
     {
+        if (weaponLogicContainer == null)
+            player = GameObject.Find("Player");
 
-        weaponLogicContainer = GameObject.Find("Player").GetComponent<WeaponLogicContainer>();
+        dispatcher = player.GetComponent<EffectsDispatcher>();
+        weaponLogicContainer = player.GetComponent<WeaponLogicContainer>();
+        playerInput = player.GetComponent<PlayerInput>();
+
+        Debug.Log("AmmoCounter initialized");
     }
 
     void Update()
@@ -26,7 +35,8 @@ public class AmmoCounter : MonoBehaviour
         int currentAmmoIndex = weaponLogicContainer.currentAmmo;
         int currentAmmo = magSize - currentAmmoIndex;
 
-        panel.text = $"{currentAmmo}/{magSize}";
+        if (panel.gameObject.activeSelf)
+            panel.text = $"{currentAmmo}/{magSize}";
 
     }
 }

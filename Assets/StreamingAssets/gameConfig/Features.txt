@@ -13,7 +13,7 @@ coolingPerSecond = 10.0 ID:11
 heat = 0.0 ID:8 range: 0.0-100.0
 overHeatLimit = 100.0 ID:10
 strafeBurstDuration = 0.3 ID:12
-strafePower = 50.0 ID:15
+strafePower = 70.0 ID:15
 strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
 ##
@@ -50,8 +50,8 @@ recoilMax = 1.0 ID:21
 
 #GFX_AR-PrimaryWeaponStats
 magCount = 10 ID:1
-magSize = 200 ID:2
-fireRate = 5.0 ID:3
+magSize = 50 ID:2
+fireRate = 9.0 ID:3
 bulletSpeed = 100.0 ID:4
 laserLength = 100.0 ID:5
 automatic = true  ID:6
@@ -64,17 +64,17 @@ heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
 bulletEffects = 0  ID:14
 damage = 10.0 ID:15
-recoilStrengthVertical = 0.5 ID:16
+recoilStrengthVertical = 0.1 ID:16
 recoilStrengthLateral = 0.0 ID:17
 bulletLifeTime = 5.0 ID:18
 reloadTime = 2.0 ID:19
 recoilRecoverySpeed = 0.01 ID:20
-recoilMax = 3.0 ID:21
+recoilMax = 0.2 ID:21
 ##
 
 #Pistol-SecondaryWeaponStats
-magCount = 2000 ID:1
-magSize = 2000 ID:2
+magCount = 10 ID:1
+magSize = 10 ID:2
 fireRate = 10.0 ID:3
 bulletSpeed = 1.0 ID:4
 laserLength = 100.0 ID:5
@@ -99,9 +99,9 @@ reloadTime = 0.5 ID:23
 
 #GFX_SNIPER-PrimaryWeaponStats
 magCount = 2000 ID:1
-magSize = 2000 ID:2
-fireRate = 10.0 ID:3
-bulletSpeed = 1.0 ID:4
+magSize = 10 ID:2
+fireRate = 0.5 ID:3
+bulletSpeed = 200.0 ID:4
 laserLength = 100.0 ID:5
 automatic = false ID:6
 activeLogicIndex = 0  ID:7
@@ -112,12 +112,12 @@ widthScale = 20.0 ID:11
 heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
 bulletEffects = 1  ID:14
-damage = 10.0 ID:15
-recoilStrengthVertical = 0.01 ID:16
+damage = 100.0 ID:15
+recoilStrengthVertical = 20.0 ID:16
 recoilStrengthLateral = 0.0 ID:17
 reloadTime = 1.0 ID:19
-recoilRecoverySpeed = 0.1 ID:20
-recoilMax = 1.0 ID:21
+recoilRecoverySpeed = 0.01 ID:20
+recoilMax = 20.0 ID:21
 bulletLifeTime = 5.0 ID:22
-reloadTime = 0.5 ID:23
+reloadTime = 2.0 ID:23
 ##

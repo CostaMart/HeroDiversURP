@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3082708132268378418}
   - component: {fileID: 2445086388497629667}
   - component: {fileID: 759994457338895252}
+  - component: {fileID: 2095809611667553164}
   m_Layer: 6
   m_Name: Image
   m_TagString: Untagged
@@ -75,6 +76,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2095809611667553164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175695070008205180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ea8449126eba230aa3302dcaea1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 8464388082226049841}
 --- !u!1 &2146593283530008942
 GameObject:
   m_ObjectHideFlags: 0
@@ -4976,6 +4990,7 @@ GameObject:
   - component: {fileID: 8182050059701399474}
   - component: {fileID: 671317668752187550}
   - component: {fileID: 8911985452107465205}
+  - component: {fileID: 6826881669831984237}
   m_Layer: 6
   m_Name: GuiCanvas
   m_TagString: Untagged
@@ -5067,6 +5082,19 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &6826881669831984237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5315562016636735136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ea8449126eba230aa3302dcaea1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 8464388082226049841}
 --- !u!1 &5514935757837269750
 GameObject:
   m_ObjectHideFlags: 0
@@ -5175,7 +5203,7 @@ MonoBehaviour:
   bulletPool: []
   bulletRigids: []
   reloading: 0
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 6093212292097676079, guid: f351ee1e5215b4e78b2bede5f2d5c8a2, type: 3}
   laserType: 0
   laserThickness: 0.1
   laserMask:
@@ -5376,6 +5404,7 @@ GameObject:
   - component: {fileID: 8388337329308547218}
   - component: {fileID: 5601461062008639717}
   - component: {fileID: 4482123162299204918}
+  - component: {fileID: 8657727532586668357}
   m_Layer: 6
   m_Name: Muzzle
   m_TagString: Untagged
@@ -5603,3 +5632,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8657727532586668357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8976830970620360236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 675c00392d2a80f5db9d5d4265a42f19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firingAudioClips:
+  - {fileID: 8300000, guid: 23d80b5297162e9459fea98d1bec36f4, type: 3}
+  emptyMagAudioClips:
+  - {fileID: 8300000, guid: 526eefc86463358579585529cc578a9c, type: 3}
