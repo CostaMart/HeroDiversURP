@@ -1,0 +1,14 @@
+{
+    "tags": [
+        {
+            "name": "EnemySpawnTag",
+            "type": "Random",
+            "members": ["Enemy1","Enemy2","Enemy3","Enemy4"]
+        },
+        {
+            "name": "PlayerTag",
+            "type": "Random",
+            "members": ["Player"]
+        }
+    ]
+}

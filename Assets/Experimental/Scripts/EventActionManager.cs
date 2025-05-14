@@ -1,25 +1,40 @@
 // Gestore centrale che configura i collegamenti tra eventi e azioni
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+[System.Serializable]
+public class ActionConfig
+{
+    public string action;
+    public string tag;
+}
+
+[System.Serializable]
+public class EventConfiguration
+{
+    // Corrisponde alla struttura del JSON aggiornato
+    public string name;                  // Nome dell'evento (es. "TargetDetected")
+    public List<ActionConfig> actions;   // Lista di azioni associate all'evento
+}
+
+[System.Serializable]
+public class EventsConfiguration
+{
+    public List<EventConfiguration> events = new();
+}
 
 public class EventActionManager : MonoBehaviour
 {
     // Singleton per l'accesso globale
     public static EventActionManager Instance { get; private set; }
 
-    // Dictionary per memorizzare le azioni disponibili
-    // key: objectId+actionName, value: InteractiveObject
-    Dictionary<string, List<InteractiveObject>> actions = new();
-
     // Internal dictionary mapping event keys to multicast delegates
-    // key: eventKey, value: objectId+actionName
-    Dictionary<string, string> eventTable = new();
+    // key: eventKey, value: (action, tag)
+    Dictionary<string, List<ActionConfig>> eventTable = new();
 
 
     private void Awake()
     {
-        // Assicura che ci sia solo un'istanza di questo manager
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -28,23 +43,52 @@ public class EventActionManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        actions = new Dictionary<string, List<InteractiveObject>>();
-        eventTable = CsvEventActionMap.LoadFromFile("EventActionMap");
-        foreach (var entry in eventTable)
-        {
-            Debug.Log($"Event '{entry.Key}' mapped to action '{entry.Value}'.");
-        }
+        LoadConfigFromJson();
     }
 
-    public void RegisterAction(string actionName, InteractiveObject target)
-    {
-        if (!eventTable.ContainsKey(actionName))
+    public void LoadConfigFromJson()
+    {       
+        // Deserializza il JSON
+        EventsConfiguration config = JsonUtility.FromJson<EventsConfiguration>(Resources.Load<TextAsset>("EventActionConfig").text);
+        
+        // Pulisci la mappa corrente
+        eventTable.Clear();
+        
+        // Popola la mappa con i dati dal JSON
+        foreach (var eventConfig in config.events)
         {
-            actions[actionName] = new List<InteractiveObject>();
+            string eventName = eventConfig.name;
+            
+            // Assicurati che l'evento sia nella mappa
+            if (!eventTable.ContainsKey(eventName))
+            {
+                eventTable[eventName] = new List<ActionConfig>();
+            }
+            
+            // Aggiungi tutte le azioni configurate per questo evento
+            foreach (var actionCfg in eventConfig.actions)
+            {
+                ActionConfig actionConfig = new()
+                {
+                    action = actionCfg.action,
+                    tag = actionCfg.tag
+                };
+                
+                eventTable[eventName].Add(actionConfig);
+                Debug.Log($"Loaded event '{eventName}' mapped to action '{actionConfig.action}' for tag '{actionConfig.tag}'.");
+            }
         }
-        actions[actionName].Add(target);
-        Debug.Log($"Action '{actionName}' registered successfully for {target.name}.");
     }
+    
+    // public void RegisterAction(string actionName, InteractiveObject target)
+    // {
+    //     if (!eventTable.ContainsKey(actionName))
+    //     {
+    //         actions[actionName] = new List<InteractiveObject>();
+    //     }
+    //     actions[actionName].Add(target);
+    //     Debug.Log($"Action '{actionName}' registered successfully for {target.name}.");
+    // }
 
     public void RegisterEvent(string eventKey)
     {
@@ -63,19 +107,43 @@ public class EventActionManager : MonoBehaviour
     public void TriggerEvent(string eventKey, object[] parameters = null)
     {
         Debug.Log($"Triggering event '{eventKey}' with parameters: {parameters}");
-        if (eventTable.TryGetValue(eventKey, out var actionKey))
+        if (eventTable.TryGetValue(eventKey, out var actionConfigs))
         {
-            if (actions.TryGetValue(actionKey, out var objects))
+            Debug.Log($"Event '{eventKey}' found with {actionConfigs.Count} actions.");
+            Debug.Log($"Actions: {string.Join(", ", actionConfigs)}");
+            foreach (var actionConfig in actionConfigs)
             {
-                foreach (var obj in objects)
+                Debug.Log($"Action Config: {actionConfig.action}, Tag: {actionConfig.tag}");
+                string actionName = actionConfig.action;
+                string tagName = actionConfig.tag;
+
+                GameObject tagObject = EntityManager.Instance.GetEntity(tagName);
+                if (tagObject == null)
                 {
-                    Debug.Log($"Triggering action '{actionKey}' for event '{eventKey}' on {obj.name}.");
-                    obj.ExecuteAction(actionKey, parameters);
+                    Debug.LogWarning($"Tag object '{tagName}' not found.");
+                    // continue;
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"Action '{actionKey}' not found for event '{eventKey}'.");
+                else
+                {
+                    Debug.Log($"Tag object '{tagName}' found.");
+                }
+                if (tagObject.TryGetComponent<GameTag>(out var tag))
+                {
+                    Debug.Log($"Tag '{tagName}' found for event '{eventKey}'.");
+                    Debug.Log($"Tag '{tagName}' has {tag.taggedObjects.Count} tagged objects.");
+                    foreach (var obj in tag.taggedObjects)
+                    {
+                        Debug.Log($"Triggering action '{actionName}' for event '{eventKey}' on {obj.name}.");
+                        if (obj.TryGetComponent<InteractiveObject>(out var interactiveObject))
+                        {
+                            interactiveObject.ExecuteAction(actionName, parameters);
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Tag '{tagName}' not found for event '{eventKey}'.");
+                }
             }
         }
         else
@@ -83,4 +151,30 @@ public class EventActionManager : MonoBehaviour
             Debug.LogWarning($"Event '{eventKey}' not found.");
         }
     }
+
+    // // metodo per richiamare le azioni associate a un evento
+    // public void TriggerEvent(string eventKey, object[] parameters = null)
+    // {
+    //     Debug.Log($"Triggering event '{eventKey}' with parameters: {parameters}");
+    //     if (eventTable.TryGetValue(eventKey, out var actionKey))
+    //     {
+    //         if (actions.TryGetValue(actionKey, out var objects))
+    //         {
+    //             foreach (var obj in objects)
+    //             {
+    //                 Debug.Log($"Triggering action '{actionKey}' for event '{eventKey}' on {obj.name}.");
+    //                 obj.ExecuteAction(actionKey, parameters);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             Debug.LogWarning($"Action '{actionKey}' not found for event '{eventKey}'.");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning($"Event '{eventKey}' not found.");
+    //     }
+    // }
+
 }

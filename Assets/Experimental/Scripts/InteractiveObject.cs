@@ -31,7 +31,7 @@ public abstract class InteractiveObject : MonoBehaviour
     {
         if (actions.TryGetValue(actionId, out var action))
         {
-            Debug.Log($"Executing action '{actionId}' on {gameObject.name} with parameters: {parameters}");
+            // Debug.Log($"Executing action '{actionId}' on {gameObject.name} with parameters: {parameters}");
             action.Invoke(parameters);
         }
         else
@@ -62,11 +62,11 @@ public abstract class InteractiveObject : MonoBehaviour
         return new List<string>(events);
     }
 
-    // Registra un'azione che questo oggetto può eseguire
+    // // Registra un'azione che questo oggetto può eseguire
     protected void RegisterAction(string actionId, Action<object[]> action)
     {
         actions[actionId] = action;
-        EventActionManager.Instance.RegisterAction(actionId, this);
+        // EventActionManager.Instance.RegisterAction(actionId, this);
     }
 
     // Registra un evento che questo oggetto può emettere

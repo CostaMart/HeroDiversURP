@@ -1,2 +1,3 @@
 eventKey,targetObjectName,actionName
 TargetDetected,ManualAgentPosition,MoveTo
+AttackStarted,ManualAgentPosition,MoveTo

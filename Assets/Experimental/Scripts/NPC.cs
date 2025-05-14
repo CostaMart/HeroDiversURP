@@ -222,7 +222,7 @@ public class NPC : InteractiveObject
     
     private void OnAttack(object[] parameters)
     {
-        currAction = Attack;
+        // currAction = Attack;
         agentController.StopAgent();
         
         EmitEvent("AttackStarted", new object[] { targetTransform });
@@ -231,7 +231,7 @@ public class NPC : InteractiveObject
         Debug.Log("Attacking target!");
         
         // Torna alla modalità chase dopo l'attacco
-        // StartCoroutine(AttackCooldown());
+        StartCoroutine(AttackCooldown());
     }
 
     void OnRotateToTarget(object[] parameters)
@@ -282,11 +282,6 @@ public class NPC : InteractiveObject
         }
     }
 
-    void Attack()
-    {
-        Debug.Log("Attacking target!");
-    }
-
     void WaitAtLastKnownPosition()
     {
         if (agentController.HasReachedDestination())
@@ -301,26 +296,19 @@ public class NPC : InteractiveObject
     }
 
     // Coroutine per il cooldown dell'attacco
-    // private IEnumerator AttackCooldown()
-    // {
-    //     // Attendiamo il tempo di recupero dell'attacco
-    //     yield return new WaitForSeconds(1.5f);
+    private IEnumerator AttackCooldown()
+    {
+        // Attendiamo il tempo di recupero dell'attacco
+        yield return new WaitForSeconds(1.5f);
         
-    //     EmitEvent("AttackEnded");
+        // EmitEvent("AttackEnded");
         
-    //     // Torna a inseguire se il target esiste ancora
-    //     if (targetTransform != null)
-    //     {
-    //         currAction = Chase;
-    //         agentController.ResumeAgent();
-            
-    //     }
-    //     else
-    //     {
-    //         // Altrimenti torna a casa
-    //         ExecuteAction("Patrol");
-    //     }
-    // }
+        // Torna a inseguire se il target esiste ancora
+        if (targetTransform != null)
+        {
+            agentController.ResumeAgent();
+        }
+    }
     
     void OnDrawGizmosSelected()
     {

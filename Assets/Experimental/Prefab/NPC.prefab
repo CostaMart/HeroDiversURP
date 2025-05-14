@@ -431,7 +431,7 @@ MonoBehaviour:
   OnStayAction: Chase
   OnStayEvent: 
   detectionRange: 10
-  detectionAngle: 23
+  detectionAngle: 42
   tagsToDetect: Player
   scanInterval: 0.2
   ignoreObstacles: 0
@@ -535,7 +535,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8148782767339455408}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
@@ -547,7 +547,7 @@ MonoBehaviour:
   OnStayAction: 
   OnStayEvent: 
   detectionRange: 3
-  detectionAngle: 360
+  detectionAngle: 110
   tagsToDetect: Player
   scanInterval: 0.2
   ignoreObstacles: 0

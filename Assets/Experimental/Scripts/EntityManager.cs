@@ -73,6 +73,14 @@ public class EntityManager : MonoBehaviour
         {
             Debug.LogWarning("Spawner prefab not set in the EntityManager Inspector!");
         }
+
+        // Caricamento dei tag da un file di configurazione
+        if (!TryGetComponent<TagConfigLoader>(out _))
+        {
+            // crea un nuovo loader se non esiste
+            TagConfigLoader loader = gameObject.AddComponent<TagConfigLoader>();
+            loader.configFile = Resources.Load<TextAsset>("TagConfig");
+        }
     }
 
     /// <summary>
@@ -189,6 +197,7 @@ public class EntityManager : MonoBehaviour
         }
         
         string uniqueId = RegisterEntity(id, entity);
+        
         return entity;
     }
 }

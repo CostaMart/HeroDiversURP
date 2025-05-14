@@ -9,7 +9,6 @@ namespace Utility
         private void Start()
         {
             agentController = GetComponent<AgentController>();
-
             RegisterAction("MoveTo", MoveTo);
             RegisterEvent("OnMoveToComplete");
         }
