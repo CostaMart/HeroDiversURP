@@ -13,10 +13,12 @@ public class AgentController : MonoBehaviour
     public Vector3 position => transform.position;
 
     public Vector3 forward => transform.forward;
+    Animator anim;
 
-    private void Start()
+    private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
         currentDestination = transform.position;
         speed = agent.speed;
     }
@@ -24,8 +26,21 @@ public class AgentController : MonoBehaviour
     private void Update()
     {
         agent.speed = speed;
-        // Debug.Log("IsStuck: " + IsStuck());
         agent.SetDestination(currentDestination);
+
+        if (anim)
+        {
+            if (IsMoving())
+            {
+                anim.speed = agent.velocity.magnitude;
+                anim.SetBool("isMoving", true);
+            }
+            else
+            {
+                anim.speed = 1f;
+                anim.SetBool("isMoving", false);
+            }
+        }
     }
 
     public void MoveTo(Vector3 destination)
@@ -37,8 +52,28 @@ public class AgentController : MonoBehaviour
     {
         Vector3 targetDirection = direction - transform.position;
         targetDirection.y = 0; // Keep the rotation on the Y axis only
+        if (targetDirection == Vector3.zero) return;
+
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
+
+        // Compute rotation direction (left or right)  
+        float signedAngle = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
+
+        // Apply rotation
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+
+        // If the angle is significantly different, set the animation parameters
+        if (angleDifference > 5f)
+        {
+            anim.speed = 1f;
+            anim.SetBool("isTurning", true);
+            anim.SetFloat("turnDirection", signedAngle);
+        }
+        else
+        {
+            anim.SetBool("isTurning", false);
+        }
     }
 
     public bool HasReachedDestination()

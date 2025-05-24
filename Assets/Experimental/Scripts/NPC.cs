@@ -47,6 +47,8 @@ public class NPC : InteractiveObject
 
     float waitAtLastKnownPositionTimer; // Timer for waiting at last known position
 
+    Animator anim;
+
     enum State
     {
         Idle,
@@ -62,6 +64,7 @@ public class NPC : InteractiveObject
         agentController = GetComponent<AgentController>();
         targetTransform = EntityManager.Instance.GetEntity("Player").transform;
         currAction = Idle; // Default action is Idle
+        anim = GetComponent<Animator>();
     }
 
     void Start()
@@ -239,7 +242,7 @@ public class NPC : InteractiveObject
         // Ruota l'agente verso il target
         agentController.RotateToDirection(targetTransform.position, rotationSpeed);
     }
-    
+
     void Idle() {}
 
     void Patrol()
@@ -272,7 +275,7 @@ public class NPC : InteractiveObject
         {
             // Resetta il timer se vediamo ancora il target
             lastKnownPosition = targetPosition;
-            
+
             // Aggiorna il percorso con una certa frequenza
             if (pathUpdateTimer >= pathUpdateRate)
             {
@@ -300,14 +303,10 @@ public class NPC : InteractiveObject
     {
         // Attendiamo il tempo di recupero dell'attacco
         yield return new WaitForSeconds(1.5f);
+        if (anim) anim.SetTrigger("attack");
+        agentController.ResumeAgent();
         
         // EmitEvent("AttackEnded");
-        
-        // Torna a inseguire se il target esiste ancora
-        if (targetTransform != null)
-        {
-            agentController.ResumeAgent();
-        }
     }
     
     void OnDrawGizmosSelected()

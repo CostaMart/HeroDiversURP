@@ -1,0 +1,58 @@
+{
+  "detectorConfigs": {
+    "default": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 10.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "Player",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "obstacleLayerName": "Default",
+      "detectionBufferSize": 32,
+      "useMultipleRaycasts": false,
+      "raycastCount": 3,
+      "verticalRange": 2.0
+    },
+    "guard": {
+      "OnEnterAction": "AlertGuard",
+      "OnEnterEvent": "OnEnemyDetected",
+      "OnExitAction": "",
+      "OnExitEvent": "OnEnemyLost",
+      "OnStayAction": "",
+      "OnStayEvent": "OnEnemyTracking",
+      "detectionRange": 15.0,
+      "detectionAngle": 90.0,
+      "tagsToDetect": "Player,Enemy",
+      "scanInterval": 0.1,
+      "ignoreObstacles": false,
+      "obstacleLayerName": "Default",
+      "detectionBufferSize": 32,
+      "useMultipleRaycasts": true,
+      "raycastCount": 3,
+      "verticalRange": 2.5
+    },
+    "sensor": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "OnTriggerActivated",
+      "OnExitAction": "",
+      "OnExitEvent": "OnTriggerDeactivated",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 5.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "Player",
+      "scanInterval": 0.05,
+      "ignoreObstacles": true,
+      "obstacleLayerName": "Default",
+      "detectionBufferSize": 16,
+      "useMultipleRaycasts": false,
+      "raycastCount": 1,
+      "verticalRange": 1.0
+    }
+  }
+}

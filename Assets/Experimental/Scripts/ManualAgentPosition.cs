@@ -33,7 +33,7 @@ namespace Utility
             }
             else
             {
-                Debug.LogWarning("Invalid parameters for MoveTo action.");
+                // Debug.LogWarning("Invalid parameters for MoveTo action.");
                 // Generate random position within a certain range
                 var randomPosition = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
                 agentController.MoveTo(randomPosition); 
