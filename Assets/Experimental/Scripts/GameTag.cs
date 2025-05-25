@@ -19,7 +19,7 @@ public class GameTag : MonoBehaviour
     {
         InitializeIterator();
     }
-    
+
     private void InitializeIterator()
     {
         switch (tagType)
@@ -52,12 +52,17 @@ public class GameTag : MonoBehaviour
             UpdateIterator();
         }
     }
-    
+
     // Rimuove tutti gli oggetti dalla lista e aggiorna l'iteratore
     public void ClearTaggedObjects()
     {
         taggedObjects.Clear();
         UpdateIterator();
+    }
+    
+    public bool Contains(GameObject obj)
+    {
+        return taggedObjects.Contains(obj);
     }
 
 }

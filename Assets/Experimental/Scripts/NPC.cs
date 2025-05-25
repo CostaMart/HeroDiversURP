@@ -170,7 +170,7 @@ public class NPC : InteractiveObject
             }
         }
 
-        // Update the AgentController with the current speed and destination
+        // Update the AgentController with the current speed
         agentController.SetSpeed(currSpeed);
 
         currAction.Invoke(); // Call the current action

@@ -19,7 +19,7 @@ public class Detector : MonoBehaviour
     readonly List<Transform> tempTargetsList = new();
     
     // Cache per performance
-    string[] targetTags;
+    GameTag[] targetTags;
     float nextScanTime = 0f;
     Transform cachedTransform;
     LayerMask obstacleLayer;
@@ -46,17 +46,18 @@ public class Detector : MonoBehaviour
             enabled = false;
             return;
         }
-                
+
         ApplyConfiguration();
     }
     
     void ApplyConfiguration()
     {
         // Parse tags
-        targetTags = config.tagsToDetect.Split(',');
-        for (int i = 0; i < targetTags.Length; i++)
+        string[] tagsToDetect = config.tagsToDetect.Split(',');
+        targetTags = new GameTag[tagsToDetect.Length];
+        for (int i = 0; i < tagsToDetect.Length; i++)
         {
-            targetTags[i] = targetTags[i].Trim();
+            targetTags[i] = EntityManager.Instance.GetEntity(tagsToDetect[i].Trim()).GetComponent<GameTag>();
         }
         
         // Setup layer mask
@@ -67,7 +68,7 @@ public class Detector : MonoBehaviour
         // Alloca buffer per OverlapSphere
         overlapResults = new Collider[config.detectionBufferSize];
         
-        // Pre-calcola dot product minimo
+        // Pre-calcola dot product minimo per l'angolo di rilevamento
         minDot = Mathf.Cos(config.detectionAngle * 0.5f * Mathf.Deg2Rad);
         
         Debug.Log($"Detector on {gameObject.name} loaded configuration '{configurationName}'");
@@ -142,7 +143,7 @@ public class Detector : MonoBehaviour
     {
         for (int i = 0; i < targetTags.Length; i++)
         {
-            if (obj.CompareTag(targetTags[i]))
+            if (targetTags[i].Contains(obj))
                 return true;
         }
         return false;
