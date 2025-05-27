@@ -1,0 +1,22 @@
+{
+    "events": [
+        {
+            "name": "TargetDetected",
+            "actions": [
+                {
+                    "action": "MoveTo",
+                    "tag": "PlayerTag"
+                }
+            ]
+        },
+        {
+            "name": "AttackStarted",
+            "actions": [
+                {
+                    "action": "MoveTo",
+                    "tag": "PlayerTag"
+                }
+            ]
+        }
+    ]
+}
