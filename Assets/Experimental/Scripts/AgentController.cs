@@ -28,11 +28,6 @@ public class AgentController : MonoBehaviour
         agent.speed = speed;
         agent.SetDestination(currentDestination);
 
-        if (IsMoving() && !IsStuck())
-        {
-            Debug.Log($"Agent {gameObject.name} has sqr speed: {agent.velocity.sqrMagnitude}");
-        }
-
         if (anim)
         {
             if (IsMoving())
@@ -53,33 +48,59 @@ public class AgentController : MonoBehaviour
         currentDestination = destination;
     }
 
-    public void RotateToDirection(Vector3 direction, float rotationSpeed)
+    public float rotationSpeed = 3f; // Velocità di rotazione (più alto = più veloce)
+
+    /// <summary>
+    /// Ruota gradualmente l'oggetto verso una direzione data, mantenendo l'asse Y costante.
+    /// Aggiorna anche le animazioni se necessario.
+    /// </summary>
+    public void RotateToDirection(Vector3 lookAtPosition, float rotationSpeed)
     {
-        Vector3 targetDirection = direction - transform.position;
-        targetDirection.y = 0; // Keep the rotation on the Y axis only
-        if (targetDirection == Vector3.zero) return;
+        if (agent.isStopped) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-        float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
+        // Calcola la direzione orizzontale verso il punto da guardare
+        Vector3 directionToTarget = lookAtPosition - transform.position;
+        directionToTarget.y = 0f;
 
-        // Compute rotation direction (left or right)  
-        float signedAngle = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
+        // Se la distanza sul piano XZ è trascurabile, non fare nulla
+        if (directionToTarget.sqrMagnitude < 0.01f)
+            return;
 
-        // Apply rotation
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+        directionToTarget.Normalize(); // Normalizza per ottenere solo la direzione
 
-        // If the angle is significantly different, set the animation parameters
-        if (angleDifference > 5f)
+        // Verifica se siamo già quasi allineati con la direzione target
+        float dot = Vector3.Dot(transform.forward, directionToTarget);
+        if (dot > 0.999f) // Corrisponde a un angolo di circa < 2.5 gradi. (cos(2.5°) ≈ 0.9990)
         {
-            anim.speed = 1f;
-            anim.SetBool("isTurning", true);
-            anim.SetFloat("turnDirection", signedAngle);
+            return;
         }
-        else
+
+        // Ruota gradualmente verso la direzione target
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
+
+        // Gestione animazione
+        if (anim != null)
         {
-            anim.SetBool("isTurning", false);
+            // Il componente Y del prodotto vettoriale tra transform.forward (direzione attuale) e directionToTarget (direzione desiderata)
+            // indica la direzione della svolta: un valore positivo e uno negativo indicano svolte opposte (es. y > 0 per sinistra).
+            float turnDirection = Vector3.Cross(transform.forward, directionToTarget).y;
+
+            if (turnDirection > 0.1f)
+            {
+                anim.SetTrigger("turnLeft");
+            }
+            else if (turnDirection < -0.1f)
+            {
+                anim.SetTrigger("turnRight");
+            }
         }
     }
+
 
     public bool HasReachedDestination()
     {

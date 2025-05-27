@@ -15,11 +15,17 @@ public class NPC : InteractiveObject
 
     public string objectId = "Enemy_0";
 
+    [Header("Rotazione")]
+    [Tooltip("Velocità con cui l'oggetto ruota verso il target.")]
+    [Range(0, 360)]
+    [SerializeField]
+    private float rotationSpeed = 180f; // Speed of rotation in degrees per second
+
     public Action currAction;
     
     // Patrol Settings
     public float waitTime = 2f; // Time to wait at each waypoint
-    public float rotationSpeed = 3f; // Time to wait before rotating
+
     private bool isWaiting = false;
     private float waitTimer = 0f;
     public float patrolRadius = 10f; // Radius of the patrol area
@@ -299,11 +305,13 @@ public class NPC : InteractiveObject
     // Coroutine per il cooldown dell'attacco
     private IEnumerator AttackCooldown()
     {
-        // Attendiamo il tempo di recupero dell'attacco
-        yield return new WaitForSeconds(1.5f);
-        if (anim) anim.SetTrigger("attack");
-        agentController.ResumeAgent();
+        if (anim)
+        {
+            anim.SetTrigger("attack");
+        }
+        yield return new WaitForSeconds(1.0f);
         
+        agentController.ResumeAgent();
         // EmitEvent("AttackEnded");
     }
     
