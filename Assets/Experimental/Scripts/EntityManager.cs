@@ -53,25 +53,28 @@ public class EntityManager : MonoBehaviour
     /// </summary>
     public void InitializeDefaultEntities()
     {
-        // Istanzia il player solo se il prefab è assegnato
-        if (_playerPrefab != null)
-        {
-            GameObject player = InstantiateEntity("Player", _playerPrefab, _playerPrefab.transform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Player prefab not set in the EntityManager Inspector!");
-        }
+        GameObject player = GameObject.Find("Player");
+        RegisterEntity("Player", player);
 
-        // Istanzia lo spawner solo se il prefab è assegnato
-        if (_spawnerPrefab != null)
-        {
-            GameObject spawner = InstantiateEntity(_spawnerPrefab.name, _spawnerPrefab, _spawnerPrefab.transform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Spawner prefab not set in the EntityManager Inspector!");
-        }
+        // Istanzia il player solo se il prefab è assegnato
+        // if (_playerPrefab != null)
+        // {
+        //     GameObject player = InstantiateEntity("Player", _playerPrefab, _playerPrefab.transform.position, Quaternion.identity);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("Player prefab not set in the EntityManager Inspector!");
+        // }
+
+        // // Istanzia lo spawner solo se il prefab è assegnato
+        // if (_spawnerPrefab != null)
+        // {
+        //     GameObject spawner = InstantiateEntity(_spawnerPrefab.name, _spawnerPrefab, _spawnerPrefab.transform.position, Quaternion.identity);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("Spawner prefab not set in the EntityManager Inspector!");
+        // }
     }
 
     /// <summary>

@@ -122,7 +122,7 @@ public class NPC : InteractiveObject
         RegisterEvent("AttackEnded");
         
         // Examples of adding features to the NPC
-        Experimental.Feature speedFeature = new(10.0f, Experimental.Feature.FeatureType.SPEED);
+        Experimental.Feature speedFeature = new(3.0f, Experimental.Feature.FeatureType.SPEED);
         AddFeature(speedFeature);
 
         agentController.SetSpeed(speedFeature.GetCurrentValue());
@@ -176,7 +176,6 @@ public class NPC : InteractiveObject
         // Update the AgentController with the current speed
         agentController.SetSpeed(currSpeed);
 
-        Debug.Log($"{name} Current State: {currAction.Method.Name}");
         currAction.Invoke(); // Call the current action
     }
 
@@ -217,7 +216,7 @@ public class NPC : InteractiveObject
     private void OnStartPatrol()
     {
         currAction = Patrol;
-        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, 9.0f));
+        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 3.0f));
         agentController.MoveTo(waypoints[currentPatrolIndex]);
     }
     
@@ -271,7 +270,7 @@ public class NPC : InteractiveObject
     void Chase()
     {
         currAction = Idle;
-        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 1.0f, -9.0f));
+        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 2.0f));
         pathUpdateTimer += Time.deltaTime;
         Vector3 targetPosition = targetTransform.position;
         
