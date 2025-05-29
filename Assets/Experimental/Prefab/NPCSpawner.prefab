@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: prefabsToSpawn.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: 'prefabsToSpawn.Array.data[0]'
@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 3683212510054738694, guid: 46d317e9946032c46b0813443fd55fdf, type: 3}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: generalSettings.overlapLayerMask.m_Bits
-      value: 4294967295
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -9157070571887331685, guid: 4688cbe9d6cb28b47af4af8472e7e804, type: 3}
       propertyPath: OnObjectSpawned.m_PersistentCalls.m_Calls.Array.size

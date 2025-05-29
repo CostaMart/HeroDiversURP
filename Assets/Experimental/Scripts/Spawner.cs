@@ -12,8 +12,6 @@ namespace Spawning
     /// </summary>
     public class Spawner : InteractiveObject
     {
-        [SerializeField] private string id = "spawner";
-
         [Header("Prefab Settings")]
         [Tooltip("The prefabs to spawn. If multiple are provided, one will be selected randomly")]
         [SerializeField] private GameObject[] prefabsToSpawn;
@@ -585,7 +583,6 @@ namespace Spawning
         
         private void Awake()
         {
-            name = gameObject.name;
             InitializeSystem();
         }
         
@@ -595,7 +592,7 @@ namespace Spawning
             // Register with entity manager
             if (EntityManager.Instance != null)
             {
-                EntityManager.Instance.RegisterEntity(id, gameObject);
+                EntityManager.Instance.RegisterEntity(objectId, gameObject);
             }
             
             if (autoStart)

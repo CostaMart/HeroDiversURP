@@ -3,7 +3,7 @@
         {
             "name": "EnemySpawnTag",
             "type": "Random",
-            "members": ["Enemy1","Enemy2","Enemy3","Enemy4"]
+            "members": ["AlienFighter","AlienFighter_1","AlienFighter_2","AlienFighter_3"]
         },
         {
             "name": "PlayerTag",

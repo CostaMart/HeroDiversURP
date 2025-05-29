@@ -15,6 +15,7 @@ namespace Utility
         {
             base.Start();
             agentController = GetComponent<AgentController>();
+            EntityManager.Instance.RegisterEntity(name, gameObject);
             RegisterAction("MoveTo", MoveTo);
             RegisterEvent("OnMoveToComplete");
         }

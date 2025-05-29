@@ -1,5 +1,51 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &341093927011911500
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4424474713958096776}
+  - component: {fileID: 949139799419715941}
+  m_Layer: 10
+  m_Name: AimPerceiver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4424474713958096776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341093927011911500}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5974170837743034523}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &949139799419715941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341093927011911500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configurationName: DroneAimPerceiver
+  reloadConfigInEditor: 0
 --- !u!1 &3683212510054738694
 GameObject:
   m_ObjectHideFlags: 0
@@ -14,7 +60,8 @@ GameObject:
   - component: {fileID: 178920909569036451}
   - component: {fileID: 5193753982566843707}
   - component: {fileID: 7111960373640172346}
-  m_Layer: 0
+  - component: {fileID: 2555534038968826511}
+  m_Layer: 10
   m_Name: AlienFighter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,6 +85,7 @@ Transform:
   - {fileID: 2873211496551384736}
   - {fileID: 5026334430068657486}
   - {fileID: 3436935596341635147}
+  - {fileID: 4424474713958096776}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3160611884731711461
@@ -102,19 +150,19 @@ NavMeshAgent:
   m_GameObject: {fileID: 3683212510054738694}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.8
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!114 &5193753982566843707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +175,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b9df8e986d41314f8592806407e890e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
 --- !u!114 &7111960373640172346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,8 +188,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectId: AlienFighter
-  waitTime: 5
-  rotationSpeed: 3
+  angularSpeed: 90
+  baseOffset: 10
+  waitAtWaypointTime: 2
   patrolRadius: 10
   patrolCount: 5
   minDistance: 2
@@ -150,11 +198,32 @@ MonoBehaviour:
   viewAngle: 60
   detectionRange: 2
   pathUpdateRate: 0.5
-  waitAtLastKnownPosition: 5
+  waitAtLastKnownPositionTime: 1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
-  attackRange: 1.5
+  attackDuration: 1
+--- !u!135 &2555534038968826511
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3683212510054738694}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1
+  m_Center: {x: 0, y: -0.098113626, z: -0.30684307}
 --- !u!1 &3887954306500022083
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,8 +234,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5026334430068657486}
   - component: {fileID: 83057903971388297}
-  m_Layer: 0
-  m_Name: AttackArea
+  m_Layer: 10
+  m_Name: AttackRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configurationName: default
+  configurationName: DroneAttackRange
   reloadConfigInEditor: 0
 --- !u!1 &4063209300880519806
 GameObject:
@@ -211,7 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2873211496551384736}
   - component: {fileID: 4294594766501177888}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LongRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configurationName: default
+  configurationName: DroneLongRangeView
   reloadConfigInEditor: 0
 --- !u!1 &6293582006633487438
 GameObject:
@@ -257,7 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2827144962612547967}
   - component: {fileID: 3778508543107305711}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShortRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,8 +341,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6293582006633487438}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.9269762, y: -0.92615324, z: -3.62782}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -291,7 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configurationName: ShortRangeView
+  configurationName: DroneShortRangeView
   reloadConfigInEditor: 0
 --- !u!1 &8253243934869372419
 GameObject:
@@ -303,7 +372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3436935596341635147}
   - component: {fileID: 3326769731801535889}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TargetPerception
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,5 +406,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d3925e226e3ea4e9572847cb359de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configurationName: default
+  configurationName: DronePerception
   reloadConfigInEditor: 0

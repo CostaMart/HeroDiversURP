@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Experimental;
 using UnityEngine;
 using Utility.Positioning;
 
@@ -13,68 +11,59 @@ public class NPC : InteractiveObject
     List<Experimental.Feature> features;
     List<Experimental.Modifier> mods;
 
-    public string objectId = "Enemy_0";
-
     [Header("Rotazione")]
     [Tooltip("Velocità con cui l'oggetto ruota verso il target.")]
-    [Range(0, 360)]
+    [Min(1f)]
     [SerializeField]
-    private float rotationSpeed = 180f; // Speed of rotation in degrees per second
+    private float angularSpeed = 90f; // Speed of rotation in degrees per second
+
+    public float baseOffset = 0f; // Offset from the ground for the NPC's position
 
     public Action currAction;
     
     // Patrol Settings
-    public float waitTime = 2f; // Time to wait at each waypoint
+    public float waitAtWaypointTime = 2f; // Time to wait at each waypoint
 
-    private bool isWaiting = false;
-    private float waitTimer = 0f;
     public float patrolRadius = 10f; // Radius of the patrol area
     public int patrolCount = 5; // Number of patrol points to generate
     public float minDistance = 2f; // Minimum distance between patrol points
     public List<RandomPointGenerator.PointResult> patrolPoints = new(); // THIS LIST IS ONLY FOR DEBUGGING
     List<Vector3> waypoints = new(); // List of patrol points
-    int currentPatrolIndex = 0; // Current index in the patrol points list
 
     // Chase Settings
     public float viewRange = 30f;       // Raggio di visione
     public float viewAngle = 60f;       // Angolo di visione
     public float detectionRange = 2f;   // Raggio di rilevamento
     public float pathUpdateRate = 0.5f; // Frequenza di aggiornamento del percorso
-    public float waitAtLastKnownPosition = 1.0f; // Tempo di attesa all'ultima posizione nota
+    public float waitAtLastKnownPositionTime = 1.0f; // Tempo di attesa all'ultima posizione nota
     public LayerMask obstacleLayer;     // Layer degli ostacoli
     float pathUpdateTimer;
     Vector3 lastKnownPosition;
     Transform targetTransform;
 
     // Attack Settings
-    public float attackRange = 1.5f; // Raggio d'attacco
+    public float attackDuration = 2.0f; // Durata dell'attacco
 
     AgentController agentController; // Reference to the AgentController
 
-    float waitAtLastKnownPositionTimer; // Timer for waiting at last known position
-
-    Animator anim;
-
-    enum State
+    enum State 
     {
         Idle,
         Patrol,
         Chase,
-        Attack,
-        WaitAtLastKnownPosition
+        Attack
     }
+
+    State currentState = State.Idle;
 
     void Awake()
     {
-        gameObject.name = objectId;
         agentController = GetComponent<AgentController>();
         targetTransform = EntityManager.Instance.GetEntity("Player").transform;
-        currAction = Idle; // Default action is Idle
-        anim = GetComponent<Animator>();
-        
+
         // Initialize components, features, and modifiers
         components = new List<Component>();
-        features = new List<Experimental.Feature>();  
+        features = new List<Experimental.Feature>();
         mods = new List<Experimental.Modifier>();
 
         // ========== Patrol Settings ==========
@@ -95,37 +84,41 @@ public class NPC : InteractiveObject
         );
 
         patrolPoints = points; // Store the generated points for debugging
-        
+
         waypoints = points.Where(pointResult => pointResult.IsValid).Select(pointResult => pointResult.Position).ToList();
 
         // ========== Chase Settings ==========
         targetTransform = EntityManager.Instance.GetEntity("Player").transform;
-        
+
         pathUpdateTimer = 0;
 
-        Vector3 basePos = lastKnownPosition = agentController.position;
+        Vector3 basePos = lastKnownPosition = agentController.Position;
 
         obstacleLayer = LayerMask.GetMask("Default");
 
         // Registra le azioni disponibili
         RegisterAction("StartPatrol", (_) => OnStartPatrol());
         RegisterAction("Chase", (_) => Chase());
+        RegisterAction("Stop", (_) => agentController.StopAgent());
+        RegisterAction("Resume", (_) => agentController.ResumeAgent());
         RegisterAction("Attack", (_) => OnAttack());
-        RegisterAction("WaitAtLastKnownPosition", (_) => OnWaitAtLastKnownPosition());
+        RegisterAction("WaitAndStartPatrol", (_) => Invoke(nameof(OnStartPatrol), waitAtLastKnownPositionTime));
         RegisterAction("RotateToTarget", (_) => OnRotateToTarget());
-        
+
         // Registra gli eventi disponibili
         RegisterEvent("StateChanged");
         RegisterEvent("TargetDetected");
         RegisterEvent("TargetLost");
         RegisterEvent("AttackStarted");
         RegisterEvent("AttackEnded");
-        
+
         // Examples of adding features to the NPC
         Experimental.Feature speedFeature = new(3.0f, Experimental.Feature.FeatureType.SPEED);
         AddFeature(speedFeature);
 
-        agentController.SetSpeed(speedFeature.GetCurrentValue());
+        agentController.Speed = speedFeature.GetCurrentValue();
+        agentController.AngularSpeed = angularSpeed;
+        agentController.SetBaseOffset(baseOffset);
 
         // Experimental.Feature healthFeature = new(100.0f, Experimental.Feature.FeatureType.HEALTH);
         // AddFeature(healthFeature);
@@ -134,6 +127,7 @@ public class NPC : InteractiveObject
     // Update is called once per frame
     void Update()
     {
+        Debug.Log($"NPC {objectId} is in state: {currentState}");
         foreach (var feature in features)
         {
             foreach (var modifier in mods)
@@ -174,9 +168,9 @@ public class NPC : InteractiveObject
         }
 
         // Update the AgentController with the current speed
-        agentController.SetSpeed(currSpeed);
+        agentController.Speed = currSpeed;
 
-        currAction.Invoke(); // Call the current action
+        // currAction.Invoke(); // Call the current action
     }
 
     public void AddFeature(Experimental.Feature feature)
@@ -213,24 +207,48 @@ public class NPC : InteractiveObject
     }
 
     // Implementazioni delle azioni    
-    private void OnStartPatrol()
+    void OnStartPatrol()
     {
-        currAction = Patrol;
+        currentState = State.Patrol;
         AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 3.0f));
-        agentController.MoveTo(waypoints[currentPatrolIndex]);
+        StartCoroutine(PatrolRoutine());
     }
-    
-    void OnWaitAtLastKnownPosition()
+
+    IEnumerator PatrolRoutine()
     {
-        currAction = WaitAtLastKnownPosition;
-        agentController.MoveTo(lastKnownPosition);
+        int currentPatrolIndex = 0;
+        while (currentState == State.Patrol)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < waitAtWaypointTime && currentState == State.Patrol)
+            {
+                if (agentController.HasReachedDestination)
+                    elapsedTime += Time.deltaTime;
+                else
+                    elapsedTime = 0f; // Reset the timer if the agent is still moving
+
+                yield return null;
+            }
+
+            if (currentState != State.Patrol) yield break; // Exit if state changes
+            agentController.MoveTo(waypoints[currentPatrolIndex]);
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
+        }
     }
+
+    // void OnWaitAtLastKnownPosition()
+    // {
+    //     agentController.MoveTo(lastKnownPosition);
+    //     currentState = State.Idle;
+    //     StartCoroutine(WaitOnReachedPosition(waitAtLastKnownPositionTime));
+    // }
     
     private void OnAttack()
     {
         // currAction = Attack;
-        agentController.StopAgent();
+        // agentController.StopAgent();
         
+        currentState = State.Attack;
         EmitEvent("AttackStarted", new object[] { targetTransform });
 
         // Logica di attacco
@@ -243,34 +261,32 @@ public class NPC : InteractiveObject
     void OnRotateToTarget()
     {        
         // Ruota l'agente verso il target
-        agentController.RotateToDirection(targetTransform.position, rotationSpeed);
+        agentController.RotateToDirection(targetTransform.position);
     }
 
-    void Idle() {}
-
-    void Patrol()
-    {
-        if (isWaiting || agentController.IsStuck())
-        {
-            waitTimer += Time.deltaTime;
-            if (waitTimer >= waitTime)
-            {
-                isWaiting = false;
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
-                agentController.MoveTo(waypoints[currentPatrolIndex]);
-            }
-        }
-        else if (agentController.HasReachedDestination())
-        {
-            isWaiting = true;
-            waitTimer = 0f;
-        } 
-    }
+    // void Patrol()
+    // {
+    //     if (isWaiting || agentController.IsStucked)
+    //     {
+    //         waitTimer += Time.deltaTime;
+    //         if (waitTimer >= waitTime)
+    //         {
+    //             isWaiting = false;
+    //             currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
+    //             agentController.MoveTo(waypoints[currentPatrolIndex]);
+    //         }
+    //     }
+    //     else if (agentController.HasReachedDestination)
+    //     {
+    //         isWaiting = true;
+    //         waitTimer = 0f;
+    //     } 
+    // }
 
     void Chase()
     {
-        currAction = Idle;
-        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 2.0f));
+        currentState = State.Chase;
+        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 5.0f));
         pathUpdateTimer += Time.deltaTime;
         Vector3 targetPosition = targetTransform.position;
         
@@ -288,29 +304,56 @@ public class NPC : InteractiveObject
         }
     }
 
-    void WaitAtLastKnownPosition()
+    // void WaitAtLastKnownPosition()
+    // {
+    //     if (agentController.HasReachedDestination || agentController.IsStucked)
+    //     {
+    //         waitAtLastKnownPositionTimer += Time.deltaTime;
+    //         if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
+    //         {
+    //             waitAtLastKnownPositionTimer = 0f;
+    //             OnStartPatrol();
+    //         }
+    //     }
+    // }
+
+    /// <summary>
+    /// Aspetta che l'agente raggiunga una posizione specificata e poi attende per un certo periodo di tempo.
+    /// Se lo stato dell'agente cambia durante l'attesa, la coroutine si interrompe.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    IEnumerator WaitOnReachedPosition(float time)
     {
-        if (agentController.HasReachedDestination() || agentController.IsStuck())
+        // Se si verifica un cambio di stato, esci dalla coroutine di attesa
+        // anche non è trascorso il tempo necessario
+        float elapsedTime = 0f;
+        State prevState = currentState;
+
+        while (currentState == prevState && agentController.IsMoving)
         {
-            waitAtLastKnownPositionTimer += Time.deltaTime;
-            if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
-            {
-                waitAtLastKnownPositionTimer = 0f;
-                OnStartPatrol();
-            }
+            yield return null; // Aspetta che l'agente raggiunga la posizione
         }
+
+        // Sa posizione è stata raggiunta, inizia il tempo di attesa
+        while (elapsedTime < time && currentState == prevState)
+        {
+            yield return null;
+            elapsedTime += Time.deltaTime;
+        }
+        
+        // Fa ripartire la pattuglia se l'agente non è in un altro stato
+        if (currentState == State.Idle) OnStartPatrol();
     }
 
     // Coroutine per il cooldown dell'attacco
-    private IEnumerator AttackCooldown()
+    IEnumerator AttackCooldown()
     {
-        if (anim)
-        {
-            anim.SetTrigger("attack");
-        }
-        yield return new WaitForSeconds(1.0f);
-        
-        agentController.ResumeAgent();
+        agentController.IsAttacking = true;
+        yield return new WaitForSeconds(attackDuration);
+        agentController.IsAttacking = false;
+
+        // agentController.ResumeAgent();
         // EmitEvent("AttackEnded");
     }
     

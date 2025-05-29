@@ -43,7 +43,7 @@ public class Detector : MonoBehaviour
 
     void LoadConfiguration()
     {
-        config = DetectorConfigLoader.Instance.GetConfig(configurationName);
+        config = DetectorConfigManager.Instance.GetConfig(configurationName);
         
         if (config == null)
         {
@@ -110,7 +110,7 @@ public class Detector : MonoBehaviour
         if (Application.isEditor && reloadConfigInEditor)
         {
             reloadConfigInEditor = false;
-            DetectorConfigLoader.Instance.ReloadConfigurations();
+            DetectorConfigManager.Instance.ReloadConfigurations();
             LoadConfiguration();
         }
         

@@ -52,9 +52,9 @@ public class GameManager : MonoBehaviour
 
     private void EnsureDetectorConfigLoader()
     {
-        if (!TryGetComponent<DetectorConfigLoader>(out _))
+        if (!TryGetComponent<DetectorConfigManager>(out _))
         {
-            var loader = gameObject.AddComponent<DetectorConfigLoader>();
+            var loader = gameObject.AddComponent<DetectorConfigManager>();
             Debug.Log("DetectorConfigLoader added to GameManager");
         }
     }

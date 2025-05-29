@@ -26,7 +26,7 @@ public class Persuit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 targetVelocity = target.GetCurrentVelocity();
+        Vector3 targetVelocity = target.CurrentVelocity;
         
         // Calculate the direction and distance to the target.
         Vector3 currentTargetPosition = target.transform.position;
@@ -38,7 +38,7 @@ public class Persuit : MonoBehaviour
             return;
         }
         // Calcolo dei coefficienti per l'equazione quadratica
-        float vP = agent.speed;
+        float vP = agent.Speed;
         float A = targetVelocity.sqrMagnitude - vP * vP;
         float B = 2f * Vector3.Dot(toTarget, targetVelocity);
         float C = toTarget.sqrMagnitude;
