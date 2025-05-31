@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 
 public class Detector : MonoBehaviour
 {
@@ -158,7 +157,7 @@ public class Detector : MonoBehaviour
     {
         for (int i = 0; i < targetTags.Length; i++)
         {
-            Debug.Log($"Checking tag {targetTags[i].name} for object {obj.name}");
+            // Debug.Log($"Checking tag {targetTags[i].name} for object {obj.name}");
             if (targetTags[i].Contains(obj))
                 return true;
         }
@@ -167,20 +166,20 @@ public class Detector : MonoBehaviour
 
     private void UpdatePotentialTargets(List<Transform> newTargets)
     {
-        // Rimuovi target che non sono più in range
         HashSet<Transform> currentTargetsInScan = new(newTargets);
 
         // Rimuovi i target da potentialTargets che non sono più nella scansione o sono null
         // Rimuovili anche dalla cache dei collider
-        potentialTargets.RemoveWhere(target => {
+        potentialTargets.RemoveWhere(target =>
+        {
             bool shouldRemove = target == null || !currentTargetsInScan.Contains(target);
-            if (shouldRemove && target != null) // Se si rimuove un target valido (non nullo) che non è più nella scansione
+            if (shouldRemove && target != null)
             {
                 targetColliderCache.Remove(target);
             }
             return shouldRemove;
         });
-    
+
         // Aggiungi nuovi target trovati nella scansione
         foreach (Transform newTarget in currentTargetsInScan)
         {
@@ -224,31 +223,76 @@ public class Detector : MonoBehaviour
             }
         }
     }
-    
+
     bool IsInFieldOfView(Transform target)
     {
         if (target == null) return false;
-        
-        Vector3 targetPosition = GetTargetPosition(target);
-        Vector3 directionToTarget = targetPosition - cachedTransform.position;
-        
-        // Quick distance check
+
+        Bounds targetBounds = GetTargetBounds(target);
+        Vector3 targetCenter = targetBounds.center;
+        Vector3 directionToTarget = targetCenter - cachedTransform.position;
+
+        // Quick distance check usando il centro
         float sqrDistance = directionToTarget.sqrMagnitude;
         if (sqrDistance > config.detectionRange * config.detectionRange)
             return false;
-        
-        // Normalize and angle check with dot product
-        directionToTarget.Normalize();
-        float dot = Vector3.Dot(cachedTransform.forward, directionToTarget);
-        
-        if (dot < minDot)
-            return false;
-        
-        // Obstacle check
-        return config.ignoreObstacles || !HasObstacleBetween(cachedTransform.position, targetPosition, target);
+
+
+        if (config.useVerticalRange)
+        {
+            // Controlla se l'intervallo verticale del collider interseca il cono di rilevamento
+            if (!IsVerticalRangeInFieldOfView(targetBounds))
+                return false;
+        }
+        else // usa solo il centro del collider come rifermento
+        {
+            // Normalize and angle check with dot product
+            directionToTarget.Normalize();
+            float dot = Vector3.Dot(cachedTransform.forward, directionToTarget);
+
+            if (dot < minDot)
+                return false;
+        }
+        return config.ignoreObstacles || !HasObstacleBetween(cachedTransform.position, targetCenter, target);
     }
     
-    Vector3 GetTargetPosition(Transform target)
+    bool IsVerticalRangeInFieldOfView(Bounds targetBounds)
+    {
+        Vector3 detectorPos = cachedTransform.position;
+        Vector3 detectorForward = cachedTransform.forward;
+        Vector3 targetCenter = targetBounds.center;
+        
+        // Distanza orizzontale al centro del target
+        Vector3 horizontalDirection = new(targetCenter.x - detectorPos.x, 0, targetCenter.z - detectorPos.z);
+        float horizontalDistance = horizontalDirection.magnitude;
+        
+        if (horizontalDistance < 0.001f) return true; // Target troppo vicino, consideralo sempre valido
+        
+        horizontalDirection.Normalize();
+        
+        // Controlla se la direzione orizzontale è nel field of view
+        Vector3 detectorForwardHorizontal = new Vector3(detectorForward.x, 0, detectorForward.z).normalized;
+        float horizontalDot = Vector3.Dot(detectorForwardHorizontal, horizontalDirection);
+        
+        if (horizontalDot < minDot) return false; // Fuori dal cono orizzontale
+        
+        // Calcola l'intervallo verticale ammesso dal cono di rilevamento a questa distanza
+        float halfAngleRad = config.detectionAngle * 0.5f * Mathf.Deg2Rad;
+        float maxVerticalOffset = horizontalDistance * Mathf.Tan(halfAngleRad);
+        
+        float detectorY = detectorPos.y;
+        float allowedMinY = detectorY - maxVerticalOffset;
+        float allowedMaxY = detectorY + maxVerticalOffset;
+        
+        // Controlla se l'intervallo verticale del collider interseca l'intervallo ammesso
+        float targetMinY = targetBounds.min.y;
+        float targetMaxY = targetBounds.max.y;
+        
+        // Intersezione di intervalli: [targetMinY, targetMaxY] ∩ [allowedMinY, allowedMaxY]
+        return targetMaxY >= allowedMinY && targetMinY <= allowedMaxY;
+    }
+
+    Bounds GetTargetBounds(Transform target)
     {
         if (!targetColliderCache.TryGetValue(target, out Collider targetCollider))
         {
@@ -256,7 +300,7 @@ public class Detector : MonoBehaviour
             targetColliderCache[target] = targetCollider;
         }
         
-        return targetCollider != null ? targetCollider.bounds.center : target.position;
+        return targetCollider != null ? targetCollider.bounds : new Bounds(target.position, Vector3.one);
     }
     
     bool HasObstacleBetween(Vector3 start, Vector3 target, Transform targetTransform)

@@ -13,10 +13,7 @@
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 3,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     },
     "LongRangeView": {
       "OnEnterAction": "Chase",
@@ -31,10 +28,7 @@
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 3,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     },
     "ShortRangeView": {
       "OnEnterAction": "Chase",
@@ -49,10 +43,7 @@
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 3,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     },
     "AttackArea": {
       "OnEnterAction": "",
@@ -67,10 +58,7 @@
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 3,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     },
     "GroundAimDistance": {
       "OnEnterAction": "Stop",
@@ -85,10 +73,7 @@
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 3,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     },
     "TargetPerception": {
       "OnEnterAction": "",
@@ -103,10 +88,7 @@
       "scanInterval": 0.05,
       "ignoreObstacles": true,
       "targetLayerName": "Player",
-      "detectionBufferSize": 1,
-      "useMultipleRaycasts": false,
-      "raycastCount": 1,
-      "verticalRange": 2.0
+      "detectionBufferSize": 1
     }
   }
 }

@@ -17,12 +17,13 @@ public class NPC : InteractiveObject
     [SerializeField]
     private float angularSpeed = 90f; // Speed of rotation in degrees per second
 
-    public float baseOffset = 0f; // Offset from the ground for the NPC's position
-
-    public Action currAction;
+    [Tooltip("Permetti la rotazione sull'asse X fino a un certo angolo massimo rispetto all'orizzontale.")]
+    [SerializeField]
+    [Range(0f, 40f)]
+    private float maxPitchAngle = 0f; // Maximum pitch angle for rotation
     
     // Patrol Settings
-    public float waitAtWaypointTime = 2f; // Time to wait at each waypoint
+    public float waitAtWaypointTime = 3f; // Time to wait at each waypoint
 
     public float patrolRadius = 10f; // Radius of the patrol area
     public int patrolCount = 5; // Number of patrol points to generate
@@ -56,7 +57,7 @@ public class NPC : InteractiveObject
 
     State currentState = State.Idle;
 
-    void Awake()
+    protected override void Start()
     {
         agentController = GetComponent<AgentController>();
         targetTransform = EntityManager.Instance.GetEntity("Player").transform;
@@ -102,7 +103,7 @@ public class NPC : InteractiveObject
         RegisterAction("Stop", (_) => agentController.StopAgent());
         RegisterAction("Resume", (_) => agentController.ResumeAgent());
         RegisterAction("Attack", (_) => OnAttack());
-        RegisterAction("WaitAndStartPatrol", (_) => Invoke(nameof(OnStartPatrol), waitAtLastKnownPositionTime));
+        RegisterAction("WaitAndStartPatrol", (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
         RegisterAction("RotateToTarget", (_) => OnRotateToTarget());
 
         // Registra gli eventi disponibili
@@ -118,16 +119,11 @@ public class NPC : InteractiveObject
 
         agentController.Speed = speedFeature.GetCurrentValue();
         agentController.AngularSpeed = angularSpeed;
-        agentController.SetBaseOffset(baseOffset);
-
-        // Experimental.Feature healthFeature = new(100.0f, Experimental.Feature.FeatureType.HEALTH);
-        // AddFeature(healthFeature);
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log($"NPC {objectId} is in state: {currentState}");
         foreach (var feature in features)
         {
             foreach (var modifier in mods)
@@ -147,7 +143,7 @@ public class NPC : InteractiveObject
 
         // Compute the current speed
         float currSpeed = features.Find(f => f.GetFeatureType() == Experimental.Feature.FeatureType.SPEED)?.GetCurrentValue() ?? 0.0f;
-        
+
         foreach (var component in components)
         {
             if (component.GetFeature(Experimental.Feature.FeatureType.SPEED) != null)
@@ -169,8 +165,6 @@ public class NPC : InteractiveObject
 
         // Update the AgentController with the current speed
         agentController.Speed = currSpeed;
-
-        // currAction.Invoke(); // Call the current action
     }
 
     public void AddFeature(Experimental.Feature feature)
@@ -213,75 +207,21 @@ public class NPC : InteractiveObject
         AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 3.0f));
         StartCoroutine(PatrolRoutine());
     }
-
-    IEnumerator PatrolRoutine()
-    {
-        int currentPatrolIndex = 0;
-        while (currentState == State.Patrol)
-        {
-            float elapsedTime = 0f;
-            while (elapsedTime < waitAtWaypointTime && currentState == State.Patrol)
-            {
-                if (agentController.HasReachedDestination)
-                    elapsedTime += Time.deltaTime;
-                else
-                    elapsedTime = 0f; // Reset the timer if the agent is still moving
-
-                yield return null;
-            }
-
-            if (currentState != State.Patrol) yield break; // Exit if state changes
-            agentController.MoveTo(waypoints[currentPatrolIndex]);
-            currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
-        }
-    }
-
-    // void OnWaitAtLastKnownPosition()
-    // {
-    //     agentController.MoveTo(lastKnownPosition);
-    //     currentState = State.Idle;
-    //     StartCoroutine(WaitOnReachedPosition(waitAtLastKnownPositionTime));
-    // }
     
     private void OnAttack()
     {
-        // currAction = Attack;
-        // agentController.StopAgent();
-        
         currentState = State.Attack;
         EmitEvent("AttackStarted", new object[] { targetTransform });
 
-        // Logica di attacco
-        Debug.Log("Attacking target!");
-        
-        // Torna alla modalità chase dopo l'attacco
+        // Debug.Log("Attacking target!");
+    
         StartCoroutine(AttackCooldown());
     }
 
     void OnRotateToTarget()
     {        
-        // Ruota l'agente verso il target
-        agentController.RotateToDirection(targetTransform.position);
+        agentController.RotateToDirection(targetTransform.position, maxPitchAngle);
     }
-
-    // void Patrol()
-    // {
-    //     if (isWaiting || agentController.IsStucked)
-    //     {
-    //         waitTimer += Time.deltaTime;
-    //         if (waitTimer >= waitTime)
-    //         {
-    //             isWaiting = false;
-    //             currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
-    //             agentController.MoveTo(waypoints[currentPatrolIndex]);
-    //         }
-    //     }
-    //     else if (agentController.HasReachedDestination)
-    //     {
-    //         isWaiting = true;
-    //         waitTimer = 0f;
-    //     } 
-    // }
 
     void Chase()
     {
@@ -304,18 +244,28 @@ public class NPC : InteractiveObject
         }
     }
 
-    // void WaitAtLastKnownPosition()
-    // {
-    //     if (agentController.HasReachedDestination || agentController.IsStucked)
-    //     {
-    //         waitAtLastKnownPositionTimer += Time.deltaTime;
-    //         if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
-    //         {
-    //             waitAtLastKnownPositionTimer = 0f;
-    //             OnStartPatrol();
-    //         }
-    //     }
-    // }
+    IEnumerator PatrolRoutine()
+    {
+        int currentPatrolIndex = 0;
+        while (currentState == State.Patrol)
+        {
+            yield return StartCoroutine(WaitOnReachedPosition(waitAtWaypointTime, State.Patrol));
+
+            if (currentState != State.Patrol) yield break; // Exit if state changes
+            agentController.MoveTo(waypoints[currentPatrolIndex]);
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
+        }
+    }
+
+    IEnumerator OnWaitAtLastKnownPosition()
+    {
+        agentController.MoveTo(lastKnownPosition);
+        yield return StartCoroutine(WaitOnReachedPosition(waitAtLastKnownPositionTime, State.Chase));
+        if (currentState == State.Chase)
+        {
+            OnStartPatrol();
+        }
+    }
 
     /// <summary>
     /// Aspetta che l'agente raggiunga una posizione specificata e poi attende per un certo periodo di tempo.
@@ -323,27 +273,18 @@ public class NPC : InteractiveObject
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
-    IEnumerator WaitOnReachedPosition(float time)
+    IEnumerator WaitOnReachedPosition(float time, State initialState)
     {
-        // Se si verifica un cambio di stato, esci dalla coroutine di attesa
-        // anche non è trascorso il tempo necessario
         float elapsedTime = 0f;
-        State prevState = currentState;
-
-        while (currentState == prevState && agentController.IsMoving)
+        while (elapsedTime < time && currentState == initialState)
         {
-            yield return null; // Aspetta che l'agente raggiunga la posizione
-        }
+            if (agentController.HasReachedDestination)
+                elapsedTime += Time.deltaTime;
+            else
+                elapsedTime = 0f; // Reset the timer if the agent is still moving
 
-        // Sa posizione è stata raggiunta, inizia il tempo di attesa
-        while (elapsedTime < time && currentState == prevState)
-        {
             yield return null;
-            elapsedTime += Time.deltaTime;
         }
-        
-        // Fa ripartire la pattuglia se l'agente non è in un altro stato
-        if (currentState == State.Idle) OnStartPatrol();
     }
 
     // Coroutine per il cooldown dell'attacco
@@ -369,38 +310,4 @@ public class NPC : InteractiveObject
             }
         }
     }
-    // void OnDrawGizmosSelected()
-    // {
-    //     Gizmos.color = Color.yellow;
-    //     Gizmos.DrawWireSphere(transform.position, detectionRange);
-        
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireSphere(transform.position, attackRange);
-    // }
-
-    // void OnDrawGizmos()
-    // {
-    //     // // Draw a sphere at the NPC's position with a radius of 0.5f
-    //     // Gizmos.color = Color.red;
-    //     // Gizmos.DrawSphere(transform.position, 0.5f);
-        
-    //     // // Draw the path of the NPC
-    //     // // foreach (var component in components)
-    //     // // {
-    //     // //     if (component is Patrol patrolComponent)
-    //     // //     {
-    //     // //         RandomPointGeneratorExtensions.DrawGizmos(patrolComponent.patrolPoints);
-    //     // //     }
-    //     // // }
-
-    //     // // Draw the patrol points
-    //     // Gizmos.color = Color.blue;
-    //     // foreach (var point in patrolPoints)
-    //     // {
-    //     //     if (point.IsValid)
-    //     //     {
-    //     //         Gizmos.DrawSphere(point.Position, 0.5f);
-    //     //     }
-    //     // }
-    // }
 }

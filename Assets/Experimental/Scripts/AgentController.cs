@@ -5,7 +5,7 @@ public class AgentController : MonoBehaviour
 {
     private NavMeshAgent agent;
 
-    private Vector3 currentDestination;
+    private PitchRotator pitchRotator;
 
     private bool isAttacking = false;
 
@@ -35,22 +35,20 @@ public class AgentController : MonoBehaviour
 
     Animator anim;
 
-    float _animSpeed = 1f;
+    readonly float _animSpeed = 1f;
 
-    private void Awake()
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        pitchRotator = GetComponentInChildren<PitchRotator>();
         anim = GetComponent<Animator>();
-        currentDestination = transform.position;
     }
 
     private void Update()
     {
-        agent.SetDestination(currentDestination);
-        anim.speed = _animSpeed;
-
         if (anim == null) return;
 
+        anim.speed = _animSpeed;
         if (IsMoving)
         {
             anim.speed = agent.velocity.magnitude;
@@ -91,50 +89,52 @@ public class AgentController : MonoBehaviour
 
     public void MoveTo(Vector3 destination)
     {
-        currentDestination = destination;
+        agent.SetDestination(destination);
     }
 
     /// <summary>
-    /// Ruota gradualmente l'oggetto verso una direzione data, mantenendo l'asse Y costante.
+    /// Ruota gradualmente l'oggetto verso una direzione data,
+    /// mantenendo l'asse Y costante (yaw) e consentendo una rotazione limitata sull'asse X (pitch).
     /// Aggiorna anche le animazioni se necessario.
     /// </summary>
-    public void RotateToDirection(Vector3 lookAtPosition)
+    /// <param name="lookAtPosition">La posizione verso cui ruotare.</param>
+    /// <param name="maxPitchAngle">L'angolo massimo (in gradi) di pitch consentito (asse X).</param>
+    public void RotateToDirection(Vector3 lookAtPosition, float maxPitchAngle)
     {
         if (IsAttacking || IsMoving) return;
 
-        // Calcola la direzione orizzontale verso il punto da guardare
         Vector3 directionToTarget = lookAtPosition - transform.position;
-        directionToTarget.y = 0f;
 
-        // Se la distanza sul piano XZ è trascurabile, non fare nulla
-        if (directionToTarget.sqrMagnitude < 0.01f)
+        // Calcolo direzione orizzontale (solo yaw)
+        Vector3 flatDirection = directionToTarget;
+        flatDirection.y = 0f;
+
+        if (flatDirection.sqrMagnitude < 0.01f)
             return;
 
-        directionToTarget.Normalize(); // Normalizza per ottenere solo la direzione
+        flatDirection.Normalize();
 
-        // Verifica se siamo già quasi allineati con la direzione target
-        float dot = Vector3.Dot(transform.forward, directionToTarget);
-        if (dot > 0.999f) // Corrisponde a un angolo di circa < 2.5 gradi. (cos(2.5°) ≈ 0.9990)
-        {
+        float dot = Vector3.Dot(transform.forward, flatDirection);
+        if (dot > 0.999f)
             return;
-        }
 
-        // Ruota gradualmente verso la direzione target
-        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        // Calcolo la rotazione desiderata (includendo yaw)
+        Quaternion yawRotation = Quaternion.LookRotation(flatDirection);
+        // Rotazione graduale verso la rotazione desiderata
         transform.rotation = Quaternion.RotateTowards(
             transform.rotation,
-            targetRotation,
+            yawRotation,
             AngularSpeed * Time.deltaTime
         );
 
+        if (pitchRotator != null)
+            pitchRotator.RotatePitch(directionToTarget, maxPitchAngle, AngularSpeed);
+
         if (anim == null) return;
 
-        // Gestione animazione
-        // Il componente Y del prodotto vettoriale tra transform.forward (direzione attuale) e directionToTarget (direzione desiderata)
-        // indica la direzione della svolta: un valore positivo e uno negativo indicano svolte opposte (es. y > 0 per sinistra).
-        float turnDirection = Vector3.Cross(transform.forward, directionToTarget).y;
+        float turnDirection = Vector3.Cross(transform.forward, flatDirection).y;
 
-        anim.speed = _animSpeed + (AngularSpeed * 0.01f);        
+        anim.speed = _animSpeed + (AngularSpeed * 0.01f);
         if (turnDirection > 0.01f)
         {
             anim.SetTrigger("turnRight");
@@ -144,4 +144,5 @@ public class AgentController : MonoBehaviour
             anim.SetTrigger("turnLeft");
         }
     }
+
 }
