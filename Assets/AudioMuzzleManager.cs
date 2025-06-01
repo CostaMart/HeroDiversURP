@@ -16,6 +16,8 @@ public class AudioMuzzleManager : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+        audioSource.volume = PlayerPrefs.GetFloat("shootingVolume", 0.5f);
+        Debug.Log("AudioMuzzleManager initialized with volume: " + audioSource.volume);
     }
 
     public void EmitFireSound()
@@ -24,7 +26,7 @@ public class AudioMuzzleManager : MonoBehaviour
         {
             AudioClip clip = firingAudioClips[Random.Range(0, firingAudioClips.Length)];
             audioSource.pitch = Random.Range(0.8f, 1.2f);
-            AudioSource.PlayClipAtPoint(clip, transform.position);
+            audioSource.PlayOneShot(clip);
         }
     }
 
@@ -33,7 +35,7 @@ public class AudioMuzzleManager : MonoBehaviour
         if (firingAudioClips.Length > 0)
         {
             AudioClip clip = firingAudioClips[Random.Range(0, firingAudioClips.Length)];
-            AudioSource.PlayClipAtPoint(clip, transform.position);
+            audioSource.PlayOneShot(clip);
         }
     }
     public bool isPlaying()
@@ -46,7 +48,7 @@ public class AudioMuzzleManager : MonoBehaviour
         if (emptyMagAudioClips.Length > 0)
         {
             AudioClip clip = emptyMagAudioClips[Random.Range(0, emptyMagAudioClips.Length)];
-            AudioSource.PlayClipAtPoint(clip, transform.position);
+            audioSource.PlayOneShot(clip);
         }
     }
 }

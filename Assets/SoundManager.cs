@@ -11,6 +11,12 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AudioClip[] fireSounds;
 
 
+    public void Awake()
+    {
+        walking.volume = PlayerPrefs.GetFloat("sfxVolume", 1.0f);
+        thrustersExplosion.volume = PlayerPrefs.GetFloat("sfxVolume", 1.0f);
+        fireSource.volume = PlayerPrefs.GetFloat("sfxVolume", 1.0f);
+    }
 
     public void EmitWalkingSound()
     {

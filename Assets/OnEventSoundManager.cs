@@ -13,10 +13,12 @@ public class OnEventSoundManager : MonoBehaviour
     [SerializeField] float soundDuration = 2.0f;
 
     private Coroutine activeSoundCoroutine;
+    private float volume;
 
     void Start()
     {
         eventChannels.Subscribe(startEvent, EmitSound);
+        soundSource.volume = PlayerPrefs.GetFloat("sfxVolume", 1.0f);
 
         if (!string.IsNullOrEmpty(stopEvent))
             eventChannels.Subscribe(stopEvent, StopSound);
