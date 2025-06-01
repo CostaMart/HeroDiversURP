@@ -1,12 +1,23 @@
     {
         "heatModifier": {
             "id": 0,
-            "name": "bullet 1",
+            "name": "heat",
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "!CharStats.1",
-                    "expr": "!CharStats.1 - (@PrimaryWeaponStats.15)"
+                    "target": "@CharStats.8",
+                    "expr": "@CharStats.8 + @HeatStats.0"
+                }
+            ]
+        },
+        "coolingModifier": {
+            "id": 1,
+            "name": "cooling",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@CharStats.8",
+                    "expr": "@CharStats.8 - @CharStats.11"
                 }
             ]
         }

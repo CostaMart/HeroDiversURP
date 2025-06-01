@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 using static ItemManager;
 
@@ -28,32 +30,43 @@ public class HeatStats : AbstractStatus
 
     void Start()
     {
+        string path = Path.Combine(Application.streamingAssetsPath, "gameConfig/HeatSystem.json");
+        var mod = JsonConvert.DeserializeObject<Dictionary<string, ModifierLoader>>(File.ReadAllText(path));
+
         heatsorce = GameObject.Find("heatSource").transform;
+        var effects = new List<AbstractEffect>();
+
+        foreach (var effect in mod["heatModifier"].effects)
+        {
+            effects.Add(new SingleActivationEffect(new Dictionary<string, string>
+            {
+                { "effectType", effect.effectType },
+                { "target", effect.target },
+                { "expr", effect.expr }
+            }, 0, 0, false));
+        }
 
         heat = new Modifier
         {
-            effects = new List<AbstractEffect>
-            {
-                new SingleActivationEffect(new Dictionary<string, string>
-                {
-                    { "effectType", "sa" },
-                    { "target","@CharStats.8"},
-                    {"expr","@CharStats.8 + @HeatStats.0"}
-                }, 0, 0, false)
-            }
+            effects = effects
         };
+
+        // Inizializza il modificatore di raffreddamento
+        effects = new List<AbstractEffect>();
+
+        foreach (var effect in mod["coolingModifier"].effects)
+        {
+            effects.Add(new SingleActivationEffect(new Dictionary<string, string>
+            {
+                { "effectType", effect.effectType },
+                { "target", effect.target },
+                { "expr", effect.expr }
+            }, 0, 0, false));
+        }
 
         cooling = new Modifier
         {
-            effects = new List<AbstractEffect>
-            {
-                new SingleActivationEffect(new Dictionary<string, string>
-                {
-                    { "effectType", "sa" },
-                    { "target","@CharStats.8"},
-                    {"expr","@CharStats.8 - @CharStats.11"}
-                }, 0, 0, false)
-            }
+            effects = effects
         };
     }
 
@@ -123,5 +136,18 @@ public class HeatStats : AbstractStatus
     protected override int ComputeID()
     {
         return ItemManager.statClassToIdRegistry["HeatStats"];
+    }
+    [System.Serializable]
+    public class ModifierLoader
+    {
+        public int id;
+        public string name;
+        public List<Effect> effects;
+    }
+    public class Effect
+    {
+        public string effectType;
+        public string target;
+        public string expr;
     }
 }

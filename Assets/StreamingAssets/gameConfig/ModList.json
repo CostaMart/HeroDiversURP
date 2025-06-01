@@ -151,21 +151,6 @@
                     "expr": "0.0"
                 }
             ]
-        },
-        {
-            "id": 7,
-            "gameIconId": 32,
-            "type": "heatSystem",
-            "inGamePrice": 50,
-            "name": "",
-            "description": "",
-            "effects": [
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.22",
-                    "expr": "2"
-                }
-            ]
         }
     ]
 }

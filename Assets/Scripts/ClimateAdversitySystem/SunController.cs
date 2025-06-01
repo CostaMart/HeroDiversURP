@@ -45,7 +45,7 @@ public class RotateToAngle : MonoBehaviour
     /// </summary>
     private void LoadSettings()
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "DayNightCycle.json");
+        string path = Path.Combine(Application.streamingAssetsPath, "gameConfig/DayNightCycle.json");
         try
         {
             var settinDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path));
