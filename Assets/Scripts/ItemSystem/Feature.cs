@@ -4,7 +4,10 @@ using UnityEngine;
 
 public enum FeatureType
 {
-    // weapon related
+    //weapon related
+    bulletOffsetSpawn,
+    resetOnFireRelease,
+    bulletFollowTarget,
     chargeTime,
     pershotBull,
     recoilMax,
@@ -50,7 +53,8 @@ public enum FeatureType
     affetedByGravity,
     linearDamping,
     mass,
-    destroyOnHit,
+    bulletHitNumber,
+    bulletMaxDistance,
     money,
     damage,
     receivedDamage,

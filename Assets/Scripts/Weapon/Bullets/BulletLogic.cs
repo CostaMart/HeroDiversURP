@@ -2,21 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Weapon.State;
 
-/// <summary>
-/// This class represents bullet logic. A bullet gets enabled when it's fired from the weapon.
-/// While inactive, it is moved to the bullet pool position.
-/// The bullet pool is used to store disabled bullets to avoid continuously
-/// spawning and destroying them.
-/// </summary>
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Weapon.State;
-using UnityEngine.VFX;
+
 
 /// <summary>
 /// Questa classe rappresenta la logica di un proiettile.
@@ -31,17 +21,30 @@ public class BulletLogic : MonoBehaviour
     private Rigidbody rb;
     private Collider c;
     public EffectsDispatcher dispatcher;
-    public Modifier toDispatch;
+    public Modifier onHitModifier;
     public BulletPoolStats bulletPoolState;
-    public bool toReset = true;
+    public float bulletHitCount = 0;
+    public float MaxhitCount = 1;
+
+    // if lifetime is 0, bullet gets resetted on mouse left button release
     public float bulletLifeTime = 3f;
     public Queue<(GameObject, Rigidbody, BulletLogic)> originQueue;
     public (GameObject, Rigidbody, BulletLogic) ThisTrio;
 
     private float lifeTimer;
     private bool isReset = false;
+
+    // if 0 bullet has no hit limit
     private Transform hiteffectTransform;
     private ParticleSystem hitEffect;
+    public float maxDistance = 1000f;
+    public int followSomething = 0;
+    public GameObject oldParent;
+    bool stopped = false;
+    public bool resetOnFireRelease = false;
+
+
+    public WeaponLogicContainer weaponContainer;
 
     protected void Awake()
     {
@@ -56,12 +59,48 @@ public class BulletLogic : MonoBehaviour
     {
         lifeTimer = 0f;
         isReset = false;
+        oldParent = this.transform.parent.gameObject;
+
+        switch (followSomething)
+        {
+            case 0: // don't follow anything
+                break;
+            case 1: // follow player
+                this.transform.SetParent(dispatcher.gameObject.transform);
+                break;
+            case 2: // follow weapon
+                this.transform.SetParent(weaponContainer.weapon.transform);
+                break;
+            default:
+                Debug.LogError("Invalid followSomething value: " + followSomething);
+                break;
+        }
+
+        if (resetOnFireRelease)
+        {
+            weaponContainer.inputSys.actions["Attack"].canceled += ResetBullet;
+        }
+
+        // not hit scan at all
+        if (MaxhitCount == -2)
+        {
+            this.GetComponent<SphereCollider>().enabled = false;
+        }
+
     }
 
 
     private void Update()
     {
-        if (toReset && !isReset)
+
+        if (!stopped && Vector3.Distance(dispatcher.gameObject.transform.position, transform.position) >= maxDistance)
+        {
+            this.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            this.GetComponent<Rigidbody>().isKinematic = true;
+            stopped = true;
+        }
+
+        if (bulletLifeTime > 0)
         {
             lifeTimer += Time.deltaTime;
             if (lifeTimer >= bulletLifeTime)
@@ -73,10 +112,17 @@ public class BulletLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        bulletHitCount++;
+        Debug.Log("got a collission my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
+        Debug.Log("Collision with: " + collision.gameObject.name);
+
         hiteffectTransform.SetParent(null);
         hiteffectTransform.position = collision.contacts[0].point;
+
+        // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
+        hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+
         hitEffect.Play();
-        Debug.Log("collided with: " + collision.gameObject.name);
 
         try
         {
@@ -89,7 +135,7 @@ public class BulletLogic : MonoBehaviour
             {
                 if (col.TryGetComponent<EffectsDispatcher>(out var d))
                 {
-                    d.AttachModifierFromOtherDispatcher(dispatcher, toDispatch);
+                    d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
                 }
             }
         }
@@ -97,8 +143,16 @@ public class BulletLogic : MonoBehaviour
         {
         }
 
-        if (toReset)
+        if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 is not limit
+        {
+            Debug.Log("Bullet hit limit reached, resetting bullet.");
             ResetBullet();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        Debug.Log("im colliding! that's wonderful!");
     }
 
     /// <summary>
@@ -109,10 +163,28 @@ public class BulletLogic : MonoBehaviour
         if (isReset) return;
         isReset = true;
 
+        bulletHitCount = 0;
+
+        if (followSomething != 0)
+        {
+            this.transform.SetParent(oldParent.transform);
+        }
+
+        if (resetOnFireRelease)
+        {
+            weaponContainer.inputSys.actions["Attack"].canceled -= ResetBullet;
+        }
+
+
+        this.GetComponent<SphereCollider>().enabled = true;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         transform.position = initialPos;
         originQueue.Enqueue(ThisTrio);
         gameObject.SetActive(false);
+    }
+    private void ResetBullet(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        ResetBullet();
     }
 }

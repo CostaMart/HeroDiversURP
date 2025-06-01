@@ -121,6 +121,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     }
 
     // == Main Update Logic ==
+    bool ChargingSoundPlaying = false;
     public override void UpdateWeaponBehaviour()
     {
         magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
@@ -136,6 +137,12 @@ public class FireWeaponLogic : AbstractWeaponLogic
                 // Caricamento con cambio colore
                 chargeTimer += Time.deltaTime;
 
+                if (!ChargingSoundPlaying)
+                {
+                    weaponContainer.audioMuzzleManager.EmitChargeSound();
+                    ChargingSoundPlaying = true;
+                }
+
                 if (weaponMaterialInstance != null)
                 {
                     float t = Mathf.Clamp01(chargeTimer / chargeTime);
@@ -148,6 +155,13 @@ public class FireWeaponLogic : AbstractWeaponLogic
                     {
                         Shoot();
                         chargeTimer = 0f;
+
+                        if (ChargingSoundPlaying)
+                        {
+                            weaponContainer.audioMuzzleManager.StopChargeSound();
+                            ChargingSoundPlaying = false;
+                        }
+
                         if (weaponMaterialInstance != null)
                             weaponMaterialInstance.color = normalColor;
                     }
@@ -177,8 +191,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
         int magSize = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
         if (weaponContainer.currentAmmo >= magSize)
         {
-            if (!weaponContainer.audioMuzzleManaager.isPlaying())
-                weaponContainer.audioMuzzleManaager.EmitEmptyMagSound();
+            if (!weaponContainer.audioMuzzleManager.isPlaying())
+                weaponContainer.audioMuzzleManager.EmitEmptyMagSound();
             return;
         }
 
@@ -204,8 +218,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
             Rigidbody rb = bulletTrio.Item2;
             BulletLogic logic = bulletTrio.Item3;
 
-            bulletToShoot.SetActive(true);
-            bulletToShoot.transform.position = weaponContainer.muzzle.position;
+            var offset = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletOffsetSpawn).Sum();
+            bulletToShoot.transform.position = weaponContainer.muzzle.position + weaponContainer.muzzle.forward * offset;
 
             int row = i / columns;
             int col = i % columns;
@@ -220,6 +234,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
             bulletToShoot.transform.rotation = Quaternion.LookRotation(direction);
 
             BulletSetUp(bulletToShoot, rb, logic);
+            bulletToShoot.SetActive(true);
             rb.linearVelocity = direction * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
 
             weaponContainer.currentAmmo++;
@@ -227,10 +242,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
                 break;
         }
 
-        if (weaponContainer.audioMuzzleManaager.isPlaying())
-            weaponContainer.audioMuzzleManaager.StopFireSound();
+        if (weaponContainer.audioMuzzleManager.isPlaying())
+            weaponContainer.audioMuzzleManager.StopFireSound();
 
-        weaponContainer.audioMuzzleManaager.EmitFireSound();
+        weaponContainer.audioMuzzleManager.EmitFireSound();
         MuzzleFlash();
 
         weaponEffectControl.PlayShootEffect();
@@ -291,9 +306,14 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private void BulletSetUp(GameObject b, Rigidbody rb, BulletLogic bulletLogic)
     {
         int key = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects);
-        bulletLogic.toDispatch = bulletPool[key];
+        bulletLogic.onHitModifier = bulletPool[key];
         bulletLogic.dispatcher = weaponContainer.dispatcher;
         bulletLogic.bulletLifeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletLifeTime).Sum();
+        bulletLogic.MaxhitCount = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletHitNumber).Sum();
+        bulletLogic.maxDistance = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletMaxDistance).Sum();
+        bulletLogic.followSomething = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.bulletFollowTarget).LastOrDefault();
+        bulletLogic.resetOnFireRelease = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.resetOnFireRelease).LastOrDefault();
+        bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(
             weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.widthScale).Sum(),

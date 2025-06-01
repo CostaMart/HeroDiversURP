@@ -19,6 +19,7 @@ public class ItemManager
 
 
     public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
+    public static Dictionary<int, Modifier> HeatSystem = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
 
     public static object Collider { get; internal set; }
@@ -213,6 +214,7 @@ public class ItemManager
         // mag consumption primarySecondary
         return bulletCollection;
     }
+
 
     /// <summary>
     /// given a pool of indexes, it returns a random item from the pool

@@ -6320,3 +6320,5 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 23d80b5297162e9459fea98d1bec36f4, type: 3}
   emptyMagAudioClips:
   - {fileID: 8300000, guid: 526eefc86463358579585529cc578a9c, type: 3}
+  chargeAudioClips:
+  - {fileID: 8300000, guid: f78fcbdc996e86fd5a014c167ce81d43, type: 3}

@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 153769950233131946}
   - component: {fileID: 6009017211231715321}
   - component: {fileID: 1475235044089738362}
-  - component: {fileID: 3040519736505940319}
   - component: {fileID: 1699630561668768913}
   - component: {fileID: 2298636893042404977}
+  - component: {fileID: 7978690761092344823}
+  - component: {fileID: 1890485555290887745}
   m_Layer: 3
   m_Name: SphereBullet
   m_TagString: Bullet
@@ -90,27 +91,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3040519736505940319
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6093212292097676079}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 72
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1699630561668768913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,8 +105,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dispatcher: {fileID: 0}
   bulletPoolState: {fileID: 0}
-  toReset: 1
+  bulletHitCount: 1
+  MaxhitCount: 0
   bulletLifeTime: 3
+  maxDistance: 1000
+  followSomething: 0
+  oldParent: {fileID: 0}
+  resetOnFireRelease: 0
+  weaponContainer: {fileID: 0}
 --- !u!54 &2298636893042404977
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -154,6 +140,48 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!135 &7978690761092344823
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093212292097676079}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.51106673
+  m_Center: {x: 0, y: 0, z: 0.011066723}
+--- !u!135 &1890485555290887745
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093212292097676079}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1730058730680113482
 PrefabInstance:
   m_ObjectHideFlags: 0

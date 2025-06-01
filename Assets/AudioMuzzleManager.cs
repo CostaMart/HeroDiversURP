@@ -5,6 +5,7 @@ public class AudioMuzzleManager : MonoBehaviour
 
     public AudioClip[] firingAudioClips;
     public AudioClip[] emptyMagAudioClips;
+    public AudioClip[] chargeAudioClips;
 
     private AudioSource audioSource;
 
@@ -26,6 +27,25 @@ public class AudioMuzzleManager : MonoBehaviour
         {
             AudioClip clip = firingAudioClips[Random.Range(0, firingAudioClips.Length)];
             audioSource.pitch = Random.Range(0.8f, 1.2f);
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    public void EmitChargeSound()
+    {
+        if (firingAudioClips.Length > 0)
+        {
+            AudioClip clip = firingAudioClips[Random.Range(0, chargeAudioClips.Length)];
+            audioSource.pitch = Random.Range(0.8f, 1.2f);
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    public void StopChargeSound()
+    {
+        if (firingAudioClips.Length > 0)
+        {
+            AudioClip clip = firingAudioClips[Random.Range(0, chargeAudioClips.Length)];
             audioSource.PlayOneShot(clip);
         }
     }

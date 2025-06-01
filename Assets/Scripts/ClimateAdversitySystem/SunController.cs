@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class RotateToAngle : MonoBehaviour
@@ -19,6 +23,7 @@ public class RotateToAngle : MonoBehaviour
         initialRotation = transform.rotation;
         Vector3 finalEuler = transform.eulerAngles;
 
+        LoadSettings();
         switch (axis)
         {
             case RotationAxis.X:
@@ -33,6 +38,25 @@ public class RotateToAngle : MonoBehaviour
         }
 
         finalRotation = Quaternion.Euler(finalEuler);
+    }
+
+    /// <summary>
+    ///  loads the settings from a JSON file located in the StreamingAssets folder.
+    /// </summary>
+    private void LoadSettings()
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "DayNightCycle.json");
+        try
+        {
+            var settinDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path));
+            targetAngle = float.Parse(settinDict["targetAngle"]);
+            axis = (RotationAxis)System.Enum.Parse(typeof(RotationAxis), settinDict["axis"]);
+            durationInSeconds = float.Parse(settinDict["durationInSeconds"]);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error loading settings from {path}: {e.Message}");
+        }
     }
 
     void Update()
