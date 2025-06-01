@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   configurationName: ShortRangeView
-  reloadConfigInEditor: 1
+  reloadConfigInEditor: 0
 --- !u!1001 &6361009675301447355
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -465,6 +465,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: cc633396b5f95da4b916357a5508ee4f, type: 3}
       insertIndex: -1
       addedObject: {fileID: -76890786614518389}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: cc633396b5f95da4b916357a5508ee4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3527975786218093230}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: cc633396b5f95da4b916357a5508ee4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1336714827470020204}
   m_SourcePrefab: {fileID: 100100000, guid: cc633396b5f95da4b916357a5508ee4f, type: 3}
 --- !u!1 &6361009675301543963 stripped
 GameObject:
@@ -543,7 +549,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -554,6 +560,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.5, z: 1}
   m_Center: {x: 0, y: 0.25, z: 0}
+--- !u!114 &-3527975786218093230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6361009675301543963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6304a7ee49db80a40b0f5b9d3d1b6197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  physicsThreshold: 5
+  recoveryTime: 2
+--- !u!54 &-1336714827470020204
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6361009675301543963}
+  serializedVersion: 4
+  m_Mass: 50
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &6361009675301583931 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: cc633396b5f95da4b916357a5508ee4f, type: 3}

@@ -70,19 +70,19 @@ public class EntityManager : MonoBehaviour
     /// </summary>
     public void InitializeDefaultEntities()
     {
-        // GameObject player = GameObject.Find("Player");
-        // RegisterEntity("Player", player);
+        GameObject player = GameObject.Find("Player");
+        RegisterEntity("Player", player);
 
         // Istanzia il player solo se il prefab è assegnato
-        if (_playerPrefab != null)
-        {
-            GameObject player = InstantiateEntity("Player", _playerPrefab, _playerPrefab.transform.position, Quaternion.identity);
-        }
+        // if (_playerPrefab != null)
+        // {
+        //     GameObject player = InstantiateEntity("Player", _playerPrefab, _playerPrefab.transform.position, Quaternion.identity);
+        // }
 
-        if (_spawnerPrefab != null)
-        {
-            GameObject spawner = InstantiateEntity("Spawner", _spawnerPrefab, Vector3.zero, Quaternion.identity);
-        }
+        // if (_spawnerPrefab != null)
+        // {
+        //     GameObject spawner = InstantiateEntity("Spawner", _spawnerPrefab, Vector3.zero, Quaternion.identity);
+        // }
         // else
         // {
         //     Debug.LogWarning("Player prefab not set in the EntityManager Inspector!");

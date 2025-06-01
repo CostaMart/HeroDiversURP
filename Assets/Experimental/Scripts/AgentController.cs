@@ -11,21 +11,27 @@ public class AgentController : MonoBehaviour
 
     public float Speed
     {
-        get => agent.speed;
-        set => agent.speed = value;
+        get => agent.enabled ? agent.speed : 0f;
+        set
+        {
+            if (agent.enabled) agent.speed = value;
+        }
     }
 
     public float AngularSpeed
     {
-        get => agent.angularSpeed;
-        set => agent.angularSpeed = value;
+        get => agent.enabled ? agent.angularSpeed : 0f;
+        set
+        {
+            if (agent.enabled) agent.angularSpeed = value;
+        }
     }
 
     public Vector3 Position => transform.position;
 
     public Vector3 Forward => transform.forward;
 
-    public bool IsStopped  => agent.isStopped;
+    public bool IsStopped => agent.enabled && agent.isStopped;
 
     public bool IsAttacking
     {
@@ -35,61 +41,50 @@ public class AgentController : MonoBehaviour
 
     Animator anim;
 
-    readonly float _animSpeed = 1f;
-
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         pitchRotator = GetComponentInChildren<PitchRotator>();
         anim = GetComponent<Animator>();
+        if (anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
     }
 
     private void Update()
     {
         if (anim == null) return;
-
-        anim.speed = _animSpeed;
-        if (IsMoving)
-        {
-            anim.speed = agent.velocity.magnitude;
-            anim.SetBool("isMoving", true);
-        }
-        else
-        {
-            anim.SetBool("isMoving", false);
-        }
-
-        anim.speed = 2f;
+        anim.SetFloat("moveSpeed", agent.velocity.sqrMagnitude);
+        anim.SetBool("isMoving", IsMoving);
         anim.SetBool("isAttacking", isAttacking);
     }
 
 
-    public bool HasReachedDestination => !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
+    public bool HasReachedDestination => agent.enabled && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
 
-    public bool IsMoving => agent.velocity.sqrMagnitude > 0.03f;
+    public bool IsMoving => agent.enabled && agent.velocity.sqrMagnitude > 0.03f;
 
-    public bool IsStucked => !IsMoving && !HasReachedDestination;
+    public bool IsStucked => agent.enabled && !IsMoving && !HasReachedDestination;
 
-    public Vector3 CurrentVelocity => agent.velocity;
-
-    public void SetBaseOffset(float offset)
-    {
-        agent.baseOffset = offset;
-    }
+    public Vector3 CurrentVelocity => agent.enabled ? agent.velocity : Vector3.zero;
 
     public void StopAgent()
     {
-        agent.isStopped = true;
+        if (agent.enabled)
+            agent.isStopped = true;
     }
 
     public void ResumeAgent()
     {
-        agent.isStopped = false;
+        if (agent.enabled)
+            agent.isStopped = false;
     }
 
     public void MoveTo(Vector3 destination)
     {
-        agent.SetDestination(destination);
+        if (agent.enabled)
+            agent.SetDestination(destination);
     }
 
     /// <summary>
@@ -101,9 +96,14 @@ public class AgentController : MonoBehaviour
     /// <param name="maxPitchAngle">L'angolo massimo (in gradi) di pitch consentito (asse X).</param>
     public void RotateToDirection(Vector3 lookAtPosition, float maxPitchAngle)
     {
-        if (IsAttacking || IsMoving) return;
+        if (!agent.enabled || IsAttacking || IsMoving) return;
 
         Vector3 directionToTarget = lookAtPosition - transform.position;
+
+        if (pitchRotator != null)
+        {
+            pitchRotator.RotatePitch(directionToTarget, maxPitchAngle, AngularSpeed);
+        }
 
         // Calcolo direzione orizzontale (solo yaw)
         Vector3 flatDirection = directionToTarget;
@@ -127,14 +127,11 @@ public class AgentController : MonoBehaviour
             AngularSpeed * Time.deltaTime
         );
 
-        if (pitchRotator != null)
-            pitchRotator.RotatePitch(directionToTarget, maxPitchAngle, AngularSpeed);
-
         if (anim == null) return;
 
         float turnDirection = Vector3.Cross(transform.forward, flatDirection).y;
 
-        anim.speed = _animSpeed + (AngularSpeed * 0.01f);
+        // anim.speed = _animSpeed + (AngularSpeed * 0.01f);
         if (turnDirection > 0.01f)
         {
             anim.SetTrigger("turnRight");

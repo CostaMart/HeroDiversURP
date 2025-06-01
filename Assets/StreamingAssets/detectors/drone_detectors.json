@@ -48,14 +48,14 @@
       "detectionBufferSize": 1
     },
     "DroneAttackRange": {
-      "OnEnterAction": "Attack",
+      "OnStayAction": "Attack",
       "detectionRange": 15.0,
       "detectionAngle": 20.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "useVerticalRange": false,
+      "useVerticalRange": true,
       "detectionBufferSize": 1
     },
     "DroneAimPerceiver": {
