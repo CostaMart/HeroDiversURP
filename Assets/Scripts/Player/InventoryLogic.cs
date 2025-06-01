@@ -54,6 +54,5 @@ public class InventoryManager : MonoBehaviour
         weaponEffectControl = relaxWeaponPosition.transform.GetChild(0).gameObject.GetComponent<WeaponEffectControl>();
 
         // attach weapon recoil to effect controller
-        weaponEffectControl.AttachToHands();
     }
 }

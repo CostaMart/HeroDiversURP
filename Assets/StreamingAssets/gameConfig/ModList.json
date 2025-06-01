@@ -114,6 +114,35 @@
                     "expr": "@PrimaryWeaponStats.1 + 1"
                 }
             ]
+        },
+        {
+            "id": 7,
+            "gameIconId": 32,
+            "inGamePrice": 50,
+            "name": "Double Barrel",
+            "description": "Omny weapon has a lot of intereseting functions, have you ever tried firing two bullets at once?",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.22",
+                    "expr": "2"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "3.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.6",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.23",
+                    "expr": "0.0"
+                }
+            ]
         }
     ]
 }

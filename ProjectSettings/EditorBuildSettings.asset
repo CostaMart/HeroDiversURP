@@ -8,9 +8,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/MyScenes/DesertLevelHeroDivers 1.unity
     guid: ec22b051b67199e4287950016acf6831
+  - enabled: 1
+    path: Assets/MyScenes/StartScreen.unity
+    guid: 4f3a76304551134159fc00283ccae26f
+  - enabled: 1
+    path: Assets/MyScenes/DesertLevelHeroDivers.unity
+    guid: 672ee2d858131ab4abab8078f45e9b80
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

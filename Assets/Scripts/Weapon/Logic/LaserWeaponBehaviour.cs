@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Weapon.State;
@@ -6,9 +7,7 @@ using static UnityEngine.InputSystem.InputAction;
 [CreateAssetMenu(fileName = "LaserWeaponBehaviour", menuName = "Scriptable Objects/weaponLogics/LaserWeaponBehaviour")]
 public class LaserWeaponBehaviour : AbstractWeaponLogic
 {
-    private LineRenderer laserRender;
     private bool shooting = false;
-    private float ammo;
     private float timer = 0f;
     private float laserFireRate = 4f;
 
@@ -18,12 +17,8 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
     private Material passiveMaterial;
     private Material activeMaterial;
 
-    public override void DisableWeaponBehaviour()
-    {
-        Destroy(laserRender);
-        weaponContainer.inputSys.actions["Attack"].performed -= OnAttackPerformed;
-        weaponContainer.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
-    }
+    private List<LineRenderer> laserRenderers = new List<LineRenderer>();
+    private Transform lineRendererContainer;
 
     public override void EnableWeaponBehaviour()
     {
@@ -31,88 +26,25 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
         activeMaterial = Resources.Load<Material>("RedGlow");
         passiveMaterial = Resources.Load<Material>("BlueGlow");
 
-        laserRender = weaponContainer.gameObject.AddComponent<LineRenderer>();
+        lineRendererContainer = weaponContainer.muzzle.GetChild(1);
 
-        laserRender.enabled = false;
-        laserRender.startWidth = activeThickness;
-        laserRender.endWidth = activeThickness;
-        laserRender.material = activeMaterial;
-
+        foreach (var lr in laserRenderers)
+            if (lr != null) GameObject.Destroy(lr.gameObject);
+        laserRenderers.Clear();
     }
 
-    private void OnAttackPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    public override void DisableWeaponBehaviour()
     {
-        shooting = true;
-        laserRender.enabled = true;
-    }
+        foreach (var lr in laserRenderers)
+            if (lr != null) GameObject.Destroy(lr.gameObject);
+        laserRenderers.Clear();
 
-    private void OnAttackCanceled(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        shooting = false;
-        laserRender.enabled = false;
-    }
-
-    public override void Reload(bool ispr) { }
-
-    public override void Shoot()
-    {
-        if (!shooting) return;
-        DrawLaser();
-    }
-
-    public override void LateUpdateWeaponBehaviour()
-    {
-        Shoot();
-    }
-
-    public override void UpdateWeaponBehaviour()
-    {
-        // useless for laser
-    }
-
-    private void DrawLaser()
-    {
-        Modifier toApplyOnHit = ItemManager.
-        bulletPool[weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects)];
-
-        laserFireRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireRate).Sum();
-        Vector3 origin = weaponContainer.muzzle.position;
-        Vector3 direction = weaponContainer.muzzle.forward;
-
-        Ray ray = new Ray(origin, direction);
-        RaycastHit hit;
-
-        Vector3 endPoint = origin + direction * 200f;
-
-        if (Physics.Raycast(ray, out hit, 200))
-        {
-            endPoint = hit.point;
-        }
-
-        laserRender.SetPosition(0, origin);
-        laserRender.SetPosition(1, endPoint);
-
-        timer += Time.deltaTime;
-        if (timer >= 1f / laserFireRate)
-        {
-            timer -= 1f / laserFireRate;
-
-            // check if hit object is part of the modifier system, if so apply modifier
-            var otherDispatcher = hit.collider.gameObject.GetComponent<EffectsDispatcher>();
-            if (otherDispatcher != null)
-            {
-                otherDispatcher.AttachModifierFromOtherDispatcher(weaponContainer.dispatcher, toApplyOnHit);
-            }
-        }
-    }
-
-    public override void FixedupdateWeaponBehaviour()
-    {
+        weaponContainer.inputSys.actions["Attack"].performed -= OnAttackPerformed;
+        weaponContainer.inputSys.actions["Attack"].canceled -= OnAttackCanceled;
     }
 
     public override void onFireStart()
     {
-
         weaponContainer.inputSys.actions["Attack"].performed += OnAttackPerformed;
     }
 
@@ -120,4 +52,116 @@ public class LaserWeaponBehaviour : AbstractWeaponLogic
     {
         weaponContainer.inputSys.actions["Attack"].canceled += OnAttackCanceled;
     }
+
+    private void OnAttackPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        shooting = true;
+    }
+
+    private void OnAttackCanceled(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        shooting = false;
+        foreach (var lr in laserRenderers)
+        {
+            if (lr != null)
+                lr.enabled = false;
+        }
+    }
+
+    public override void Shoot()
+    {
+        if (!shooting) return;
+
+        int lasersToFire = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.pershotBull);
+        lasersToFire = Mathf.Max(1, lasersToFire);
+
+        // Aggiorna il pool dinamicamente
+        EnsureLaserPool(lasersToFire);
+
+        float spreadX = 8f;
+        float spreadY = 8f;
+        int columns = 4;
+        int rows = Mathf.CeilToInt(lasersToFire / (float)columns);
+
+        for (int i = 0; i < lasersToFire; i++)
+        {
+            LineRenderer laser = laserRenderers[i];
+            laser.enabled = true;
+            laser.material = activeMaterial;
+            laser.startWidth = activeThickness;
+            laser.endWidth = activeThickness;
+
+            int row = i / columns;
+            int col = i % columns;
+
+            float xOffset = (-(Mathf.Min(columns, lasersToFire) - 1) / 2f + col) * spreadX;
+            float yOffset = (-(rows - 1) / 2f + row) * spreadY;
+
+            Quaternion rotation = Quaternion.AngleAxis(xOffset, weaponContainer.muzzle.up) *
+                                  Quaternion.AngleAxis(yOffset, weaponContainer.muzzle.right);
+
+            Vector3 direction = rotation * weaponContainer.muzzle.forward;
+            Vector3 origin = weaponContainer.muzzle.position;
+            Vector3 endPoint = origin + direction * 200f;
+
+            Ray ray = new Ray(origin, direction);
+            if (Physics.Raycast(ray, out RaycastHit hit, 200))
+            {
+                endPoint = hit.point;
+
+                var otherDispatcher = hit.collider.GetComponent<EffectsDispatcher>();
+                if (otherDispatcher != null)
+                {
+                    var toApply = ItemManager.bulletPool[
+                        weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects)];
+
+                    timer += Time.deltaTime;
+                    if (timer >= 1f / laserFireRate)
+                    {
+                        timer -= 1f / laserFireRate;
+                        otherDispatcher.AttachModifierFromOtherDispatcher(weaponContainer.dispatcher, toApply);
+                    }
+                }
+            }
+
+            laser.SetPosition(0, origin);
+            laser.SetPosition(1, endPoint);
+        }
+
+        // Disabilita laser in eccesso
+        for (int i = lasersToFire; i < laserRenderers.Count; i++)
+        {
+            laserRenderers[i].enabled = false;
+        }
+    }
+
+    public override void UpdateWeaponBehaviour() { }
+
+    public override void FixedupdateWeaponBehaviour() { }
+
+    public override void LateUpdateWeaponBehaviour()
+    {
+        Shoot();
+    }
+
+    private void EnsureLaserPool(int needed)
+    {
+        // Crea nuovi se servono
+        while (laserRenderers.Count < needed)
+        {
+            GameObject laserGO = new GameObject("LaserRenderer_" + laserRenderers.Count);
+            laserGO.transform.parent = weaponContainer.transform;
+            LineRenderer newLR = laserGO.AddComponent<LineRenderer>();
+            newLR.enabled = false;
+            newLR.material = activeMaterial;
+            newLR.positionCount = 2;
+            newLR.startWidth = activeThickness;
+            newLR.endWidth = activeThickness;
+            laserRenderers.Add(newLR);
+        }
+
+        // Non distruggere in eccesso — vengono solo disabilitati in `Shoot()`
+    }
+
+    public override void Reload(bool ispr) { }
 }

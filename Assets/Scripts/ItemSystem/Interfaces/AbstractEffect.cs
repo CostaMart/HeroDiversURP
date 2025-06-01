@@ -206,8 +206,7 @@ public abstract class AbstractEffect
             x++;
         }
 
-        var returnable = Convert.ToSingle(ex.Evaluate());
-        return returnable;
+        return (object)ex.Evaluate();
     }
 
     private object[] resolveValues(AbstractStatus[] statusClass, int[][] paramIndexes)

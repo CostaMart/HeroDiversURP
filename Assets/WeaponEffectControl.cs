@@ -1,13 +1,32 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponEffectControl : MonoBehaviour
 {
-    public enum Axis { X, Y, Z }
     public enum Direction
     {
         Positive,
         Negative
+    }
+
+    [System.Serializable]
+    public class KickAxisSettings
+    {
+        public bool enabled = false;
+        public Direction direction = Direction.Positive;
+        public float distance = 0.1f;
+    }
+
+    [System.Serializable]
+    public class TargetKickSettings
+    {
+        public Transform target;
+
+        public KickAxisSettings xAxis = new KickAxisSettings();
+        public KickAxisSettings yAxis = new KickAxisSettings();
+        public KickAxisSettings zAxis = new KickAxisSettings();
+
+        // Memorizza posizione iniziale
+        [HideInInspector] public Vector3 initialPosition;
     }
 
     [Header("Kick Settings")]
@@ -17,45 +36,52 @@ public class WeaponEffectControl : MonoBehaviour
     [Tooltip("Intensità della variazione casuale sugli assi secondari")]
     public float randomOffsetAmount = 0.01f;
 
-    [Header("Target Transforms")]
-    [SerializeField] private List<TargetKickSettings> kickTargets;
+    [Header("Targets Settings")]
+    public TargetKickSettings containerSettings = new TargetKickSettings();
+    public TargetKickSettings frontHandleSettings = new TargetKickSettings();
+    public TargetKickSettings backHandleSettings = new TargetKickSettings();
 
-    private Dictionary<Transform, Vector3> initialPositions = new Dictionary<Transform, Vector3>();
-    private Dictionary<Transform, Vector3> activeOffsets = new Dictionary<Transform, Vector3>();
     private bool isKicking = false;
     private float kickTimer = 0f;
 
-    // Classe per memorizzare le impostazioni di ciascun target
-    [System.Serializable]
-    public class TargetKickSettings
+    private readonly TargetKickSettings[] allTargets;
+
+    private void Awake()
     {
-        public Transform target;          // Transform da muovere
-        public Axis kickAxis = Axis.Z;   // Asse di movimento per il target
-        public Direction kickDirection = Direction.Positive; // Direzione della spinta (positiva o negativa)
-        public float kickDistance = 0.1f; // Kick distance personalizzata per ogni target
-        public TargetKickSettings(Transform target, Axis kickAxis = Axis.Z, Direction kickDirection = Direction.Positive, float kickDistance = 0.1f)
-        {
-            this.target = target;
-            this.kickAxis = kickAxis;
-            this.kickDirection = kickDirection;
-            this.kickDistance = kickDistance;
-        }
+        // Associa i target a mano se non assegnati
+        if (containerSettings.target == null)
+            containerSettings.target = GameObject.Find("Container")?.transform;
+
+        if (frontHandleSettings.target == null)
+            frontHandleSettings.target = GameObject.Find("frontHandle")?.transform;
+
+        if (backHandleSettings.target == null)
+            backHandleSettings.target = GameObject.Find("backHandle")?.transform;
+
+        CacheInitialPositions();
     }
 
     void OnEnable()
     {
-        AttachToHands();
+        // Associa i target a mano se non assegnati
+        if (containerSettings.target == null)
+            containerSettings.target = GameObject.Find("Container")?.transform;
+
+        if (frontHandleSettings.target == null)
+            frontHandleSettings.target = GameObject.Find("frontHandle")?.transform;
+
+        if (backHandleSettings.target == null)
+            backHandleSettings.target = GameObject.Find("backHandle")?.transform;
     }
 
-    void Start()
+    void CacheInitialPositions()
     {
-        foreach (var t in kickTargets)
-        {
-            if (t.target != null && !initialPositions.ContainsKey(t.target))
-            {
-                initialPositions[t.target] = t.target.localPosition;
-            }
-        }
+        if (containerSettings.target != null)
+            containerSettings.initialPosition = containerSettings.target.localPosition;
+        if (frontHandleSettings.target != null)
+            frontHandleSettings.initialPosition = frontHandleSettings.target.localPosition;
+        if (backHandleSettings.target != null)
+            backHandleSettings.initialPosition = backHandleSettings.target.localPosition;
     }
 
     void Update()
@@ -65,26 +91,9 @@ public class WeaponEffectControl : MonoBehaviour
         kickTimer += Time.deltaTime;
         float halfDuration = kickDuration / 2f;
 
-        foreach (var t in kickTargets)
-        {
-            Vector3 startPos = initialPositions[t.target];
-            Vector3 offset = activeOffsets.ContainsKey(t.target) ? activeOffsets[t.target] : Vector3.zero;
-
-            if (kickTimer <= halfDuration)
-            {
-                float tFactor = Mathf.SmoothStep(0f, 1f, kickTimer / halfDuration);
-                t.target.localPosition = startPos + offset * tFactor;
-            }
-            else if (kickTimer <= kickDuration)
-            {
-                float tFactor = Mathf.SmoothStep(0f, 1f, (kickTimer - halfDuration) / halfDuration);
-                t.target.localPosition = startPos + offset * (1f - tFactor);
-            }
-            else
-            {
-                t.target.localPosition = startPos;
-            }
-        }
+        UpdateKickForTarget(containerSettings, kickTimer, halfDuration);
+        UpdateKickForTarget(frontHandleSettings, kickTimer, halfDuration);
+        UpdateKickForTarget(backHandleSettings, kickTimer, halfDuration);
 
         if (kickTimer > kickDuration)
         {
@@ -93,6 +102,59 @@ public class WeaponEffectControl : MonoBehaviour
         }
     }
 
+    void UpdateKickForTarget(TargetKickSettings t, float kickTimer, float halfDuration)
+    {
+        if (t.target == null) return;
+
+        Vector3 offset = CalculateOffset(t);
+
+        if (kickTimer <= halfDuration)
+        {
+            float tFactor = Mathf.SmoothStep(0f, 1f, kickTimer / halfDuration);
+            t.target.localPosition = t.initialPosition + offset * tFactor;
+        }
+        else if (kickTimer <= kickDuration)
+        {
+            float tFactor = Mathf.SmoothStep(0f, 1f, (kickTimer - halfDuration) / halfDuration);
+            t.target.localPosition = t.initialPosition + offset * (1f - tFactor);
+        }
+        else
+        {
+            t.target.localPosition = t.initialPosition;
+        }
+    }
+
+    Vector3 CalculateOffset(TargetKickSettings t)
+    {
+        Vector3 offset = Vector3.zero;
+
+        if (t.xAxis.enabled)
+        {
+            offset += (t.xAxis.direction == Direction.Positive ? Vector3.right : Vector3.left) * t.xAxis.distance;
+        }
+
+        if (t.yAxis.enabled)
+        {
+            offset += (t.yAxis.direction == Direction.Positive ? Vector3.up : Vector3.down) * t.yAxis.distance;
+        }
+
+        if (t.zAxis.enabled)
+        {
+            offset += (t.zAxis.direction == Direction.Positive ? Vector3.forward : Vector3.back) * t.zAxis.distance;
+        }
+
+        // Random offset per naturalezza, ortogonale all'offset principale
+        Vector3 random = new Vector3(
+            Random.Range(-randomOffsetAmount, randomOffsetAmount),
+            Random.Range(-randomOffsetAmount, randomOffsetAmount),
+            Random.Range(-randomOffsetAmount, randomOffsetAmount)
+        );
+
+        Vector3 mainAxis = offset.normalized;
+        Vector3 randomOffset = random - Vector3.Project(random, mainAxis);
+
+        return offset + randomOffset;
+    }
 
     public void PlayShootEffect()
     {
@@ -100,75 +162,5 @@ public class WeaponEffectControl : MonoBehaviour
 
         isKicking = true;
         kickTimer = 0f;
-        activeOffsets.Clear();
-
-        foreach (var t in kickTargets)
-        {
-            Vector3 dir = GetDirectionVector(t.target, t.kickAxis, t.kickDirection);
-
-            Vector3 random = new Vector3(
-                Random.Range(-randomOffsetAmount, randomOffsetAmount),
-                Random.Range(-randomOffsetAmount, randomOffsetAmount),
-                Random.Range(-randomOffsetAmount, randomOffsetAmount)
-            );
-
-            Vector3 mainAxis = dir.normalized;
-            Vector3 randomOffset = random - Vector3.Project(random, mainAxis);
-
-            Vector3 fullOffset = (dir * t.kickDistance) + randomOffset; // Usa kickDistance personalizzata
-
-            activeOffsets[t.target] = fullOffset;
-        }
-    }
-
-    private Vector3 GetDirectionVector(Transform target, Axis axis, Direction direction)
-    {
-        Vector3 dir = axis switch
-        {
-            Axis.X => Vector3.right,
-            Axis.Y => Vector3.up,
-            Axis.Z => Vector3.forward,
-            _ => Vector3.forward // Default in caso di errore
-        };
-
-        // Modifica la direzione in base alla selezione dell'enum
-        if (direction == Direction.Negative)
-        {
-            dir = -dir;
-        }
-
-        return dir;
-    }
-
-    public void AttachToHands()
-    {
-        kickTargets.Clear();
-        initialPositions.Clear(); // 🔑 Reset iniziale
-
-        AddTargetIfExists("Container", Axis.Y, Direction.Positive, 15f);
-        AddTargetIfExists("frontHandle", Axis.Y, Direction.Positive, 0.0003f);
-        AddTargetIfExists("backHandle", Axis.X, Direction.Positive, 0.0005f);
-
-        // 🔄 Aggiorna initialPositions
-        foreach (var t in kickTargets)
-        {
-            if (t.target != null)
-            {
-                initialPositions[t.target] = t.target.localPosition;
-            }
-        }
-    }
-
-    private void AddTargetIfExists(string objectName, Axis axis, Direction direction, float distance)
-    {
-        GameObject obj = GameObject.Find(objectName);
-        if (obj != null)
-        {
-            kickTargets.Add(new TargetKickSettings(obj.transform, axis, direction, distance));
-        }
-        else
-        {
-            Debug.LogWarning($"[WeaponEffectControl] GameObject '{objectName}' not found in scene.");
-        }
     }
 }

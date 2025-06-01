@@ -10,6 +10,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
     // == Configurable Fields ==
     [SerializeField] private float impulseForce = 0.5f;
 
+    // Colori per cambio colore arma durante caricamento
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color chargeColor = Color.yellow;
+
     // == Public Runtime Flags ==
     public bool shooting = false;
     public bool animatorSet = false;
@@ -23,6 +27,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private int magCount = 0;
     private float smokeTimer = 0f;
     private bool smokeActive = false;
+    private float chargeTimer = 0f;
 
     // == Muzzle Effects ==
     private Transform muzzleFlash;
@@ -34,6 +39,12 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private Modifier ammoConsumptionPrimary;
     private Modifier ammoConsumptionSecondary;
 
+    // Renderer arma e materiale istanza per cambiare colore
+    private Renderer weaponRenderer;
+    private Material weaponMaterialInstance;
+
+    private WeaponEffectControl weaponEffectControl;
+
     // == Lifecycle Methods ==
     public override void EnableWeaponBehaviour()
     {
@@ -41,7 +52,18 @@ public class FireWeaponLogic : AbstractWeaponLogic
         muzzleFlash = GameObject.Find("muzzleflash").transform;
         smoke = GameObject.Find("muzzleSteam").transform;
         muzzleFlashPS = muzzleFlash.GetComponent<ParticleSystem>();
-        smokePS = smoke.GetComponent<ParticleSystem>();
+        smokePS = weaponContainer.muzzle.GetChild(0).GetComponent<ParticleSystem>();
+
+        // Ottieni renderer dell'arma (dal weaponContainer o dai suoi figli)
+        weaponRenderer = weaponContainer.weapon.GetComponentInChildren<Renderer>();
+        if (weaponRenderer != null)
+        {
+            // Clona materiale per non modificare l’originale
+            weaponMaterialInstance = weaponRenderer.material;
+            weaponMaterialInstance.color = normalColor;
+        }
+
+        this.weaponEffectControl = weaponContainer.weapon.GetComponent<WeaponEffectControl>();
 
         // Initialize bullet pool and modifiers
         CheckbulletsConsistency();
@@ -50,6 +72,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         // Initialize ammo count
         magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
         timer = 0;
+        chargeTimer = 0f;
     }
 
     public override void DisableWeaponBehaviour() { }
@@ -66,8 +89,23 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     public override void onFireStop()
     {
+        if (!weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic))
+        {
+            float chargeTime = weaponContainer.dispatcher.GetMostRecentFeatureValue<float>(FeatureType.chargeTime);
+
+            if (chargeTime > 0f && chargeTimer >= chargeTime)
+            {
+                // Se non automatico e caricamento completo, sparo al rilascio
+                Shoot();
+            }
+        }
+
         shooting = false;
         smoke.transform.position = weaponContainer.muzzle.position;
+        chargeTimer = 0f;
+
+        if (weaponMaterialInstance != null)
+            weaponMaterialInstance.color = normalColor;
     }
 
     public override void Reload(bool isPrimary)
@@ -88,12 +126,44 @@ public class FireWeaponLogic : AbstractWeaponLogic
         magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
         CheckbulletsConsistency();
 
+        float chargeTime = weaponContainer.dispatcher.GetMostRecentFeatureValue<float>(FeatureType.chargeTime);
+        bool isAutomatic = weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic);
+
         if (shooting)
         {
-            Shoot();
+            if (chargeTime > 0f)
+            {
+                // Caricamento con cambio colore
+                chargeTimer += Time.deltaTime;
+
+                if (weaponMaterialInstance != null)
+                {
+                    float t = Mathf.Clamp01(chargeTimer / chargeTime);
+                    weaponMaterialInstance.color = Color.Lerp(normalColor, chargeColor, t);
+                }
+
+                if (isAutomatic)
+                {
+                    if (chargeTimer >= chargeTime)
+                    {
+                        Shoot();
+                        chargeTimer = 0f;
+                        if (weaponMaterialInstance != null)
+                            weaponMaterialInstance.color = normalColor;
+                    }
+                }
+            }
+            else
+            {
+                Shoot();
+            }
         }
         else
         {
+            chargeTimer = 0f;
+            if (weaponMaterialInstance != null)
+                weaponMaterialInstance.color = normalColor;
+
             weaponContainer.cameraController.ResetRecoil();
             HandleSmokeEffects();
         }
@@ -104,7 +174,6 @@ public class FireWeaponLogic : AbstractWeaponLogic
     {
         if (weaponContainer.animations.reloading) return;
 
-        // Check if magazine is full
         int magSize = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
         if (weaponContainer.currentAmmo >= magSize)
         {
@@ -113,50 +182,75 @@ public class FireWeaponLogic : AbstractWeaponLogic
             return;
         }
 
-        // Fire rate control
         float fireDelay = 1f / weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireRate).Sum();
         if (Time.time - timer < fireDelay) return;
         timer = Time.time;
 
-        // Dequeue bullet and activate it
-        var bulletTrio = weaponContainer.bullets.Dequeue();
-        GameObject bulletToShoot = bulletTrio.Item1;
-        bulletToShoot.SetActive(true);
-        bulletToShoot.transform.position = weaponContainer.muzzle.position;
-        bulletToShoot.transform.rotation = weaponContainer.muzzle.rotation;
+        int bulletsToFire = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.pershotBull);
+        bulletsToFire = Mathf.Max(1, bulletsToFire);
 
-        // Setup bullet logic and physics
-        BulletSetUp(bulletToShoot, bulletTrio.Item2, bulletTrio.Item3);
-        bulletTrio.Item2.linearVelocity = weaponContainer.muzzle.forward *
-            weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
+        int columns = 4;
+        int rows = Mathf.CeilToInt(bulletsToFire / (float)columns);
 
-        weaponContainer.currentAmmo++;
+        float spreadX = 8f;
+        float spreadY = 8f;
 
-        // Audio and effects
+        for (int i = 0; i < bulletsToFire; i++)
+        {
+            if (weaponContainer.bullets.Count == 0) break;
+
+            var bulletTrio = weaponContainer.bullets.Dequeue();
+            GameObject bulletToShoot = bulletTrio.Item1;
+            Rigidbody rb = bulletTrio.Item2;
+            BulletLogic logic = bulletTrio.Item3;
+
+            bulletToShoot.SetActive(true);
+            bulletToShoot.transform.position = weaponContainer.muzzle.position;
+
+            int row = i / columns;
+            int col = i % columns;
+
+            float xOffset = (-(Mathf.Min(columns, bulletsToFire) - 1) / 2f + col) * spreadX;
+            float yOffset = (-(rows - 1) / 2f + row) * spreadY;
+
+            Quaternion rotation = Quaternion.AngleAxis(xOffset, weaponContainer.muzzle.up) *
+                                  Quaternion.AngleAxis(yOffset, weaponContainer.muzzle.right);
+
+            Vector3 direction = rotation * weaponContainer.muzzle.forward;
+            bulletToShoot.transform.rotation = Quaternion.LookRotation(direction);
+
+            BulletSetUp(bulletToShoot, rb, logic);
+            rb.linearVelocity = direction * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
+
+            weaponContainer.currentAmmo++;
+            if (weaponContainer.currentAmmo >= magSize)
+                break;
+        }
+
         if (weaponContainer.audioMuzzleManaager.isPlaying())
             weaponContainer.audioMuzzleManaager.StopFireSound();
 
         weaponContainer.audioMuzzleManaager.EmitFireSound();
         MuzzleFlash();
 
-        if (weaponContainer.weaponEffectControl != null)
-            weaponContainer.weaponEffectControl.PlayShootEffect();
+        weaponEffectControl.PlayShootEffect();
 
         weaponContainer.impulseSource.GenerateImpulse();
-
-        // Recoil application
         ApplyRecoil();
 
-        // Smoke activation
         if (!smokeActive)
         {
             smokeActive = true;
             smokeTimer = 0f;
         }
 
-        // Stop shooting if semi-auto
         if (!weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic))
             shooting = false;
+        Debug.Log("auotmatic value: " + weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic));
+
+        // Resetta il colore arma a normale allo sparo
+        if (weaponMaterialInstance != null)
+            weaponMaterialInstance.color = normalColor;
     }
 
     // == Helper Methods ==

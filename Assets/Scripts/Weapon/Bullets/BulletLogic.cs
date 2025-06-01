@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Weapon.State;
+using UnityEngine.VFX;
 
 /// <summary>
 /// Questa classe rappresenta la logica di un proiettile.
@@ -39,12 +40,16 @@ public class BulletLogic : MonoBehaviour
 
     private float lifeTimer;
     private bool isReset = false;
+    private Transform hiteffectTransform;
+    private ParticleSystem hitEffect;
 
     protected void Awake()
     {
         c = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         initialPos = transform.position;
+        hitEffect = transform.GetChild(0).GetComponent<ParticleSystem>();
+        hiteffectTransform = transform.GetChild(0);
     }
 
     private void OnEnable()
@@ -68,6 +73,10 @@ public class BulletLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        hiteffectTransform.SetParent(null);
+        hiteffectTransform.position = collision.contacts[0].point;
+        hitEffect.Play();
+        Debug.Log("collided with: " + collision.gameObject.name);
 
         try
         {

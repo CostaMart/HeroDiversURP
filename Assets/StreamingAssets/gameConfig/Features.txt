@@ -70,15 +70,17 @@ bulletLifeTime = 5.0 ID:18
 reloadTime = 2.0 ID:19
 recoilRecoverySpeed = 0.01 ID:20
 recoilMax = 0.2 ID:21
+pershotBull = 1 ID:22
+chargeTime = 0.0 ID:23
 ##
 
 #Pistol-SecondaryWeaponStats
 magCount = 10 ID:1
-magSize = 10 ID:2
-fireRate = 10.0 ID:3
-bulletSpeed = 1.0 ID:4
+magSize = 50 ID:2
+fireRate = 9.0 ID:3
+bulletSpeed = 10.0 ID:4
 laserLength = 100.0 ID:5
-automatic = false ID:6
+automatic = true  ID:6
 activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 2.0 ID:9
@@ -86,15 +88,16 @@ destroyOnHit = true ID:10
 widthScale = 20.0 ID:11
 heightScale = 20.0 ID:12
 lengthScale = 20.0 ID:13
-bulletEffects = 1  ID:14
+bulletEffects = 0  ID:14
 damage = 10.0 ID:15
-recoilStrengthVertical = 0.01 ID:16
+recoilStrengthVertical = 0.1 ID:16
 recoilStrengthLateral = 0.0 ID:17
-reloadTime = 1.0 ID:19
-recoilRecoverySpeed = 0.1 ID:20
-recoilMax = 1.0 ID:21
-bulletLifeTime = 5.0 ID:22
-reloadTime = 0.5 ID:23
+bulletLifeTime = 5.0 ID:18
+reloadTime = 2.0 ID:19
+recoilRecoverySpeed = 0.01 ID:20
+recoilMax = 0.2 ID:21
+pershotBull = 1 ID:22
+chargeTime = 0.5 ID:23
 ##
 
 #GFX_SNIPER-PrimaryWeaponStats

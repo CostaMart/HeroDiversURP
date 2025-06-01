@@ -211,7 +211,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
                 .SelectMany(stats => stats.features.Values.Where(feat => feat.id == f))
                 .ToList();
             toRet.Sort((x, y) => x.lastModifiedTime >= y.lastModifiedTime ? -1 : 1);
-            return (T)toRet.FirstOrDefault().currentValue;
+            return (T)toRet.LastOrDefault().currentValue;
         }
         catch (NullReferenceException e)
         {
