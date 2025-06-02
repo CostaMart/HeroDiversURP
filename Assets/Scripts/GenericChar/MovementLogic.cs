@@ -54,6 +54,8 @@ public class MovementLogic : MonoBehaviour
 
     [SerializeField] EventChannels eventChannels;
     UnityEvent burstOn = new UnityEvent();
+
+    UnityEvent burstEngineFail = new UnityEvent();
     UnityEvent burstOff = new UnityEvent();
     UnityEvent jump = new UnityEvent();
 
@@ -64,6 +66,7 @@ public class MovementLogic : MonoBehaviour
         eventChannels.createEvent("BurstOn", burstOn);
         eventChannels.createEvent("BurstOff", burstOff);
         eventChannels.createEvent("Jump", jump);
+        eventChannels.createEvent("BurstEngineFail", burstEngineFail);
 
         controlEventManager.AddListenerMove(Move);
         controlEventManager.AddListenerJump(Jump);
@@ -236,6 +239,12 @@ public class MovementLogic : MonoBehaviour
 
     public void TryStrafe()
     {
+
+        if (dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum() == 0)
+        {
+            burstEngineFail.Invoke();
+            return; // non puoi strafeare se la velocità di strafe è 0
+        }
 
         if (moveDirection == Vector3.zero) return; // non puoi strafeare se non indichi una direzione
 
