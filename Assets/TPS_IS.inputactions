@@ -45,7 +45,7 @@
                     "name": "Crouch",
                     "type": "Button",
                     "id": "27c5f898-bc57-4ee1-8800-db469aca5fe3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -144,6 +144,15 @@
                     "name": "Strafe",
                     "type": "Button",
                     "id": "411cc21c-44a7-42d3-a1a7-c7c164614b3a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ReloadScene",
+                    "type": "Button",
+                    "id": "414b44d8-ac55-4244-8fdf-209552554c0b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -643,6 +652,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ef5a0bd6-4988-4965-908f-537c4424eaa3",
+                    "path": "<Keyboard>/f12",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ReloadScene",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -74,67 +74,113 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
 
 
-    void OnEnable()
-    {
-        AttachIKReferencesToWeapon(0);
-    }
 
     void Awake()
     {
         channel.createEvent("stepLeft", leftStepEvent);
         channel.createEvent("stepRight", rightStepEvent);
     }
-    void Start()
+    void OnEnable()
     {
+        AttachIKReferencesToWeapon(0);
 
-
+        animator = GetComponent<Animator>();
 
         playerInput.actions["Reload"].performed += ReloadAnimate;
 
         if (!toggleAim)
         {
-            playerInput.actions["Aim"].performed += ctx =>
-            {
-                if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
-                { aiming = true; animator.SetBool(aimHash, aiming); }
-            };
-
-            playerInput.actions["Aim"].canceled += ctx => { aiming = false; animator.SetBool(aimHash, aiming); };
+            playerInput.actions["Aim"].performed += AimHoldStarted;
+            playerInput.actions["Aim"].canceled += AimHoldCanceled;
         }
         else
         {
-            playerInput.actions["Aim"].performed += ctx =>
-            {
-                if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
-                    aiming = !aiming; animator.SetBool(aimHash, aiming);
-            };
+            playerInput.actions["Aim"].performed += AimToggle;
         }
 
-        playerInput.actions["Move"].performed += ctx => { animator.SetBool(walkHash, true); };
-        playerInput.actions["Move"].canceled += ctx => { animator.SetBool(walkHash, false); };
+        playerInput.actions["Move"].performed += MoveStarted;
+        playerInput.actions["Move"].canceled += MoveCanceled;
 
-        animator = GetComponent<Animator>();
+        playerInput.actions["wpn1"].performed += WeaponSwitch;
+    }
 
+    void OnDisable()
+    {
+        playerInput.actions["Reload"].performed -= ReloadAnimate;
 
-        // equipment event manager setup
-        // si ascolta l'evento di cambio arma per cambiare la posizione della mano sinistra a seconda dell'arma impugnata. cambio possibile solo se non si sta mirando.
-        playerInput.actions["wpn1"].performed += ((index) =>
+        if (!toggleAim)
         {
-            if (!pistol)
-            {
-                pistol = true;
-                animator.SetBool(pistolHash, true);
-                pistolObject.transform.SetParent(PistolRelaxedPosition);
-                pistolObject.transform.localPosition = Vector3.zero;
-                pistolObject.transform.localRotation = Quaternion.identity;
-            }
-            else if (pistol)
-            {
-                pistol = false;
-                animator.SetBool(pistolHash, false);
-            }
-        });
+            playerInput.actions["Aim"].performed -= AimHoldStarted;
+            playerInput.actions["Aim"].canceled -= AimHoldCanceled;
+        }
+        else
+        {
+            playerInput.actions["Aim"].performed -= AimToggle;
+        }
 
+        playerInput.actions["Move"].performed -= MoveStarted;
+        playerInput.actions["Move"].canceled -= MoveCanceled;
+
+        playerInput.actions["wpn1"].performed -= WeaponSwitch;
+    }
+
+    void OnDestroy()
+    {
+        channel.destroyEvent("stepLeft");
+        channel.destroyEvent("stepRight");
+    }
+
+    // methods to be called as callbacks from the input system
+    #region Input Callbacks
+    private void AimHoldStarted(InputAction.CallbackContext ctx)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+        {
+            aiming = true;
+            animator.SetBool(aimHash, aiming);
+        }
+    }
+
+    private void AimHoldCanceled(InputAction.CallbackContext ctx)
+    {
+        aiming = false;
+        animator.SetBool(aimHash, aiming);
+    }
+
+    private void AimToggle(InputAction.CallbackContext ctx)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+        {
+            aiming = !aiming;
+            animator.SetBool(aimHash, aiming);
+        }
+    }
+
+    private void MoveStarted(InputAction.CallbackContext ctx)
+    {
+        animator.SetBool(walkHash, true);
+    }
+
+    private void MoveCanceled(InputAction.CallbackContext ctx)
+    {
+        animator.SetBool(walkHash, false);
+    }
+
+    private void WeaponSwitch(InputAction.CallbackContext ctx)
+    {
+        if (!pistol)
+        {
+            pistol = true;
+            animator.SetBool(pistolHash, true);
+            pistolObject.transform.SetParent(PistolRelaxedPosition);
+            pistolObject.transform.localPosition = Vector3.zero;
+            pistolObject.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            pistol = false;
+            animator.SetBool(pistolHash, false);
+        }
     }
 
     int reloadSpeedHash = Animator.StringToHash("ReloadMultiplier");
@@ -152,6 +198,8 @@ public class PlayerAnimatorLogic : MonoBehaviour
         animator.SetBool(reloadHash, true);
         this.reloading = true;
     }
+    #endregion
+    // ==========================================================================================
 
 
     int jumpHash = Animator.StringToHash("jump");

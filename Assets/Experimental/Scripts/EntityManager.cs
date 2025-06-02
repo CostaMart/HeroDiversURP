@@ -15,14 +15,14 @@ public class EntityManager : MonoBehaviour
 
     // Dizionario per tracciare le entità
     private Dictionary<string, GameObject> _entities = new();
-    
+
     // Eventi per notificare altre classi quando entità vengono aggiunte o rimosse
     // public event Action<string, GameObject> OnEntityRegistered;
     // public event Action<string, GameObject> OnEntityRemoved;
 
     [Header("Debug Settings")]
     [SerializeField] private bool _logRegistrations = false;
-    
+
     [Header("Default Prefabs")]
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _spawnerPrefab;
@@ -33,7 +33,6 @@ public class EntityManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -99,7 +98,7 @@ public class EntityManager : MonoBehaviour
             Debug.LogWarning($"Entity ID '{uniqueId}' already exists!");
             return uniqueId;
         }
-            
+
         _entities.Add(uniqueId, entity);
         entity.name = uniqueId; // Aggiorna il nome dell'oggetto per riflettere l'ID
 
@@ -128,15 +127,15 @@ public class EntityManager : MonoBehaviour
         {
             return entity;
         }
-        
+
         if (_logRegistrations)
         {
             Debug.LogWarning($"Entity with ID '{id}' not found!");
         }
-        
+
         return null;
     }
-    
+
     /// <summary>
     /// Controlla se un'entità con un determinato ID esiste nel sistema di gestione.
     public bool HasEntity(string id)
@@ -193,9 +192,9 @@ public class EntityManager : MonoBehaviour
         {
             entity.transform.SetParent(transform); // Imposta l'EntityManager come genitore se non specificato
         }
-        
+
         string uniqueId = RegisterEntity(id, entity);
-        
+
         return entity;
     }
 }

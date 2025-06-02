@@ -44,6 +44,7 @@ public class BulletLogic : MonoBehaviour
     public bool resetOnFireRelease = false;
     private bool sticky = false;
     public float bounciness = 0f;
+    public bool antigravitational = false;
 
     // Frequenza con cui processare OnTriggerStay (in secondi)
     public float tickRate = 0.2f;
@@ -75,6 +76,7 @@ public class BulletLogic : MonoBehaviour
         isReset = false;
         oldParent = this.transform.parent.gameObject;
         bulletHitCount = 0;
+        rb.useGravity = !antigravitational;
 
         switch (followSomething)
         {

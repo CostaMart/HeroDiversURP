@@ -315,6 +315,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         bulletLogic.resetOnFireRelease = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.resetOnFireRelease).LastOrDefault();
         bulletLogic.bounciness = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletBounciness).Sum();
         bulletLogic.tickRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletTickRate).Sum();
+        bulletLogic.antigravitational = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.antigravitational).LastOrDefault();
         bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(

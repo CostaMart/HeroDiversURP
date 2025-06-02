@@ -104,6 +104,21 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.13",
                     "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "9.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.22",
+                    "expr": "1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.29",
+                    "expr": "true"
                 }
             ]
         },
@@ -128,7 +143,7 @@
             "type": "normal",
             "inGamePrice": 50,
             "name": "Double Barrel",
-            "description": "Omny weapon has a lot of intereseting functions, have you ever tried firing two bullets at once?",
+            "description": "Omni weapon has a lot of intereseting functions, have you ever tried firing two bullets at once?",
             "effects": [
                 {
                     "effectType": "sa",
@@ -149,6 +164,121 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.23",
                     "expr": "0.0"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "gameIconId": 12,
+            "type": "normal",
+            "inGamePrice": 50,
+            "name": "Super Glue",
+            "description": "I think they will not come off that easily, until they explode at least",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.7",
+                    "expr": "0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.28",
+                    "expr": "0.5"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.10",
+                    "expr": "1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.28",
+                    "expr": "0.5"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.27",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.25",
+                    "expr": "3"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "gameIconId": 12,
+            "type": "normal",
+            "inGamePrice": 50,
+            "name": "Fat Bombs",
+            "description": "big explotions and they hurts",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.7",
+                    "expr": "0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.28",
+                    "expr": "1000.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.10",
+                    "expr": "1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.9",
+                    "expr": "10.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.27",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.25",
+                    "expr": "0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.4",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.6",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "2.0"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "gameIconId": 12,
+            "type": "normal",
+            "inGamePrice": 50,
+            "name": "Energy Deviation Channel",
+            "description": "Deviate part of the energy of the exoSuit to the weapon, less strafes more firepower",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.15",
+                    "expr": "@PrimaryWeaponStats.15 + 10"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@CharStats.16",
+                    "expr": "@CharStats.16 - 1"
                 }
             ]
         }

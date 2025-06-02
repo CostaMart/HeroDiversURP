@@ -8,4 +8,7 @@
 4 rarity: 30
 5 rarity: 30
 7 rarity: 30
+8 rarity: 30
+9 rarity: 30
+10 rarity: 50
 ##

@@ -25,6 +25,11 @@ public class DemoLoader : MonoBehaviour
     private Vector3 originalCameraPosition;
     private bool loading = false;
 
+    public void Start()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+    }
     public void LoadDemo()
     {
         if (!loading)

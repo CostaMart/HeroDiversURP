@@ -29,6 +29,7 @@ public class StrafeBars : MonoBehaviour
     RectTransform rectParent;
     RectTransform thisRect;
     Vector3 originalScale;
+    PlayerInput playerInput = null;
 
     void Start()
     {
@@ -40,7 +41,18 @@ public class StrafeBars : MonoBehaviour
             Instantiate(indicator, indicatorContainer.transform);
         }
 
-        var playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
+
+        text.text = "OVERHEAT";
+        original = img.color;
+        originalScale = thisRect.localScale;
+    }
+
+    void OnEnable()
+    {
+
+        rectParent = this.transform.parent.GetComponent<RectTransform>();
+        thisRect = this.transform.GetComponent<RectTransform>();
+        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
 
         if (toggleMode)
         {
@@ -53,12 +65,19 @@ public class StrafeBars : MonoBehaviour
             playerInput.actions["Aim"].performed += ctx => MoveTo(fightModePosition);
             playerInput.actions["Aim"].canceled += ctx => MoveTo(restPosition);
         }
+    }
 
-        text.text = "OVERHEAT";
-        original = img.color;
-        rectParent = transform.parent.GetComponent<RectTransform>();
-        thisRect = transform.GetComponent<RectTransform>();
-        originalScale = thisRect.localScale;
+    void OnDisable()
+    {
+        if (toggleMode)
+        {
+            playerInput.actions["Aim"].performed -= ctx => TogglePosition();
+        }
+        else
+        {
+            playerInput.actions["Aim"].performed -= ctx => MoveTo(fightModePosition);
+            playerInput.actions["Aim"].canceled -= ctx => MoveTo(restPosition);
+        }
     }
 
     void TogglePosition()

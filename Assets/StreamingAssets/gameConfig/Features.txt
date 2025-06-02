@@ -73,10 +73,11 @@ recoilMax = 0.2 ID:21
 pershotBull = 2 ID:22
 chargeTime = 0.0 ID:23
 bulletMaxDistance = 200.0 ID:24
-bulletFollowTarget = 2 ID:25 // follow notghin:0, follow gun: 1, follow player: 2, sticky: 3
+bulletFollowTarget = 0 ID:25 // follow notghin:0, follow gun: 1, follow player: 2, sticky: 3
 resetOnFireRelease = false ID:26
 bulletBounciness = 0.0 ID:27 range: 0.0-1.0 // if bounciness is 0 the bullet will go trought enemeies
 bulletTickRate = 1.0 ID:28 // How often the bullet applies its modifier on prolongated contact after first collision with a target
+antigravitational = false ID:29 // if true the bullet will not be affected by gravity
 ##
 
 #Pistol-SecondaryWeaponStats

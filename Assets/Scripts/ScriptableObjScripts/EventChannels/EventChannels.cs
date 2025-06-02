@@ -28,4 +28,16 @@ public class EventChannels : ScriptableObject
         }
     }
 
+    public void destroyEvent(string eventName)
+    {
+        if (events.ContainsKey(eventName))
+        {
+            events.Remove(eventName);
+        }
+        else
+        {
+            Debug.LogWarning($"Event {eventName} does not exist.");
+        }
+    }
+
 }
