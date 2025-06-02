@@ -24,6 +24,8 @@ public class HeatStats : AbstractStatus
 
     private Modifier heat;
     private Modifier cooling;
+    private Modifier overHeatMalus;
+    private Modifier overHeatMalusCounter;
 
     private float raycastTimer = 0f;
     private float timer = 0f;
@@ -68,13 +70,54 @@ public class HeatStats : AbstractStatus
         {
             effects = effects
         };
+
+        effects = new List<AbstractEffect>();
+
+        foreach (var effect in mod["overHeatMalus"].effects)
+        {
+            effects.Add(new SingleActivationEffect(new Dictionary<string, string>
+            {
+                { "effectType", effect.effectType },
+                { "target", effect.target },
+                { "expr", effect.expr }
+            }, 0, 0, false));
+        }
+
+        overHeatMalus = new Modifier
+        {
+            effects = effects
+        };
+
+
+        effects = new List<AbstractEffect>();
+
+        foreach (var effect in mod["overHeatMalusCounter"].effects)
+        {
+            effects.Add(new SingleActivationEffect(new Dictionary<string, string>
+            {
+                { "effectType", effect.effectType },
+                { "target", effect.target },
+                { "expr", effect.expr }
+            }, 0, 0, false));
+        }
+
+        overHeatMalusCounter = new Modifier
+        {
+            effects = effects
+        };
+
     }
 
+    bool overHeat = false;
     private void Update()
     {
         base.Update();
         var heatInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.heatingRate).Sum();
         var coolingInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.coolingRate).Sum();
+        var currentHeatLvl = dispatcher.GetAllFeatureByType<float>(FeatureType.heat).Sum();
+        var overHeatLimit = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).Sum();
+
+
 
         // Raycast 5 volte al secondo per aggiornare esposizione
         raycastTimer += Time.deltaTime;
@@ -101,6 +144,21 @@ public class HeatStats : AbstractStatus
                 timer = 0f;
             }
         }
+
+        if (currentHeatLvl >= overHeatLimit)
+        {
+            dispatcher.modifierDispatch(overHeatMalus);
+            overHeat = true;
+            return;
+        }
+
+        if (overHeat)
+        {
+            // Reset overheat state
+            overHeat = false;
+            dispatcher.modifierDispatch(overHeatMalusCounter);
+        }
+
     }
 
     private void CheckExposure()

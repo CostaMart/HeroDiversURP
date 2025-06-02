@@ -9,9 +9,6 @@ jumpSpeedx = 10.0 ID:4
 jumpSpeedz = 10.0 ID:5
 speedLimitBeforeRagdolling = 1000.0 ID:6
 maxJumps = 1 ID:7
-coolingPerSecond = 10.0 ID:11
-heat = 0.0 ID:8 range: 0.0-100.0
-overHeatLimit = 100.0 ID:10
 strafeBurstDuration = 0.3 ID:12
 strafePower = 70.0 ID:15
 strafeCooldown = 2.0 ID:17
@@ -19,9 +16,13 @@ maxStrafes = 4 ID:16
 ##
 
 #Player-HeatStats
+heatingPerSecond = 5.0 ID:0 
 coolingRate = 1.0 ID:1
 heatingRate = 1.0 ID:2
-heatingPerSecond = 5.0 ID:0 
+heat = 0.0 ID:3 range: 0.0-100.0
+overHeatLimit = 100.0 ID:4
+coolingPerSecond = 10.0 ID:5
+strafePower = 0.0 ID:6
 ##
 
 #GFX_MG-PrimaryWeaponStats

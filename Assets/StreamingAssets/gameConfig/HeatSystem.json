@@ -5,8 +5,8 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@CharStats.8",
-                    "expr": "@CharStats.8 + @HeatStats.0"
+                    "target": "@HeatStats.3",
+                    "expr": "@HeatStats.3 + @HeatStats.0"
                 }
             ]
         },
@@ -16,8 +16,30 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@CharStats.8",
-                    "expr": "@CharStats.8 - @CharStats.11"
+                    "target": "@HeatStats.3",
+                    "expr": "@HeatStats.3 - @HeatStats.5"
+                }
+            ]
+        },
+        "overHeatMalus": {
+            "id": 2,
+            "name": "overheat",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@HeatStats.6",
+                    "expr": "0 - @CharStats.15"
+                }
+            ]
+        },
+        "overHeatMalusCounter": {
+            "id": 3,
+            "name": "backToNormal",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@HeatStats.6",
+                    "expr": "0"
                 }
             ]
         }

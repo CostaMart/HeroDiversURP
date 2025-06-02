@@ -93,7 +93,7 @@ public class StrafeBars : MonoBehaviour
 
 
         // se siamo surriscaldati, mostra il cooldown rosso
-        if (movementLogic.temperature > movementLogic.overHeatLimit / 2)
+        if (movementLogic.temperature >= movementLogic.overHeatLimit)
         {
             img.color = Color.red;
             text.color = Color.red;

@@ -236,15 +236,12 @@ public class MovementLogic : MonoBehaviour
 
     public void TryStrafe()
     {
+
+        if (moveDirection == Vector3.zero) return; // non puoi strafeare se non indichi una direzione
+
         if (isBursting)
         {
             Debug.Log("Non puoi strafeare, uno strafe è già in corso!");
-            return;
-        }
-
-        if (temperature > overHeatLimit / 2)
-        {
-            Debug.Log("Non puoi strafeare, armatura surriscaldata!");
             return;
         }
 

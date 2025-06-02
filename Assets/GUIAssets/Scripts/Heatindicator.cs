@@ -40,14 +40,14 @@ public class Heatindicator : MonoBehaviour
         float maxHeat = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).DefaultIfEmpty(100).Sum();
         float heatPercent = logic.temperature / maxHeat;
 
-        if (logic.temperature > maxHeat / 2 && !alarmed)
+        if (logic.temperature >= maxHeat && !alarmed)
         {
             Debug.Log("Critical heat reached!");
             heatEvent.Invoke();
             alarmed = true;
         }
 
-        if (logic.temperature < maxHeat / 2)
+        if (logic.temperature < maxHeat)
         {
             Debug.Log("Heat is back to normal.");
             alarmed = false;
