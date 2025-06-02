@@ -254,51 +254,54 @@ public class BulletLogic : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        triggerStayTimer += Time.deltaTime;
-
-        if (triggerStayTimer < tickRate)
-            return;
-
-        // Reset del timer per il prossimo tick
-        triggerStayTimer = 0f;
-
-        Debug.Log("TriggerStay a cadenza regolare. Hit count: " + bulletHitCount + " / Max: " + MaxhitCount);
-        Debug.Log("Collisione (trigger) con: " + other.gameObject.name);
-
-        hiteffectTransform.SetParent(null);
-        hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
-
-        // Imposta il raggio dell'effetto in base al raggio di esplosione
-        hiteffectTransform.localScale = Vector3.one *
-            dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
-
-        hitEffect.Play();
-
-        try
+        if (other.CompareTag("NPC"))
         {
-            Collider[] colliders = Physics.OverlapSphere(
-                hiteffectTransform.transform.position,
-                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
-            );
+            triggerStayTimer += Time.deltaTime;
 
-            foreach (Collider col in colliders)
+            if (triggerStayTimer < tickRate)
+                return;
+
+            // Reset del timer per il prossimo tick
+            triggerStayTimer = 0f;
+
+            Debug.Log("TriggerStay a cadenza regolare. Hit count: " + bulletHitCount + " / Max: " + MaxhitCount);
+            Debug.Log("Collisione (trigger) con: " + other.gameObject.name);
+
+            hiteffectTransform.SetParent(null);
+            hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
+
+            // Imposta il raggio dell'effetto in base al raggio di esplosione
+            hiteffectTransform.localScale = Vector3.one *
+                dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+
+            hitEffect.Play();
+
+            try
             {
-                if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                Collider[] colliders = Physics.OverlapSphere(
+                    hiteffectTransform.transform.position,
+                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
+                );
+
+                foreach (Collider col in colliders)
                 {
-                    d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
+                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                    {
+                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            Debug.LogWarning("Errore durante OverlapSphere nel TriggerStay: " + e.Message);
-        }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Errore durante OverlapSphere nel TriggerStay: " + e.Message);
+            }
 
-        bulletHitCount++;
-        if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 = infinito
-        {
-            Debug.Log("Bullet ha raggiunto il limite di colpi (trigger). Reset.");
-            ResetBullet();
+            bulletHitCount++;
+            if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 = infinito
+            {
+                Debug.Log("Bullet ha raggiunto il limite di colpi (trigger). Reset.");
+                ResetBullet();
+            }
         }
     }
 

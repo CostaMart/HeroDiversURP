@@ -5,15 +5,7 @@ public class SettingsMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject settingsMenu;
     [SerializeField] private GameObject startButton;
-    public void Start()
-    {
-        // set once each volume
-        PlayerPrefs.SetFloat("strafeBlur", 0.3f);
-        PlayerPrefs.SetFloat("musicVolume", 0.8f);
-        PlayerPrefs.SetFloat("sfxVolume", 0.6f);
-        PlayerPrefs.SetFloat("shootingVolume", 0.2f);
-        PlayerPrefs.Save();
-    }
+
     public void OnButtonPressed()
     {
         settingsMenu.SetActive(true);
