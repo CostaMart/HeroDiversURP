@@ -313,6 +313,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
         bulletLogic.maxDistance = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletMaxDistance).Sum();
         bulletLogic.followSomething = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.bulletFollowTarget).LastOrDefault();
         bulletLogic.resetOnFireRelease = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.resetOnFireRelease).LastOrDefault();
+        bulletLogic.bounciness = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletBounciness).Sum();
+        bulletLogic.tickRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletTickRate).Sum();
         bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(

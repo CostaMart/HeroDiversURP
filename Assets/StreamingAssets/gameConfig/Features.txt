@@ -59,22 +59,24 @@ activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 1.0 ID:9
 bulletHitNumber = 1.0 ID:10
-widthScale = 20.0 ID:11
-heightScale = 20.0 ID:12
-lengthScale = 20.0 ID:13
+widthScale = 100.0 ID:11
+heightScale = 100.0 ID:12
+lengthScale = 100.0 ID:13
 bulletEffects = 0  ID:14
 damage = 10.0 ID:15
 recoilStrengthVertical = 0.1 ID:16
 recoilStrengthLateral = 0.0 ID:17
-bulletLifeTime = 50.0 ID:18
+bulletLifeTime = 5.0 ID:18
 reloadTime = 2.0 ID:19
 recoilRecoverySpeed = 0.01 ID:20
 recoilMax = 0.2 ID:21
 pershotBull = 1 ID:22
 chargeTime = 0.0 ID:23
 bulletMaxDistance = 100.0 ID:24
-bulletFollowTarget = 0 ID:25
+bulletFollowTarget = 0 ID:25 // follow notghin:0, follow gun: 1, follow player: 2, sticky: 3
 resetOnFireRelease = false ID:26
+bulletBounciness = 0.0 ID:27 range: 0.0-1.0
+bulletTickRate = 10.0 ID:28 // How often the bullet applies its modifier on prolongated contact after first collision with a target
 ##
 
 #Pistol-SecondaryWeaponStats

@@ -4,44 +4,61 @@ using UnityEngine;
 
 public enum FeatureType
 {
-    //weapon related
+    // === Bullet-related ===
+    bulletBounciness,
     bulletOffsetSpawn,
-    resetOnFireRelease,
     bulletFollowTarget,
+    bulletSpeed,
+    bulletLifeTime,
+    bulletHitNumber,
+    bulletMaxDistance,
+    explosionRadius,
+    bulletEffects,
+    damage,
+    bulletTickRate,
+
+    // === Shooting logic ===
+    resetOnFireRelease,
     chargeTime,
     pershotBull,
+    fireRate,
+    automatic,
+    activeLogicIndex,
+
+    // === Recoil ===
     recoilMax,
     recoilRecoverySpeed,
+    recoilStrengthVertical,
+    recoilStrengthLateral,
+
+    // === Magazine/Reload ===
     reloadTime,
     magSize,
     magCount,
-    bulletSpeed,
+
+    // === Laser-related ===
     laserLength,
-    automatic,
-    activeLogicIndex,
-    explosionRadius,
-    fireRate,
-    bulletLifeTime,
-    recoilStrengthVertical,
-    recoilStrengthLateral,
+
+    // === Scaling (e.g., for visual effects or physical projectiles) ===
     widthScale,
     heightScale,
     lengthScale,
-    bulletEffects,
-    //
+
+    // === Heat/Cooling system ===
     coolingPerSecond,
     heatingRate,
     heatingPerSecond,
     coolingRate,
     overHeatLimit,
     heat,
+
+    // === Strafe / Dash system ===
     strafeCooldown,
     maxStrafes,
     strafeBurstDuration,
     strafePower,
-    keys,
-    maxHealth,
-    health,
+
+    // === Movement & Jumping ===
     speed,
     rotationSpeed,
     aimRotationSpeed,
@@ -50,14 +67,22 @@ public enum FeatureType
     jumpSpeedz,
     speedLimitBeforeRagdolling,
     maxJumps,
+
+    // === Physics ===
     affetedByGravity,
     linearDamping,
     mass,
-    bulletHitNumber,
-    bulletMaxDistance,
-    money,
-    damage,
+
+    // === Health ===
+    maxHealth,
+    health,
     receivedDamage,
+
+    // === Economy ===
+    money,
+
+    // === Misc ===
+    keys,
 }
 
 public class Feature

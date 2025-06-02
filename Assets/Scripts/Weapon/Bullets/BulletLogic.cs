@@ -42,6 +42,16 @@ public class BulletLogic : MonoBehaviour
     public GameObject oldParent;
     bool stopped = false;
     public bool resetOnFireRelease = false;
+    private bool sticky = false;
+    public float bounciness = 0f;
+
+    // Frequenza con cui processare OnTriggerStay (in secondi)
+    public float tickRate = 0.2f;
+    int bulletLayer = 0;
+    int NPCLayer = 0;
+    int terrainLayer = 0;
+    static bool matrixAlreadyUpdated = false; //used by the bullets to communicate about physics matrix status, if a bullet already updated it others are not gonna do the same 
+    static int lastBounciness = -1;
 
 
     public WeaponLogicContainer weaponContainer;
@@ -53,13 +63,18 @@ public class BulletLogic : MonoBehaviour
         initialPos = transform.position;
         hitEffect = transform.GetChild(0).GetComponent<ParticleSystem>();
         hiteffectTransform = transform.GetChild(0);
+        bulletLayer = LayerMask.NameToLayer("Bullets");
+        NPCLayer = LayerMask.NameToLayer("NPC");
+        terrainLayer = LayerMask.NameToLayer("Terrain");
     }
 
     private void OnEnable()
     {
+        triggerStayTimer = 0f;
         lifeTimer = 0f;
         isReset = false;
         oldParent = this.transform.parent.gameObject;
+        bulletHitCount = 0;
 
         switch (followSomething)
         {
@@ -71,6 +86,9 @@ public class BulletLogic : MonoBehaviour
             case 2: // follow weapon
                 this.transform.SetParent(weaponContainer.weapon.transform);
                 break;
+            case 3: //sticky
+                sticky = true;
+                break;
             default:
                 Debug.LogError("Invalid followSomething value: " + followSomething);
                 break;
@@ -81,11 +99,18 @@ public class BulletLogic : MonoBehaviour
             weaponContainer.inputSys.actions["Attack"].canceled += ResetBullet;
         }
 
-        // not hit scan at all
-        if (MaxhitCount == -2)
+        c.material.bounciness = bounciness;
+
+        if (bounciness != lastBounciness)
         {
-            this.GetComponent<SphereCollider>().enabled = false;
+            if (bounciness == 0) Physics.IgnoreLayerCollision(bulletLayer, NPCLayer, true);
+            else Physics.IgnoreLayerCollision(bulletLayer, NPCLayer, false);
+
+            Physics.IgnoreLayerCollision(bulletLayer, terrainLayer, false);
+            lastBounciness = (int)bounciness;
         }
+
+
 
     }
 
@@ -95,8 +120,8 @@ public class BulletLogic : MonoBehaviour
 
         if (!stopped && Vector3.Distance(dispatcher.gameObject.transform.position, transform.position) >= maxDistance)
         {
-            this.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-            this.GetComponent<Rigidbody>().isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true;
             stopped = true;
         }
 
@@ -112,7 +137,6 @@ public class BulletLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        bulletHitCount++;
         Debug.Log("got a collission my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
         Debug.Log("Collision with: " + collision.gameObject.name);
 
@@ -124,10 +148,136 @@ public class BulletLogic : MonoBehaviour
 
         hitEffect.Play();
 
+        if (bounciness != 0)
+        {
+            try
+            {
+                Collider[] colliders = Physics.OverlapSphere(
+                    collision.transform.position,
+                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
+                );
+
+                foreach (Collider col in colliders)
+                {
+                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                    {
+                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
+            bulletHitCount++;
+
+            if (sticky && bulletHitCount == MaxhitCount)
+            {
+                bulletHitCount++;
+                this.transform.SetParent(collision.transform);
+                rb.linearVelocity = Vector3.zero;
+                rb.isKinematic = true;
+                return;
+            }
+
+
+            if (bulletHitCount == MaxhitCount && MaxhitCount != -1) // -1 is not limit
+            {
+                Debug.Log("Bullet hit limit reached, resetting bullet. " + bulletHitCount + " limit " + MaxhitCount);
+                ResetBullet();
+            }
+        }
+
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (bounciness == 0)
+        {
+            Debug.Log("got a trigger my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
+            Debug.Log("Collision with: " + other.gameObject.name);
+
+            hiteffectTransform.SetParent(null);
+            hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
+
+            // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
+            hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+
+            hitEffect.Play();
+
+
+
+
+            try
+            {
+                Collider[] colliders = Physics.OverlapSphere(
+                    hiteffectTransform.transform.position,
+                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
+                );
+
+                foreach (Collider col in colliders)
+                {
+                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                    {
+                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
+            bulletHitCount++;
+
+            if (sticky && bulletHitCount == MaxhitCount)
+            {
+                bulletHitCount++;
+                this.transform.SetParent(other.transform);
+                rb.linearVelocity = Vector3.zero;
+                rb.isKinematic = true;
+                return;
+            }
+
+            if (bulletHitCount == MaxhitCount && MaxhitCount != -1) // -1 is not limit
+            {
+                Debug.Log("Bullet hit limit reached, resetting bullet.");
+                ResetBullet();
+            }
+        }
+    }
+
+
+
+
+    // Timer interno per controllare la cadenza
+    private float triggerStayTimer = 0.4f;
+
+    private void OnTriggerStay(Collider other)
+    {
+        triggerStayTimer += Time.deltaTime;
+
+        if (triggerStayTimer < tickRate)
+            return;
+
+        // Reset del timer per il prossimo tick
+        triggerStayTimer = 0f;
+
+        Debug.Log("TriggerStay a cadenza regolare. Hit count: " + bulletHitCount + " / Max: " + MaxhitCount);
+        Debug.Log("Collisione (trigger) con: " + other.gameObject.name);
+
+        hiteffectTransform.SetParent(null);
+        hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
+
+        // Imposta il raggio dell'effetto in base al raggio di esplosione
+        hiteffectTransform.localScale = Vector3.one *
+            dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+
+        hitEffect.Play();
+
         try
         {
             Collider[] colliders = Physics.OverlapSphere(
-                collision.transform.position,
+                hiteffectTransform.transform.position,
                 bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
             );
 
@@ -141,18 +291,20 @@ public class BulletLogic : MonoBehaviour
         }
         catch (Exception e)
         {
+            Debug.LogWarning("Errore durante OverlapSphere nel TriggerStay: " + e.Message);
         }
 
-        if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 is not limit
+        bulletHitCount++;
+        if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 = infinito
         {
-            Debug.Log("Bullet hit limit reached, resetting bullet.");
+            Debug.Log("Bullet ha raggiunto il limite di colpi (trigger). Reset.");
             ResetBullet();
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerExit(Collider other)
     {
-        Debug.Log("im colliding! that's wonderful!");
+        triggerStayTimer = 0f; // Reset del timer quando esce dal trigger
     }
 
     /// <summary>
@@ -160,10 +312,10 @@ public class BulletLogic : MonoBehaviour
     /// </summary>
     private void ResetBullet()
     {
+        Debug.Log("Resetting bullet...");
         if (isReset) return;
         isReset = true;
 
-        bulletHitCount = 0;
 
         if (followSomething != 0)
         {
@@ -177,6 +329,8 @@ public class BulletLogic : MonoBehaviour
 
 
         this.GetComponent<SphereCollider>().enabled = true;
+        rb.includeLayers = ~0;
+        rb.isKinematic = false;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         transform.position = initialPos;
@@ -187,4 +341,7 @@ public class BulletLogic : MonoBehaviour
     {
         ResetBullet();
     }
+
+
+
 }
