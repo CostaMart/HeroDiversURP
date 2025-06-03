@@ -82,16 +82,29 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public override void FixedupdateWeaponBehaviour() { }
 
     // == Input Handlers ==
+    #region input handlers
     public override void onFireStart()
     {
+        // manage chargin sound if necessary
+        var chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
+        if (!ChargingSoundPlaying && chargeTime > 0)
+        {
+            weaponContainer.audioMuzzleManager.EmitChargeSound(chargeTime);
+            ChargingSoundPlaying = true;
+        }
+
         shooting = true;
     }
 
     public override void onFireStop()
     {
+        // manage charging sound
+        weaponContainer.audioMuzzleManager.StopChargeSound();
+        ChargingSoundPlaying = false;
+
         if (!weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic))
         {
-            float chargeTime = weaponContainer.dispatcher.GetMostRecentFeatureValue<float>(FeatureType.chargeTime);
+            float chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
 
             if (chargeTime > 0f && chargeTimer >= chargeTime)
             {
@@ -119,6 +132,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
             weaponContainer.currentAmmo = 0;
         }
     }
+    #endregion
 
     // == Main Update Logic ==
     bool ChargingSoundPlaying = false;
@@ -127,7 +141,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
         CheckbulletsConsistency();
 
-        float chargeTime = weaponContainer.dispatcher.GetMostRecentFeatureValue<float>(FeatureType.chargeTime);
+        float chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
         bool isAutomatic = weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic);
 
         if (shooting)
@@ -137,33 +151,17 @@ public class FireWeaponLogic : AbstractWeaponLogic
                 // Caricamento con cambio colore
                 chargeTimer += Time.deltaTime;
 
-                if (!ChargingSoundPlaying)
-                {
-                    weaponContainer.audioMuzzleManager.EmitChargeSound();
-                    ChargingSoundPlaying = true;
-                }
-
-                if (weaponMaterialInstance != null)
-                {
-                    float t = Mathf.Clamp01(chargeTimer / chargeTime);
-                    weaponMaterialInstance.color = Color.Lerp(normalColor, chargeColor, t);
-                }
-
                 if (isAutomatic)
                 {
                     if (chargeTimer >= chargeTime)
                     {
+                        weaponContainer.audioMuzzleManager.StopChargeSound();
+                        ChargingSoundPlaying = false;
+
                         Shoot();
                         chargeTimer = 0f;
 
-                        if (ChargingSoundPlaying)
-                        {
-                            weaponContainer.audioMuzzleManager.StopChargeSound();
-                            ChargingSoundPlaying = false;
-                        }
 
-                        if (weaponMaterialInstance != null)
-                            weaponMaterialInstance.color = normalColor;
                     }
                 }
             }
@@ -242,8 +240,6 @@ public class FireWeaponLogic : AbstractWeaponLogic
                 break;
         }
 
-        if (weaponContainer.audioMuzzleManager.isPlaying())
-            weaponContainer.audioMuzzleManager.StopFireSound();
 
         weaponContainer.audioMuzzleManager.EmitFireSound();
         MuzzleFlash();
@@ -306,7 +302,14 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private void BulletSetUp(GameObject b, Rigidbody rb, BulletLogic bulletLogic)
     {
         int key = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletEffects);
-        bulletLogic.onHitModifier = bulletPool[key];
+        int onExplodeKey = weaponContainer.dispatcher.GetMostRecentFeatureValue<int>(FeatureType.bulletDestructionExplosionEffect);
+
+        if (key != -1)
+            bulletLogic.onHitModifier = bulletPool[key];
+
+        if (onExplodeKey != -1)
+            bulletLogic.onDestroyModifier = bulletPool[onExplodeKey];
+
         bulletLogic.dispatcher = weaponContainer.dispatcher;
         bulletLogic.bulletLifeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletLifeTime).Sum();
         bulletLogic.MaxhitCount = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletHitNumber).Sum();
@@ -316,6 +319,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
         bulletLogic.bounciness = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletBounciness).Sum();
         bulletLogic.tickRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletTickRate).Sum();
         bulletLogic.antigravitational = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.antigravitational).LastOrDefault();
+        bulletLogic.speed = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletDeviationSpeed).Sum();
+        bulletLogic.destroyExplosionRadius = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletDestructionExplosionRadius).Sum();
         bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(

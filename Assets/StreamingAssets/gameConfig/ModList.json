@@ -92,6 +92,11 @@
                 },
                 {
                     "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.23",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
                     "target": "@PrimaryWeaponStats.11",
                     "expr": "50.0"
                 },
@@ -279,6 +284,101 @@
                     "effectType": "sa",
                     "target": "@CharStats.16",
                     "expr": "@CharStats.16 - 1"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "gameIconId": 10,
+            "type": "normal",
+            "inGamePrice": 50,
+            "name": "Radio controlled Bombs",
+            "description": "They follow your commands, and detonate on trigger release, what's better than that?",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "9.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.4",
+                    "expr": "100.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.6",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.7",
+                    "expr": "0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.10",
+                    "expr": "-1.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.14",
+                    "expr": "-1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.18",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.22",
+                    "expr": "1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.23",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.24",
+                    "expr": "1000.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.25",
+                    "expr": "2"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.26",
+                    "expr": "true"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.27",
+                    "expr": "0.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.29",
+                    "expr": "true"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.30",
+                    "expr": "100.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.31",
+                    "expr": "10.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.32",
+                    "expr": "0"
                 }
             ]
         }

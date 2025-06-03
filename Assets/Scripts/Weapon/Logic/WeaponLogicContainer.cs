@@ -14,6 +14,7 @@ public class WeaponLogicContainer : MonoBehaviour
     [SerializeField] public WeaponEffectControl weaponEffectControl;
     [SerializeField] public CinemachineImpulseSource impulseSource;
     [SerializeField] public PlayerAnimatorLogic animations;
+    [SerializeField] public GameObject aimRef;
 
 
     public bool isPrimary;

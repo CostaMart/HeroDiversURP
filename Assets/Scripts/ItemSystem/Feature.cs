@@ -5,6 +5,8 @@ using UnityEngine;
 public enum FeatureType
 {
     // === Bullet-related ===
+    bulletDestructionExplosionEffect,
+    bulletDestructionExplosionRadius,
     bulletBounciness,
     bulletOffsetSpawn,
     bulletFollowTarget,
@@ -17,6 +19,7 @@ public enum FeatureType
     damage,
     bulletTickRate,
     antigravitational,
+    bulletDeviationSpeed,
 
     // === Shooting logic ===
     resetOnFireRelease,

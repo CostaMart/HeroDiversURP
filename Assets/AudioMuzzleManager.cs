@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class AudioMuzzleManager : MonoBehaviour
@@ -7,18 +8,20 @@ public class AudioMuzzleManager : MonoBehaviour
     public AudioClip[] emptyMagAudioClips;
     public AudioClip[] chargeAudioClips;
 
-    private AudioSource audioSource;
+    private AudioSource fireAudioSource;
+    private AudioSource chargeAudioSource;
 
 
     public void OnEnable()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
+        if (fireAudioSource == null)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
+            fireAudioSource = gameObject.AddComponent<AudioSource>();
+            chargeAudioSource = gameObject.AddComponent<AudioSource>();
         }
-        audioSource.volume = PlayerPrefs.GetFloat("shootingVolume", 0.5f);
-        Debug.Log("AudioMuzzleManager initialized with volume: " + audioSource.volume);
+        fireAudioSource.volume = PlayerPrefs.GetFloat("shootingVolume", 0.5f);
+        chargeAudioSource.volume = PlayerPrefs.GetFloat("chargeVolume", 0.5f);
+
     }
 
     public void EmitFireSound()
@@ -26,41 +29,52 @@ public class AudioMuzzleManager : MonoBehaviour
         if (firingAudioClips.Length > 0)
         {
             AudioClip clip = firingAudioClips[Random.Range(0, firingAudioClips.Length)];
-            audioSource.pitch = Random.Range(0.8f, 1.2f);
-            audioSource.PlayOneShot(clip);
+            fireAudioSource.pitch = Random.Range(0.8f, 1.2f);
+            fireAudioSource.PlayOneShot(clip);
         }
     }
 
-    public void EmitChargeSound()
+    private Coroutine chargeSoundCoroutine;
+
+    public void EmitChargeSound(float durationInSeconds, float targetPitch = 2.0f)
     {
-        if (firingAudioClips.Length > 0)
+        if (chargeSoundCoroutine != null)
         {
-            AudioClip clip = firingAudioClips[Random.Range(0, chargeAudioClips.Length)];
-            audioSource.pitch = Random.Range(0.8f, 1.2f);
-            audioSource.PlayOneShot(clip);
+            StopCoroutine(chargeSoundCoroutine);
+        }
+
+        AudioClip clip = chargeAudioClips[Random.Range(0, chargeAudioClips.Length)];
+        chargeAudioSource.clip = clip;
+        chargeAudioSource.loop = true;
+        chargeAudioSource.pitch = 1.0f;
+        chargeAudioSource.Play();
+
+        chargeSoundCoroutine = StartCoroutine(UpdatePitchOverTime(durationInSeconds, 1.0f, targetPitch));
+    }
+
+    private IEnumerator UpdatePitchOverTime(float duration, float startPitch, float endPitch)
+    {
+        while (true)
+        {
+            chargeAudioSource.pitch = Mathf.Lerp(chargeAudioSource.pitch, endPitch, 0.01f);
+            yield return null;
         }
     }
 
     public void StopChargeSound()
     {
-        if (firingAudioClips.Length > 0)
-        {
-            AudioClip clip = firingAudioClips[Random.Range(0, chargeAudioClips.Length)];
-            audioSource.PlayOneShot(clip);
-        }
+        if (chargeSoundCoroutine != null) StopCoroutine(chargeSoundCoroutine);
+        chargeAudioSource.Stop();
     }
 
     public void StopFireSound()
     {
-        if (firingAudioClips.Length > 0)
-        {
-            AudioClip clip = firingAudioClips[Random.Range(0, firingAudioClips.Length)];
-            audioSource.PlayOneShot(clip);
-        }
+        if (chargeSoundCoroutine != null) StopCoroutine(chargeSoundCoroutine);
+        fireAudioSource.Stop();
     }
     public bool isPlaying()
     {
-        return audioSource.isPlaying;
+        return fireAudioSource.isPlaying;
     }
 
     public void EmitEmptyMagSound()
@@ -68,7 +82,7 @@ public class AudioMuzzleManager : MonoBehaviour
         if (emptyMagAudioClips.Length > 0)
         {
             AudioClip clip = emptyMagAudioClips[Random.Range(0, emptyMagAudioClips.Length)];
-            audioSource.PlayOneShot(clip);
+            fireAudioSource.PlayOneShot(clip);
         }
     }
 }

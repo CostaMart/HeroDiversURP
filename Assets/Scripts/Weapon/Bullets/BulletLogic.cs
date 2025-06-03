@@ -1,10 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using UnityEditor.Rendering;
 using UnityEngine;
 using Weapon.State;
+using Vector3 = UnityEngine.Vector3;
 
 
 
@@ -37,6 +38,10 @@ public class BulletLogic : MonoBehaviour
     // if 0 bullet has no hit limit
     private Transform hiteffectTransform;
     private ParticleSystem hitEffect;
+
+    private Transform exploderTransform;
+    private ParticleSystem explodeVfX;
+
     public float maxDistance = 1000f;
     public int followSomething = 0;
     public GameObject oldParent;
@@ -53,6 +58,22 @@ public class BulletLogic : MonoBehaviour
     int terrainLayer = 0;
     static bool matrixAlreadyUpdated = false; //used by the bullets to communicate about physics matrix status, if a bullet already updated it others are not gonna do the same 
     static int lastBounciness = -1;
+    public float speed = 10f; // Speed of the bullet, can be modified by the weapon
+    public Transform followTarget;
+    public Vector3 stopPointWithRespectToPlayer = Vector3.zero; // where the bullet should stop if it is following something
+    float homingTimer = 0f;
+    bool followTargetSet = false;
+
+    public float destroyExplosionRadius = 0f; // radius of the explosion, can be modified by the weapon
+    public Modifier onDestroyModifier; // modifier to apply on explosion, can be modified by the weapon
+    enum followType
+    {
+        None = 0, // don't follow anything
+        Sticky = 1, // sticky bullet
+        Aim = 2, // custom follow logic 
+        Player = 3, // follow the player
+        Homing = 4 // homing bullet
+    }
 
 
     public WeaponLogicContainer weaponContainer;
@@ -62,8 +83,14 @@ public class BulletLogic : MonoBehaviour
         c = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         initialPos = transform.position;
+
         hitEffect = transform.GetChild(0).GetComponent<ParticleSystem>();
         hiteffectTransform = transform.GetChild(0);
+
+        explodeVfX = transform.GetChild(1).GetComponent<ParticleSystem>();
+        exploderTransform = transform.GetChild(1);
+
+
         bulletLayer = LayerMask.NameToLayer("Bullets");
         NPCLayer = LayerMask.NameToLayer("NPC");
         terrainLayer = LayerMask.NameToLayer("Terrain");
@@ -71,6 +98,8 @@ public class BulletLogic : MonoBehaviour
 
     private void OnEnable()
     {
+        followTargetSet = false;
+        homingTimer = 0f;
         triggerStayTimer = 0f;
         lifeTimer = 0f;
         isReset = false;
@@ -78,19 +107,22 @@ public class BulletLogic : MonoBehaviour
         bulletHitCount = 0;
         rb.useGravity = !antigravitational;
 
-        switch (followSomething)
+        switch ((followType)followSomething)
         {
-            case 0: // don't follow anything
+            case followType.None: // don't follow anything
                 break;
-            case 1: // follow player
-                this.transform.SetParent(dispatcher.gameObject.transform);
-                break;
-            case 2: // follow weapon
-                this.transform.SetParent(weaponContainer.weapon.transform);
-                break;
-            case 3: //sticky
+            case followType.Sticky: //sticky
                 sticky = true;
                 break;
+            case followType.Aim:
+                followTarget = weaponContainer.aimRef.transform;
+                break;
+            case followType.Player:
+                followTarget = weaponContainer.dispatcher.gameObject.transform;
+                break;
+            case followType.Homing:
+                break;
+
             default:
                 Debug.LogError("Invalid followSomething value: " + followSomething);
                 break;
@@ -117,25 +149,147 @@ public class BulletLogic : MonoBehaviour
     }
 
 
+
     private void Update()
     {
 
         if (!stopped && Vector3.Distance(dispatcher.gameObject.transform.position, transform.position) >= maxDistance)
         {
             rb.linearVelocity = Vector3.zero;
-            rb.isKinematic = true;
+            stopPointWithRespectToPlayer = transform.position - dispatcher.gameObject.transform.position;
             stopped = true;
         }
 
+        lifeTimer += Time.deltaTime;
+
         if (bulletLifeTime > 0)
         {
-            lifeTimer += Time.deltaTime;
             if (lifeTimer >= bulletLifeTime)
             {
                 ResetBullet();
             }
         }
     }
+
+
+
+    void FixedUpdate()
+    {
+        if ((followType)followSomething == followType.Aim)
+        {
+            Debug.Log("Homing bullet is following target: " + followTarget.name);
+
+            Vector3 origin = weaponContainer.muzzle.transform.position;
+            Vector3 target = followTarget.position;
+            Vector3 direction = (target - origin).normalized;
+
+            // Punto desiderato lungo la direzione, ma limitato a maxDistance
+            Vector3 desiredPosition = origin + direction * maxDistance;
+            var actualDistance = (this.transform.position - desiredPosition).magnitude;
+
+            // Se il proiettile è già oltre, bloccalo o riportalo in zona
+            Vector3 toDesired = desiredPosition - transform.position;
+
+            // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
+            if (toDesired.magnitude > 0.01f)
+            {
+                if (actualDistance > 2)
+                    rb.linearVelocity = toDesired.normalized * speed;
+                else
+                    rb.linearVelocity = toDesired.normalized * speed * actualDistance / 2f; // riduce la velocità quando è vicino al target
+            }
+            else
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+        }
+
+        if ((followType)followSomething == followType.Player)
+        {
+            Debug.Log("Homing bullet is following target: " + followTarget.name);
+
+            if (!stopped) return;
+
+            Vector3 origin = weaponContainer.muzzle.transform.position;
+            Vector3 target = dispatcher.gameObject.transform.position + stopPointWithRespectToPlayer;
+            Vector3 direction = (target - origin).normalized;
+
+            // Punto desiderato lungo la direzione, ma limitato a maxDistance
+            Vector3 desiredPosition = origin + direction * maxDistance;
+            var actualDistance = (this.transform.position - desiredPosition).magnitude;
+
+            // Se il proiettile è già oltre, bloccalo o riportalo in zona
+            Vector3 toDesired = desiredPosition - transform.position;
+
+            // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
+            if (toDesired.magnitude > 0.01f)
+            {
+                if (actualDistance > 2)
+                    rb.linearVelocity = toDesired.normalized * speed;
+                else
+                    rb.linearVelocity = toDesired.normalized * speed * actualDistance / 2f; // riduce la velocità quando è vicino al target
+            }
+            else
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+        }
+
+        if ((followType)followSomething == followType.Homing)
+        {
+            if (!followTargetSet)
+            {
+                Debug.Log("Homing bullet is looking for a target...");
+
+                if (lifeTimer >= homingTimer)
+                {
+                    var foundArray = Physics.OverlapSphere(
+                        transform.position,
+                        20f,
+                        1 << NPCLayer
+                    );
+
+                    foreach (var f in foundArray)
+                    {
+                        Debug.Log("Found a target for homing: " + f.gameObject.name);
+                    }
+
+                    if (foundArray.Length > 0)
+                    {
+                        followTarget = foundArray.First().gameObject.transform;
+                        followTargetSet = true;
+                    }
+
+                    homingTimer += lifeTimer + 0.2f; // update the timer to find a new target
+                }
+
+                Debug.Log("if you see this without the found message, it means the bullet is not homing yet.");
+                return;
+            }
+
+            Debug.Log("Homing bullet is following target: " + followTarget.name);
+
+
+            Vector3 desiredPosition = followTarget.position;
+            float actualDistance = (this.transform.position - desiredPosition).magnitude;
+
+            // Se il proiettile è già oltre, bloccalo o riportalo in zona
+            Vector3 toDesired = desiredPosition - transform.position;
+
+            // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
+            if (toDesired.magnitude > 0.01f)
+            {
+                if (actualDistance > 2)
+                    rb.linearVelocity = toDesired.normalized * speed;
+            }
+            else
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+
+        }
+    }
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -152,24 +306,13 @@ public class BulletLogic : MonoBehaviour
 
         if (bounciness != 0)
         {
-            try
-            {
-                Collider[] colliders = Physics.OverlapSphere(
-                    collision.transform.position,
-                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
-                );
+            var other = collision.gameObject.GetComponent<EffectsDispatcher>();
+            //applica l'effetto al bersaglio colpito
+            ApplyEffect(other);
 
-                foreach (Collider col in colliders)
-                {
-                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
-                    {
-                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-            }
+            //applica l'effetto di esplosione
+            Explode(hiteffectTransform.position, collision.collider,
+                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum(), onHitModifier);
 
             bulletHitCount++;
 
@@ -192,6 +335,8 @@ public class BulletLogic : MonoBehaviour
 
     }
 
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (bounciness == 0)
@@ -203,31 +348,14 @@ public class BulletLogic : MonoBehaviour
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
 
             // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
+            var radius = dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
             hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
-
             hitEffect.Play();
 
 
-
-
-            try
-            {
-                Collider[] colliders = Physics.OverlapSphere(
-                    hiteffectTransform.transform.position,
-                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
-                );
-
-                foreach (Collider col in colliders)
-                {
-                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
-                    {
-                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-            }
+            //applica l'effeto al bnersaglio colpito e se c'è una esplosione applica l'effetto di esplosione
+            ApplyEffect(other.GetComponent<EffectsDispatcher>());
+            Explode(hiteffectTransform.position, other, radius, onHitModifier);
 
             bulletHitCount++;
 
@@ -271,32 +399,16 @@ public class BulletLogic : MonoBehaviour
 
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
+            var radius = dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
 
             // Imposta il raggio dell'effetto in base al raggio di esplosione
-            hiteffectTransform.localScale = Vector3.one *
-                dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
-
+            hiteffectTransform.localScale = Vector3.one * radius;
             hitEffect.Play();
 
-            try
-            {
-                Collider[] colliders = Physics.OverlapSphere(
-                    hiteffectTransform.transform.position,
-                    bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum()
-                );
+            //applica l'effeto al bnersaglio colpito e se c'è una esplosione applica l'effetto di esplosione
+            ApplyEffect(other.GetComponent<EffectsDispatcher>());
+            Explode(hiteffectTransform.position, other, radius, onHitModifier);
 
-                foreach (Collider col in colliders)
-                {
-                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
-                    {
-                        d.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("Errore durante OverlapSphere nel TriggerStay: " + e.Message);
-            }
 
             bulletHitCount++;
             if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 = infinito
@@ -312,15 +424,24 @@ public class BulletLogic : MonoBehaviour
         triggerStayTimer = 0f; // Reset del timer quando esce dal trigger
     }
 
+
     /// <summary>
     /// Ripristina la posizione del proiettile dopo l'impatto o il timeout.
     /// </summary>
     private void ResetBullet()
     {
-        Debug.Log("Resetting bullet...");
         if (isReset) return;
         isReset = true;
 
+        if (onDestroyModifier != null && destroyExplosionRadius > 0)
+        {
+            Debug.Log("Resetting bullet...AND EXPLODING HAHAHAHA");
+            exploderTransform.position = transform.position;
+            exploderTransform.localScale = Vector3.one * destroyExplosionRadius;
+            exploderTransform.SetParent(null);
+            explodeVfX.Play();
+            Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
+        }
 
         if (followSomething != 0)
         {
@@ -347,6 +468,55 @@ public class BulletLogic : MonoBehaviour
         ResetBullet();
     }
 
+
+
+
+
+
+
+    // ====== Utility methods ======
+    public void ApplyEffect(EffectsDispatcher otherdDispathcer)
+    {
+        if (onHitModifier == null) return;
+
+        try
+        {
+            otherdDispathcer.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("Error applying effect: " + e.Message);
+        }
+    }
+
+    public void Explode(Vector3 position, Collider toExclude, float radius, Modifier mod)
+    {
+        if (radius <= 0) return; // no explosion radius, no effect
+
+        try
+        {
+            Collider[] colliders = Physics.OverlapSphere(
+                position,
+                radius,
+                1 << NPCLayer
+            );
+
+            foreach (Collider col in colliders)
+            {
+                if (col != null)
+                    if (col == toExclude) continue; // skip the collider that was excluded
+
+                if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                {
+                    d.AttachModifierFromOtherDispatcher(dispatcher, mod);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
 
 
 }
