@@ -153,7 +153,7 @@ public class BulletLogic : MonoBehaviour
     private void Update()
     {
 
-        if (!stopped && Vector3.Distance(dispatcher.gameObject.transform.position, transform.position) >= maxDistance)
+        if (!stopped && (dispatcher.gameObject.transform.position - transform.position).magnitude >= maxDistance)
         {
             rb.linearVelocity = Vector3.zero;
             stopPointWithRespectToPlayer = transform.position - dispatcher.gameObject.transform.position;
@@ -185,13 +185,13 @@ public class BulletLogic : MonoBehaviour
 
             // Punto desiderato lungo la direzione, ma limitato a maxDistance
             Vector3 desiredPosition = origin + direction * maxDistance;
-            var actualDistance = (this.transform.position - desiredPosition).magnitude;
+            var actualDistance = (this.transform.position - desiredPosition).sqrMagnitude;
 
             // Se il proiettile è già oltre, bloccalo o riportalo in zona
             Vector3 toDesired = desiredPosition - transform.position;
 
             // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
-            if (toDesired.magnitude > 0.01f)
+            if (toDesired.sqrMagnitude > 0.01f)
             {
                 if (actualDistance > 2)
                     rb.linearVelocity = toDesired.normalized * speed;
@@ -216,13 +216,13 @@ public class BulletLogic : MonoBehaviour
 
             // Punto desiderato lungo la direzione, ma limitato a maxDistance
             Vector3 desiredPosition = origin + direction * maxDistance;
-            var actualDistance = (this.transform.position - desiredPosition).magnitude;
+            var actualDistance = (this.transform.position - desiredPosition).sqrMagnitude;
 
             // Se il proiettile è già oltre, bloccalo o riportalo in zona
             Vector3 toDesired = desiredPosition - transform.position;
 
             // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
-            if (toDesired.magnitude > 0.01f)
+            if (toDesired.sqrMagnitude > 0.01f)
             {
                 if (actualDistance > 2)
                     rb.linearVelocity = toDesired.normalized * speed;
@@ -271,13 +271,13 @@ public class BulletLogic : MonoBehaviour
 
 
             Vector3 desiredPosition = followTarget.position;
-            float actualDistance = (this.transform.position - desiredPosition).magnitude;
+            float actualDistance = (this.transform.position - desiredPosition).sqrMagnitude;
 
             // Se il proiettile è già oltre, bloccalo o riportalo in zona
             Vector3 toDesired = desiredPosition - transform.position;
 
             // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
-            if (toDesired.magnitude > 0.01f)
+            if (toDesired.sqrMagnitude > 0.01f)
             {
                 if (actualDistance > 2)
                     rb.linearVelocity = toDesired.normalized * speed;

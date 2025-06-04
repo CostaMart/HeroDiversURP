@@ -72,13 +72,13 @@ recoilRecoverySpeed = 0.01 ID:20
 recoilMax = 0.2 ID:21
 pershotBull = 2 ID:22
 chargeTime = 0.0 ID:23
-bulletMaxDistance = 1000.0 ID:24
-bulletFollowTarget = 0 ID:25 // follow nothing: 0, sticky: 1, follow aim: 2, follow player: 3, homing: 4 
+bulletMaxDistance = 5.0 ID:24
+bulletFollowTarget = 2 ID:25 // follow nothing: 0, sticky: 1, follow aim: 2, follow player: 3, homing: 4 
 resetOnFireRelease = false ID:26
 bulletBounciness = 0.0 ID:27 range: 0.0-1.0 // if bounciness is 0 the bullet will go trought enemeies
 bulletTickRate = 1.0 ID:28 // How often the bullet applies its modifier on prolongated contact after first collision with a target
 antigravitational = true ID:29 // if true the bullet will not be affected by gravity
-bulletDeviationSpeed = 0.0 ID:30 // the speed with which a bullet can deviate from its path to follow the "bulletFollowTarget" target
+bulletDeviationSpeed = 100.0 ID:30 // the speed with which a bullet can deviate from its path to follow the "bulletFollowTarget" target
 bulletDestructionExplosionRadius = 0.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
 bulletDestructionExplosionEffect = 0 ID:32 // the effect to play on bullet destruction (set as the index of bulletlist modfiier), -1 is no effect
 ##
