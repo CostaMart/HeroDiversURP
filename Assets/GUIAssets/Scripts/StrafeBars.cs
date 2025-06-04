@@ -29,7 +29,7 @@ public class StrafeBars : MonoBehaviour
     RectTransform rectParent;
     RectTransform thisRect;
     Vector3 originalScale;
-    PlayerInput playerInput = null;
+    PlayerInput playerInput;
 
     void Start()
     {
@@ -49,6 +49,9 @@ public class StrafeBars : MonoBehaviour
 
     void OnEnable()
     {
+        restPosition = GameObject.Find("restPosition").transform;
+        fightModePosition = GameObject.Find("fightModePosition").transform;
+        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
 
         rectParent = this.transform.parent.GetComponent<RectTransform>();
         thisRect = this.transform.GetComponent<RectTransform>();
@@ -57,37 +60,43 @@ public class StrafeBars : MonoBehaviour
         if (toggleMode)
         {
             // Toggle con un singolo evento
-            playerInput.actions["Aim"].performed += ctx => TogglePosition();
+            playerInput.actions["Aim"].performed += TogglePosition;
         }
         else
         {
             // Comportamento originale
-            playerInput.actions["Aim"].performed += ctx => MoveTo(fightModePosition);
-            playerInput.actions["Aim"].canceled += ctx => MoveTo(restPosition);
+            playerInput.actions["Aim"].performed += EnterFightMode;
+            playerInput.actions["Aim"].canceled += EnterRestMode;
         }
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
+        Debug.Log("StrafeBars OnDestroy called");
         if (toggleMode)
         {
-            playerInput.actions["Aim"].performed -= ctx => TogglePosition();
+            playerInput.actions["Aim"].performed -= TogglePosition;
         }
         else
         {
-            playerInput.actions["Aim"].performed -= ctx => MoveTo(fightModePosition);
-            playerInput.actions["Aim"].canceled -= ctx => MoveTo(restPosition);
+            playerInput.actions["Aim"].performed -= EnterFightMode;
+            playerInput.actions["Aim"].canceled -= EnterRestMode;
         }
     }
 
-    void TogglePosition()
+    void TogglePosition(CallbackContext ctx)
     {
         isInFightMode = !isInFightMode;
-        MoveTo(isInFightMode ? fightModePosition : restPosition);
+
+        if (isInFightMode)
+            EnterFightMode();
+        else
+            EnterRestMode();
     }
 
-    void MoveTo(Transform target)
+    void EnterFightMode()
     {
+        var target = fightModePosition;
         rectParent.SetParent(target);
         rectParent.localPosition = Vector3.zero;
         rectParent.localRotation = Quaternion.identity;
@@ -101,6 +110,57 @@ public class StrafeBars : MonoBehaviour
             ? originalScale * 2
             : originalScale * 2;  // Più piccola in fight
     }
+    void EnterFightMode(CallbackContext ctx)
+    {
+        var target = fightModePosition;
+        rectParent.SetParent(target);
+        rectParent.localPosition = Vector3.zero;
+        rectParent.localRotation = Quaternion.identity;
+
+        var rectSelf = transform.GetComponent<RectTransform>();
+        rectSelf.localPosition = Vector3.zero;
+        rectSelf.localRotation = Quaternion.identity;
+
+        // Cambia la scala del rectParent in base alla posizione
+        transform.GetComponent<RectTransform>().localScale = (target == restPosition)
+            ? originalScale * 2
+            : originalScale * 2;  // Più piccola in fight
+    }
+
+    private void EnterRestMode()
+    {
+        var target = restPosition;
+        rectParent.SetParent(target);
+        rectParent.localPosition = Vector3.zero;
+        rectParent.localRotation = Quaternion.identity;
+
+        var rectSelf = transform.GetComponent<RectTransform>();
+        rectSelf.localPosition = Vector3.zero;
+        rectSelf.localRotation = Quaternion.identity;
+
+        // Cambia la scala del rectParent in base alla posizione
+        transform.GetComponent<RectTransform>().localScale = (target == restPosition)
+            ? originalScale * 2
+            : originalScale * 2;  // Più piccola in fight
+    }
+
+    private void EnterRestMode(CallbackContext ctx)
+    {
+        var target = restPosition;
+        rectParent.SetParent(target);
+        rectParent.localPosition = Vector3.zero;
+        rectParent.localRotation = Quaternion.identity;
+
+        var rectSelf = transform.GetComponent<RectTransform>();
+        rectSelf.localPosition = Vector3.zero;
+        rectSelf.localRotation = Quaternion.identity;
+
+        // Cambia la scala del rectParent in base alla posizione
+        transform.GetComponent<RectTransform>().localScale = (target == restPosition)
+            ? originalScale * 2
+            : originalScale * 2;  // Più piccola in fight
+    }
+
 
     void Update()
     {

@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 2e325af0568b3f08298ac2c9ce449923
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - sandstorm: {fileID: 5499412366136645911, guid: 039a612b4e7ecf6e386ecdcd8f5d4642, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

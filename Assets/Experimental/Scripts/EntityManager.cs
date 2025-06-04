@@ -52,9 +52,6 @@ public class EntityManager : MonoBehaviour
     /// </summary>
     public void InitializeDefaultEntities()
     {
-        GameObject player = GameObject.Find("Player");
-        RegisterEntity("Player", player);
-
         // Istanzia il player solo se il prefab è assegnato
         // if (_playerPrefab != null)
         // {
@@ -196,5 +193,13 @@ public class EntityManager : MonoBehaviour
         string uniqueId = RegisterEntity(id, entity);
 
         return entity;
+    }
+    void OnEnable()
+    {
+        if (!_entities.ContainsKey("Player"))
+        {
+            GameObject player = GameObject.Find("Player");
+            RegisterEntity("Player", player);
+        }
     }
 }

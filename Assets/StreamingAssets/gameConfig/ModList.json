@@ -318,7 +318,7 @@
                 {
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.10",
-                    "expr": "-1.0"
+                    "expr": "100.0"
                 },
                 {
                     "effectType": "sa",

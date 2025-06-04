@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 3ab19277bbf3e05dda056024ea807716
+labels:
+- MyStuff
 PrefabImporter:
   externalObjects: {}
   userData: 

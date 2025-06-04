@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: eef09023d8e2d76d3973f0c02187787f
+labels:
+- MyStuff
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
