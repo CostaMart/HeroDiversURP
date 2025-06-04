@@ -218,7 +218,7 @@ namespace Utility.Positioning
         #region Campi privati
         
         private readonly PointGeneratorOptions options;
-        private readonly HashSet<Vector3> existingPoints = new HashSet<Vector3>();
+        private readonly HashSet<Vector3> existingPoints = new ();
         
         #endregion
         
@@ -250,23 +250,13 @@ namespace Utility.Positioning
         /// <returns>Risultato della generazione del punto</returns>
         public PointResult GeneratePoint(Vector3 center, Vector3 size, AreaShape shape = AreaShape.Circle)
         {
-            Vector3 randomPoint;
-            
-            switch (shape)
+            var randomPoint = shape switch
             {
-                case AreaShape.Circle:
-                    randomPoint = GenerateCirclePoint(center, size.x);
-                    break;
-                case AreaShape.Rectangle:
-                    randomPoint = GenerateRectanglePoint(center, size.x, size.z);
-                    break;
-                case AreaShape.Sphere:
-                    randomPoint = GenerateSpherePoint(center, size.x);
-                    break;
-                default:
-                    throw new System.ArgumentException($"Forma non supportata: {shape}");
-            }
-            
+                AreaShape.Circle => GenerateCirclePoint(center, size.x),
+                AreaShape.Rectangle => GenerateRectanglePoint(center, size.x, size.z),
+                AreaShape.Sphere => GenerateSpherePoint(center, size.x),
+                _ => throw new System.ArgumentException($"Forma non supportata: {shape}"),
+            };
             return ValidateAndProcessPoint(randomPoint);
         }
         
@@ -435,20 +425,13 @@ namespace Utility.Positioning
         
         private Vector3 GenerateCirclePoint(Vector3 center, float radius)
         {
-            switch (options.Distribution)
+            return options.Distribution switch
             {
-                case DistributionType.Uniform:
-                    return GenerateUniformCirclePoint(center, radius);
-                    
-                case DistributionType.Centered:
-                    return GenerateCenteredCirclePoint(center, radius);
-                    
-                case DistributionType.Perimeter:
-                    return GeneratePerimeterCirclePoint(center, radius);
-                    
-                default:
-                    return GenerateUniformCirclePoint(center, radius);
-            }
+                DistributionType.Uniform => GenerateUniformCirclePoint(center, radius),
+                DistributionType.Centered => GenerateCenteredCirclePoint(center, radius),
+                DistributionType.Perimeter => GeneratePerimeterCirclePoint(center, radius),
+                _ => GenerateUniformCirclePoint(center, radius),
+            };
         }
         
         private Vector3 GenerateUniformCirclePoint(Vector3 center, float radius)
@@ -639,7 +622,7 @@ namespace Utility.Positioning
             // Se non richiediamo validazione NavMesh, il punto è già valido
             if (!options.ValidateOnNavMesh)
             {
-                Vector3 finalPoint = new Vector3(point.x, point.y + options.PointHeight, point.z);
+                Vector3 finalPoint = new(point.x, point.y + options.PointHeight, point.z);
                 return new PointResult(finalPoint, true, false);
             }
             
@@ -648,7 +631,7 @@ namespace Utility.Positioning
                 options.NavMeshSearchDistance, options.NavMeshAreaMask))
             {
                 // Aggiusta l'altezza del punto
-                Vector3 finalPoint = new Vector3(
+                Vector3 finalPoint = new(
                     navHit.position.x, 
                     navHit.position.y + options.PointHeight, 
                     navHit.position.z);

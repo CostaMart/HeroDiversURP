@@ -40,7 +40,7 @@ public class NPC : InteractiveObject
     public LayerMask obstacleLayer;     // Layer degli ostacoli
     float pathUpdateTimer;
     Vector3 lastKnownPosition;
-    Transform targetTransform;
+    // Transform targetTransform;
 
     // Attack Settings
     public float attackDuration = 2.0f; // Durata dell'attacco
@@ -60,7 +60,7 @@ public class NPC : InteractiveObject
     protected override void Start()
     {
         agentController = GetComponent<AgentController>();
-        targetTransform = EntityManager.Instance.GetEntity("Player").transform;
+        // targetTransform = EntityManager.Instance.GetEntity("Player").transform;
 
         // Initialize components, features, and modifiers
         components = new List<Component>();
@@ -89,7 +89,6 @@ public class NPC : InteractiveObject
         waypoints = points.Where(pointResult => pointResult.IsValid).Select(pointResult => pointResult.Position).ToList();
 
         // ========== Chase Settings ==========
-        targetTransform = EntityManager.Instance.GetEntity("Player").transform;
 
         pathUpdateTimer = 0;
 
@@ -99,12 +98,12 @@ public class NPC : InteractiveObject
 
         // Registra le azioni disponibili
         RegisterAction("StartPatrol", (_) => OnStartPatrol());
-        RegisterAction("Chase", (_) => Chase());
+        RegisterAction("Chase", Chase);
         RegisterAction("Stop", (_) => agentController.StopAgent());
         RegisterAction("Resume", (_) => agentController.ResumeAgent());
-        RegisterAction("Attack", (_) => OnAttack());
+        RegisterAction("Attack", OnAttack);
         RegisterAction("WaitAndStartPatrol", (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
-        RegisterAction("RotateToTarget", (_) => OnRotateToTarget());
+        RegisterAction("RotateToTarget", OnRotateToTarget);
 
         // Registra gli eventi disponibili
         RegisterEvent("StateChanged");
@@ -208,27 +207,44 @@ public class NPC : InteractiveObject
         StartCoroutine(PatrolRoutine());
     }
     
-    private void OnAttack()
+    private void OnAttack(object[] p)
     {
+        if (p.Length == 0 || p[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for attack action.");
+            return;
+        }
+
         currentState = State.Attack;
-        EmitEvent("AttackStarted", new object[] { targetTransform });
+        EmitEvent("AttackStarted", new object[] { target});
 
         // Debug.Log("Attacking target!");
     
         StartCoroutine(AttackCooldown());
     }
 
-    void OnRotateToTarget()
-    {        
-        agentController.RotateToDirection(targetTransform.position, maxPitchAngle);
+    void OnRotateToTarget(object[] p)
+    {
+        if (p.Length == 0 || p[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for rotation.");
+            return;
+        }       
+        agentController.RotateToDirection(target.position, maxPitchAngle);
     }
 
-    void Chase()
+    void Chase(object[] p)
     {
+        if (p.Length == 0 || p[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for chase action.");
+            return;
+        }
+
         currentState = State.Chase;
         AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 5.0f));
         pathUpdateTimer += Time.deltaTime;
-        Vector3 targetPosition = targetTransform.position;
+        Vector3 targetPosition = target.position;
         
         if (targetPosition != null)
         {

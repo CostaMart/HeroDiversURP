@@ -371,9 +371,7 @@ namespace Spawning
                 {
                     n--;
                     int k = UnityEngine.Random.Range(0, n + 1);
-                    Vector3 temp = gridPositions[k];
-                    gridPositions[k] = gridPositions[n];
-                    gridPositions[n] = temp;
+                    (gridPositions[n], gridPositions[k]) = (gridPositions[k], gridPositions[n]);
                 }
             }
             
@@ -545,9 +543,9 @@ namespace Spawning
                         Gizmos.DrawLine(nodes[i].position, nodes[i+1].position);
                 }
                 
-                if (spawner.pathSettings.closedPath && nodes[0] != null && nodes[nodes.Length-1] != null)
+                if (spawner.pathSettings.closedPath && nodes[0] != null && nodes[^1] != null)
                 {
-                    Gizmos.DrawLine(nodes[nodes.Length-1].position, nodes[0].position);
+                    Gizmos.DrawLine(nodes[^1].position, nodes[0].position);
                 }
                 
                 // Draw nodes
@@ -622,20 +620,14 @@ namespace Spawning
             else
             {
                 // If not playing, create temporary strategy for gizmos
-                ISpawnStrategy tempStrategy = null;
-                switch (spawnStrategyType)
+                ISpawnStrategy tempStrategy = spawnStrategyType switch
                 {
-                    case SpawnStrategyType.Area:
-                        tempStrategy = new AreaSpawnStrategy();
-                        break;
-                    case SpawnStrategyType.Grid:
-                        tempStrategy = new GridSpawnStrategy();
-                        break;
-                    case SpawnStrategyType.Path:
-                        tempStrategy = new PathSpawnStrategy();
-                        break;
-                }
-                
+                    SpawnStrategyType.Area => new AreaSpawnStrategy(),
+                    SpawnStrategyType.Grid => new GridSpawnStrategy(),
+                    SpawnStrategyType.Path => new PathSpawnStrategy(),
+                    _ => null
+                };
+
                 if (tempStrategy != null)
                 {
                     tempStrategy.Initialize(this, null);
@@ -823,20 +815,13 @@ namespace Spawning
             pointGenerator = new RandomPointGenerator(options);
             
             // Create the appropriate strategy
-            switch (spawnStrategyType)
+            activeStrategy = spawnStrategyType switch
             {
-                case SpawnStrategyType.Area:
-                    activeStrategy = new AreaSpawnStrategy();
-                    break;
-                    
-                case SpawnStrategyType.Grid:
-                    activeStrategy = new GridSpawnStrategy();
-                    break;
-                    
-                case SpawnStrategyType.Path:
-                    activeStrategy = new PathSpawnStrategy();
-                    break;
-            }
+                SpawnStrategyType.Area => new AreaSpawnStrategy(),
+                SpawnStrategyType.Grid => new GridSpawnStrategy(),
+                SpawnStrategyType.Path => new PathSpawnStrategy(),
+                _ => null
+            };
             
             // Initialize the strategy
             activeStrategy?.Initialize(this, pointGenerator);

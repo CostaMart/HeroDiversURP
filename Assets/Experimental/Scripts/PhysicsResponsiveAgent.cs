@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class PhysicsResponsiveAgent : MonoBehaviour
 {
-    [SerializeField] private float physicsThreshold = 5f;
+    [SerializeField] private float physicsThreshold = 2f;
     [SerializeField] private float recoveryTime = 2f;
     [SerializeField] private float continuousForceThreshold = 2f;
     [SerializeField] private float forceCheckInterval = 0.1f;
@@ -25,7 +25,7 @@ public class PhysicsResponsiveAgent : MonoBehaviour
         rb.isKinematic = true;
 
         lastValidPosition = transform.position;
-        _physicsThreshold = physicsThreshold * physicsThreshold;
+        // _physicsThreshold = physicsThreshold * physicsThreshold;
         _continuousForceThreshold = continuousForceThreshold * continuousForceThreshold;
     }
     
@@ -117,33 +117,30 @@ public class PhysicsResponsiveAgent : MonoBehaviour
         
         // Applica l'impulso
         Vector3 impulse = collision.impulse;
-        if (impulse.magnitude < 0.1f) // Se l'impulso è troppo piccolo, usa la velocità relativa
+        if (impulse.sqrMagnitude < 0.01f) // Se l'impulso è troppo piccolo, usa la velocità relativa
         {
             impulse = collision.relativeVelocity * rb.mass;
         }
         rb.AddForce(impulse, ForceMode.Impulse);
         
+        // Aspetta che la velocità si stabilizzi
+        while (rb.linearVelocity.sqrMagnitude > 0.01f)
+        {
+            yield return null;
+        }
         // Aspetta che si stabilizzi
         yield return new WaitForSeconds(recoveryTime);
-        
+
         // Controlla se la posizione è valida per il NavMesh
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(transform.position, out hit, 5f, NavMesh.AllAreas))
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
         {
-            // Posizione valida
-            rb.isKinematic = true;
-            agent.enabled = true;
-            agent.SetDestination(originalDestination);
-        }
-        else
-        {
-            // Posizione non valida, torna all'ultima posizione valida
+            // Posizione sulla NavMesh non valida, torna all'ultima posizione valida
             transform.position = lastValidPosition;
-            rb.isKinematic = true;
-            agent.enabled = true;
-            agent.SetDestination(originalDestination);
         }
-        
+
+        rb.isKinematic = true;
+        agent.enabled = true;
+        agent.SetDestination(originalDestination);
         inPhysicsMode = false;
     }
 }
