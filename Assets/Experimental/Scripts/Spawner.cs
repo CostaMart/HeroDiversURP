@@ -151,27 +151,33 @@ namespace Spawning
             [Tooltip("Maximum random interval")]
             public float maxInterval = 5f;
         }
-        
+
         [Serializable]
         public class GeneralSettings
         {
             [Tooltip("Height offset for spawned objects")]
             public float heightOffset = 0.5f;
-            
-            [Tooltip("Whether to validate spawn positions on NavMesh")]
-            public bool validateOnNavMesh = true;
-            
-            [Tooltip("Maximum search distance for NavMesh validation")]
-            public float navMeshSearchDistance = 5f;
-            
+
             [Tooltip("Whether to avoid overlaps with other objects")]
             public bool avoidOverlaps = true;
-            
+
             [Tooltip("Radius to check for overlaps")]
             public float overlapCheckRadius = 0.5f;
-            
+
             [Tooltip("Layers to check for overlaps")]
             public LayerMask overlapLayerMask = default;
+
+            [Tooltip("Whether to validate spawn positions on NavMesh")]
+            public bool validateOnNavMesh = true;
+
+            [Tooltip("Maximum search distance for NavMesh validation")]
+            public float navMeshSearchDistance = 5f;
+
+            [Tooltip("Whether to validate spawn positions on terrain")]
+            public bool validateOnTerrain = true;
+
+            [Tooltip("Maximum terrain slope angle for valid spawn positions (in degrees)")]
+            public float maxTerrainSteepness = 45f;
         }
         
         #endregion
@@ -241,6 +247,12 @@ namespace Spawning
             
             private void GenerateBatchPositions()
             {
+                if (pointGenerator == null)
+                {
+                    cachedPositions = new List<Vector3>(); // Ensure list is initialized
+                    return;
+                }
+                
                 Vector3 size = GetSizeVector();
                 var results = pointGenerator.GeneratePoints(
                     spawner.transform.position,
@@ -345,6 +357,14 @@ namespace Spawning
             
             private void GenerateGridPositions()
             {
+                gridPositions = new List<Vector3>();
+
+                if (pointGenerator == null)
+                {
+                    currentIndex = 0;
+                    return;
+                }
+
                 var results = pointGenerator.GenerateGridPoints(
                     spawner.transform.position,
                     new Vector2(spawner.gridSettings.width, spawner.gridSettings.length),
@@ -352,7 +372,6 @@ namespace Spawning
                     spawner.gridSettings.jitter
                 );
                 
-                gridPositions = new List<Vector3>();
                 foreach (var result in results)
                 {
                     if (result.IsValid)
@@ -524,7 +543,7 @@ namespace Spawning
                 int i = Mathf.FloorToInt(scaledT);
                 float fraction = scaledT - i;
                 
-                i = i % nodes.Length;
+                i %= nodes.Length;
                 int nextI = (i + 1) % nodes.Length;
                 
                 return Vector3.Lerp(nodes[i].position, nodes[nextI].position, fraction);
@@ -803,13 +822,15 @@ namespace Spawning
             // Create point generator with appropriate settings
             var options = new RandomPointGenerator.PointGeneratorOptions
             {
-                PointHeight = generalSettings.heightOffset,
+                HeightOffset = generalSettings.heightOffset,
                 Distribution = areaSettings.distribution,
                 ValidateOnNavMesh = generalSettings.validateOnNavMesh,
                 NavMeshSearchDistance = generalSettings.navMeshSearchDistance,
                 AvoidOverlaps = generalSettings.avoidOverlaps,
                 OverlapCheckRadius = generalSettings.overlapCheckRadius,
-                OverlapLayerMask = generalSettings.overlapLayerMask
+                OverlapLayerMask = generalSettings.overlapLayerMask,
+                ValidateOnTerrain = generalSettings.validateOnTerrain,
+                MaxTerrainSteepness = generalSettings.maxTerrainSteepness
             };
             
             pointGenerator = new RandomPointGenerator(options);
