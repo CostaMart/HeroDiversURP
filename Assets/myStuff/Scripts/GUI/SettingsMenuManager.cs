@@ -21,17 +21,20 @@ public class SettingsMenuManager : MonoBehaviour
 
     public void OnMusicVolumeChanged(float value)
     {
+        value = 20f * Mathf.Log10(value);
         PlayerPrefs.SetFloat("musicVolume", value);
         PlayerPrefs.Save();
     }
     public void OnSFXVolumeChanged(float value)
     {
+        value = 20f * Mathf.Log10(value);
         PlayerPrefs.SetFloat("sfxVolume", value);
         Debug.Log("SFX Volume set to: " + value);
         PlayerPrefs.Save();
     }
     public void OnShotVolumeChanged(float value)
     {
+        value = 20f * Mathf.Log10(value);
         PlayerPrefs.SetFloat("shootingVolume", value);
         Debug.Log("SFX Volume set to: " + value);
         PlayerPrefs.Save();

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioMuzzleManager : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class AudioMuzzleManager : MonoBehaviour
     public AudioClip[] firingAudioClips;
     public AudioClip[] emptyMagAudioClips;
     public AudioClip[] chargeAudioClips;
+    public AudioMixerGroup shooting;
 
     private AudioSource fireAudioSource;
     private AudioSource chargeAudioSource;
@@ -17,10 +19,9 @@ public class AudioMuzzleManager : MonoBehaviour
         if (fireAudioSource == null)
         {
             fireAudioSource = gameObject.AddComponent<AudioSource>();
+            fireAudioSource.outputAudioMixerGroup = shooting;
             chargeAudioSource = gameObject.AddComponent<AudioSource>();
         }
-        fireAudioSource.volume = PlayerPrefs.GetFloat("shootingVolume", 0.5f);
-        chargeAudioSource.volume = PlayerPrefs.GetFloat("chargeVolume", 0.5f);
 
     }
 

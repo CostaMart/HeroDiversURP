@@ -18,8 +18,6 @@ public class OnEventSoundManager : MonoBehaviour
     void Start()
     {
         eventChannels.Subscribe(startEvent, EmitSound);
-        soundSource.volume = PlayerPrefs.GetFloat("sfxVolume", 1.0f);
-
         if (!string.IsNullOrEmpty(stopEvent))
             eventChannels.Subscribe(stopEvent, StopSound);
     }

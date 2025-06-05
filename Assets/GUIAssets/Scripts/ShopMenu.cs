@@ -27,7 +27,6 @@ public class InteractiveShopMan : MonoBehaviour
 
     public void StartShopGui()
     {
-        playerInput.SwitchCurrentActionMap("UI");
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         shopMenu.SetActive(true);
@@ -54,9 +53,15 @@ public class InteractiveShopMan : MonoBehaviour
         this.items = givenItems;
     }
 
+    public void OnDisable()
+    {
+        playerInput.actions["Esc"].performed -= CloseShopGui;
+    }
+
 
     public void OnEnable()
     {
+        playerInput.SwitchCurrentActionMap("UI");
         playerInput.actions["Esc"].performed += CloseShopGui;
         StartShopGui();
         shopMenu.SetActive(true);

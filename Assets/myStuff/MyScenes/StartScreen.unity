@@ -4438,7 +4438,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2071234992}
   - component: {fileID: 2071234993}
-  - component: {fileID: 2071234994}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -4531,20 +4530,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &2071234994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2071234991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1d54a704bae460e7b38b59a011a93f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dataToUse: strafeBlur
-  defaultValue: 0.5
 --- !u!1 &2086241981 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1073798048220644, guid: e0c87617521568e4c81b2bb96e5e6989, type: 3}

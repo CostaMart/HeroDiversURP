@@ -4,12 +4,21 @@ using UnityEngine.UI;
 public class OnSliderEnabled : MonoBehaviour
 {
     [SerializeField] string dataToUse;
-    [SerializeField] float defaultValue = 0.5f;
+    [SerializeField] float defaultValue = -6f; // decibel di default (es. -6 dB)
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        this.GetComponent<Slider>().value = PlayerPrefs.GetFloat(dataToUse, 0.5f);
-    }
+        Slider slider = GetComponent<Slider>();
+        float dB = PlayerPrefs.GetFloat(dataToUse, defaultValue);
 
+        // Converti da decibel a valore lineare per lo slider
+        float linearValue = Mathf.Pow(10f, dB / 20f);
+
+        // Clamp tra 0 e 1 per sicurezza
+        linearValue = Mathf.Clamp01(linearValue);
+
+        slider.value = linearValue;
+
+        Debug.Log($"Decibel: {dB} dB | Valore slider: {linearValue}");
+    }
 }

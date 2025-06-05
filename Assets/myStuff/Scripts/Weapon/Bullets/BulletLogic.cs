@@ -9,6 +9,7 @@ using Vector3 = UnityEngine.Vector3;
 
 
 
+
 /// <summary>
 /// Questa classe rappresenta la logica di un proiettile.
 /// Un proiettile viene attivato quando viene sparato dall'arma.
@@ -18,6 +19,11 @@ using Vector3 = UnityEngine.Vector3;
 /// </summary>
 public class BulletLogic : MonoBehaviour
 {
+    [SerializeField] AudioSource bulletAudioSource;
+    [SerializeField] AudioSource explosionAudioSource;
+    [SerializeField] AudioClip bulletAudioClip;
+
+    [SerializeField] AudioClip explosionAudioClip;
     private Vector3 initialPos;
     private Rigidbody rb;
     private Collider c;
@@ -296,6 +302,8 @@ public class BulletLogic : MonoBehaviour
         Debug.Log("got a collission my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
         Debug.Log("Collision with: " + collision.gameObject.name);
 
+
+        bulletAudioSource.PlayOneShot(bulletAudioClip);
         hiteffectTransform.SetParent(null);
         hiteffectTransform.position = collision.contacts[0].point;
 
@@ -306,15 +314,16 @@ public class BulletLogic : MonoBehaviour
 
         if (bounciness != 0)
         {
+
+            bulletAudioSource.PlayOneShot(bulletAudioClip);
             var other = collision.gameObject.GetComponent<EffectsDispatcher>();
             //applica l'effetto al bersaglio colpito
             ApplyEffect(other);
 
             //applica l'effetto di esplosione
-            Explode(hiteffectTransform.position, collision.collider,
-                bulletPoolState.GetFeatureValuesByType<float>(FeatureType.explosionRadius).Sum(), onHitModifier);
+            if (collision.collider != null)
 
-            bulletHitCount++;
+                bulletHitCount++;
 
             if (sticky && bulletHitCount == MaxhitCount)
             {
@@ -331,6 +340,7 @@ public class BulletLogic : MonoBehaviour
                 Debug.Log("Bullet hit limit reached, resetting bullet. " + bulletHitCount + " limit " + MaxhitCount);
                 ResetBullet();
             }
+
         }
 
     }
@@ -341,9 +351,12 @@ public class BulletLogic : MonoBehaviour
     {
         if (bounciness == 0)
         {
+
             Debug.Log("got a trigger my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
             Debug.Log("Collision with: " + other.gameObject.name);
 
+
+            bulletAudioSource.PlayOneShot(bulletAudioClip);
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
 
@@ -355,7 +368,6 @@ public class BulletLogic : MonoBehaviour
 
             //applica l'effeto al bnersaglio colpito e se c'è una esplosione applica l'effetto di esplosione
             ApplyEffect(other.GetComponent<EffectsDispatcher>());
-            Explode(hiteffectTransform.position, other, radius, onHitModifier);
 
             bulletHitCount++;
 
@@ -433,13 +445,8 @@ public class BulletLogic : MonoBehaviour
         if (isReset) return;
         isReset = true;
 
-        if (onDestroyModifier != null && destroyExplosionRadius > 0)
+        if (destroyExplosionRadius > 0)
         {
-            Debug.Log("Resetting bullet...AND EXPLODING HAHAHAHA");
-            exploderTransform.position = transform.position;
-            exploderTransform.localScale = Vector3.one * destroyExplosionRadius;
-            exploderTransform.SetParent(null);
-            explodeVfX.Play();
             Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
         }
 
@@ -491,29 +498,38 @@ public class BulletLogic : MonoBehaviour
 
     public void Explode(Vector3 position, Collider toExclude, float radius, Modifier mod)
     {
+
+        exploderTransform.SetParent(null);
+        exploderTransform.position = position;
+        exploderTransform.localScale = Vector3.one * radius;
+        explodeVfX.Play();
+        explosionAudioSource.PlayOneShot(explosionAudioClip);
         if (radius <= 0) return; // no explosion radius, no effect
 
-        try
+        if (onDestroyModifier != null)
         {
-            Collider[] colliders = Physics.OverlapSphere(
-                position,
-                radius,
-                1 << NPCLayer
-            );
-
-            foreach (Collider col in colliders)
+            try
             {
-                if (col != null)
-                    if (col == toExclude) continue; // skip the collider that was excluded
+                Collider[] colliders = Physics.OverlapSphere(
+                    position,
+                    radius,
+                    1 << NPCLayer
+                );
 
-                if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                foreach (Collider col in colliders)
                 {
-                    d.AttachModifierFromOtherDispatcher(dispatcher, mod);
+                    if (col != null)
+                        if (col == toExclude) continue; // skip the collider that was excluded
+
+                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                    {
+                        d.AttachModifierFromOtherDispatcher(dispatcher, mod);
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
+            catch (Exception e)
+            {
+            }
         }
 
     }
