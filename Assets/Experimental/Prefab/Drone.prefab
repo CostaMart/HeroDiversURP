@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6304a7ee49db80a40b0f5b9d3d1b6197, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physicsThreshold: 4
+  physicsThreshold: 0
   recoveryTime: 2
   continuousForceThreshold: 2
   forceCheckInterval: 0.1

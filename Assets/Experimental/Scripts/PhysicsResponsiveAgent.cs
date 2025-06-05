@@ -11,6 +11,7 @@ public class PhysicsResponsiveAgent : MonoBehaviour
     
     private NavMeshAgent agent;
     private Rigidbody rb;
+    private AlignToTerrainNormal terrainAligner;
     private Vector3 lastValidPosition;
     private bool inPhysicsMode = false;
     private Coroutine forceCheckCoroutine;
@@ -25,7 +26,7 @@ public class PhysicsResponsiveAgent : MonoBehaviour
         rb.isKinematic = true;
 
         lastValidPosition = transform.position;
-        // _physicsThreshold = physicsThreshold * physicsThreshold;
+        _physicsThreshold = physicsThreshold * physicsThreshold;
         _continuousForceThreshold = continuousForceThreshold * continuousForceThreshold;
     }
     

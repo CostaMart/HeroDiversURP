@@ -65,7 +65,7 @@
       "OnEnterEvent": "",
       "OnExitAction": "Resume",
       "OnExitEvent": "",
-      "OnStayAction": "RotateToTarget",
+      "OnStayAction": "Stop",
       "OnStayEvent": "",
       "detectionRange": 19.0,
       "detectionAngle": 360.0,
