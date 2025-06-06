@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class SettingsMenuManager : MonoBehaviour
@@ -8,42 +9,27 @@ public class SettingsMenuManager : MonoBehaviour
 
     public void OnButtonPressed()
     {
-        settingsMenu.SetActive(true);
-        startButton.GetComponent<UnityEngine.UI.Button>().interactable = false;
-        this.gameObject.GetComponent<UnityEngine.UI.Button>().interactable = false;
+        if (!settingsMenu.activeSelf)
+        {
+            settingsMenu.SetActive(true);
+            startButton.GetComponent<UnityEngine.UI.Button>().interactable = false;
+            this.gameObject.GetComponent<UnityEngine.UI.Button>().interactable = false;
+        }
+        else
+        {
+            settingsMenu.SetActive(false);
+            startButton.GetComponent<UnityEngine.UI.Button>().interactable = true;
+            this.gameObject.GetComponent<UnityEngine.UI.Button>().interactable = true;
+        }
     }
 
-    public void OnBlurSliderChanged(float value)
-    {
-        PlayerPrefs.SetFloat("strafeBlur", value);
-        PlayerPrefs.Save();
-    }
-
-    public void OnMusicVolumeChanged(float value)
-    {
-        value = 20f * Mathf.Log10(value);
-        PlayerPrefs.SetFloat("musicVolume", value);
-        PlayerPrefs.Save();
-    }
-    public void OnSFXVolumeChanged(float value)
-    {
-        value = 20f * Mathf.Log10(value);
-        PlayerPrefs.SetFloat("sfxVolume", value);
-        Debug.Log("SFX Volume set to: " + value);
-        PlayerPrefs.Save();
-    }
-    public void OnShotVolumeChanged(float value)
-    {
-        value = 20f * Mathf.Log10(value);
-        PlayerPrefs.SetFloat("shootingVolume", value);
-        Debug.Log("SFX Volume set to: " + value);
-        PlayerPrefs.Save();
-    }
-
-    public void OnCloseSettings()
+    public void OnSavePress()
     {
         settingsMenu.SetActive(false);
         startButton.GetComponent<UnityEngine.UI.Button>().interactable = true;
         this.gameObject.GetComponent<UnityEngine.UI.Button>().interactable = true;
     }
+
+
+
 }
