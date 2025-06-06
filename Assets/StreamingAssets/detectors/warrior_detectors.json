@@ -1,0 +1,93 @@
+{
+  "detectorConfigs": {
+    "default": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 20.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    },
+    "LongRangeView": {
+      "OnEnterAction": "Chase",
+      "OnEnterEvent": "TargetDetected",
+      "OnExitAction": "WaitAndStartPatrol",
+      "OnExitEvent": "TargetLost",
+      "OnStayAction": "Chase",
+      "OnStayEvent": "",
+      "detectionRange": 30.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    },
+    "ShortRangeView": {
+      "OnEnterAction": "Chase",
+      "OnEnterEvent": "TargetDetected",
+      "OnExitAction": "WaitAndStartPatrol",
+      "OnExitEvent": "TargetLost",
+      "OnStayAction": "Chase",
+      "OnStayEvent": "",
+      "detectionRange": 25.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    },
+    "AttackArea": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "Attack",
+      "OnStayEvent": "",
+      "detectionRange": 20.0,
+      "detectionAngle": 20.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    },
+    "GroundAimDistance": {
+      "OnEnterEvent": "",
+      "OnExitAction": "Resume",
+      "OnExitEvent": "",
+      "OnStayAction": "AimAtTarget",
+      "OnStayEvent": "",
+      "detectionRange": 19.0,
+      "detectionAngle": 60.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    },
+    "TargetPerception": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "RotateToTarget",
+      "OnStayEvent": "",
+      "detectionRange": 35.0,
+      "detectionAngle": 160.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.05,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "detectionBufferSize": 1
+    }
+  }
+}

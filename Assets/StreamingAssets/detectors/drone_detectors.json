@@ -1,0 +1,85 @@
+{
+  "detectorConfigs": {
+    "default": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 10.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 5
+    },
+    "DroneLongRangeView": {
+      "OnEnterAction": "Chase",
+      "OnEnterEvent": "TargetDetected",
+      "OnExitAction": "WaitAndStartPatrol",
+      "OnExitEvent": "TargetLost",
+      "OnStayAction": "Chase",
+      "OnStayEvent": "",
+      "detectionRange": 40.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 5
+    },
+    "DroneShortRangeView": {
+      "OnEnterAction": "Chase",
+      "OnEnterEvent": "TargetDetected",
+      "OnExitAction": "WaitAndStartPatrol",
+      "OnExitEvent": "TargetLost",
+      "OnStayAction": "Chase",
+      "detectionRange": 20.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 5
+    },
+    "DroneAttackRange": {
+      "OnStayAction": "Attack",
+      "detectionRange": 15.0,
+      "detectionAngle": 20.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": true,
+      "detectionBufferSize": 5
+    },
+    "DroneAimPerceiver": {
+      "OnExitAction": "Resume",
+      "OnStayAction": "AimAtTarget",
+      "detectionRange": 14.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": true,
+      "detectionBufferSize": 5
+    },
+    "DronePerception": {
+      "OnStayAction": "RotateToTarget",
+      "detectionRange": 60.0,
+      "detectionAngle": 160.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 5
+    }
+  }
+}

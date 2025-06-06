@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 848471732959879639}
   - component: {fileID: 3210244307780162655}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: DroneLongRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 2902186960262327752}
   - component: {fileID: -566884327487376229}
   - component: {fileID: 9058447427260633323}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: Drone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ SphereCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -232,7 +232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1110702425358156939}
   - component: {fileID: 1394037415802827122}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: PitchPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6388661499592569154}
   - component: {fileID: 5955807641076605044}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: DronePerception
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6299141663843284329}
   - component: {fileID: 5571588529346644552}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: DroneAimPerceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -374,7 +374,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4348478073957296406}
   - component: {fileID: 2982701400634859820}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: DroneAttackRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -420,7 +420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5662620720812252071}
   - component: {fileID: 1379845221608948401}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: DroneShortRangeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -479,6 +479,10 @@ PrefabInstance:
     - target: {fileID: 3683212510054738694, guid: 46d317e9946032c46b0813443fd55fdf, type: 3}
       propertyPath: m_Name
       value: AlienFighter
+      objectReference: {fileID: 0}
+    - target: {fileID: 3683212510054738694, guid: 46d317e9946032c46b0813443fd55fdf, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3778508543107305711, guid: 46d317e9946032c46b0813443fd55fdf, type: 3}
       propertyPath: m_Enabled
