@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Experimental;
 using UnityEngine;
 using Utility.Positioning;
 
@@ -13,68 +11,57 @@ public class NPC : InteractiveObject
     List<Experimental.Feature> features;
     List<Experimental.Modifier> mods;
 
-    public string objectId = "Enemy_0";
-
     [Header("Rotazione")]
     [Tooltip("Velocità con cui l'oggetto ruota verso il target.")]
-    [Range(0, 360)]
+    [Min(1f)]
     [SerializeField]
-    private float rotationSpeed = 180f; // Speed of rotation in degrees per second
+    private float angularSpeed = 90f; // Speed of rotation in degrees per second
 
-    public Action currAction;
+    [Tooltip("Permetti la rotazione sull'asse X fino a un certo angolo massimo rispetto all'orizzontale.")]
+    [SerializeField]
+    [Range(0f, 40f)]
+    private float maxPitchAngle = 0f; // Maximum pitch angle for rotation
     
     // Patrol Settings
-    public float waitTime = 2f; // Time to wait at each waypoint
+    public float waitAtWaypointTime = 3f; // Time to wait at each waypoint
 
-    private bool isWaiting = false;
-    private float waitTimer = 0f;
     public float patrolRadius = 10f; // Radius of the patrol area
     public int patrolCount = 5; // Number of patrol points to generate
     public float minDistance = 2f; // Minimum distance between patrol points
     public List<RandomPointGenerator.PointResult> patrolPoints = new(); // THIS LIST IS ONLY FOR DEBUGGING
     List<Vector3> waypoints = new(); // List of patrol points
-    int currentPatrolIndex = 0; // Current index in the patrol points list
 
     // Chase Settings
-    public float viewRange = 30f;       // Raggio di visione
-    public float viewAngle = 60f;       // Angolo di visione
-    public float detectionRange = 2f;   // Raggio di rilevamento
     public float pathUpdateRate = 0.5f; // Frequenza di aggiornamento del percorso
-    public float waitAtLastKnownPosition = 1.0f; // Tempo di attesa all'ultima posizione nota
+    public float waitAtLastKnownPositionTime = 1.0f; // Tempo di attesa all'ultima posizione nota
     public LayerMask obstacleLayer;     // Layer degli ostacoli
     float pathUpdateTimer;
     Vector3 lastKnownPosition;
-    Transform targetTransform;
+    // Transform targetTransform;
 
     // Attack Settings
-    public float attackRange = 1.5f; // Raggio d'attacco
+    public float attackDuration = 2.0f; // Durata dell'attacco
 
     AgentController agentController; // Reference to the AgentController
 
-    float waitAtLastKnownPositionTimer; // Timer for waiting at last known position
-
-    Animator anim;
-
-    enum State
+    enum State 
     {
         Idle,
         Patrol,
         Chase,
-        Attack,
-        WaitAtLastKnownPosition
+        Attack
     }
 
-    void Awake()
+    State currentState = State.Idle;
+
+    protected override void Start()
     {
-        gameObject.name = objectId;
         agentController = GetComponent<AgentController>();
-        targetTransform = EntityManager.Instance.GetEntity("Player").transform;
-        currAction = Idle; // Default action is Idle
-        anim = GetComponent<Animator>();
-        
+        // targetTransform = EntityManager.Instance.GetEntity("Player").transform;
+
         // Initialize components, features, and modifiers
         components = new List<Component>();
-        features = new List<Experimental.Feature>();  
+        features = new List<Experimental.Feature>();
         mods = new List<Experimental.Modifier>();
 
         // ========== Patrol Settings ==========
@@ -87,7 +74,7 @@ public class NPC : InteractiveObject
         };
 
         var points = new RandomPointGenerator(options).GeneratePoints(
-            agentController.transform.position, // Starting position
+            transform.position, // Starting position
             new Vector3(patrolRadius, 0, patrolRadius), // Patrol area size
             patrolCount, // Number of points to generate
             RandomPointGenerator.AreaShape.Rectangle,
@@ -95,40 +82,42 @@ public class NPC : InteractiveObject
         );
 
         patrolPoints = points; // Store the generated points for debugging
-        
+
         waypoints = points.Where(pointResult => pointResult.IsValid).Select(pointResult => pointResult.Position).ToList();
 
         // ========== Chase Settings ==========
-        targetTransform = EntityManager.Instance.GetEntity("Player").transform;
-        
+
         pathUpdateTimer = 0;
 
-        Vector3 basePos = lastKnownPosition = agentController.position;
+        Vector3 basePos = lastKnownPosition = agentController.Position;
 
         obstacleLayer = LayerMask.GetMask("Default");
 
         // Registra le azioni disponibili
         RegisterAction("StartPatrol", (_) => OnStartPatrol());
-        RegisterAction("Chase", (_) => Chase());
-        RegisterAction("Attack", (_) => OnAttack());
-        RegisterAction("WaitAtLastKnownPosition", (_) => OnWaitAtLastKnownPosition());
-        RegisterAction("RotateToTarget", (_) => OnRotateToTarget());
-        
+        RegisterAction("Chase", Chase);
+        RegisterAction("Stop", (_) => agentController.StopAgent());
+        RegisterAction("Resume", (_) => agentController.ResumeAgent());
+        RegisterAction("Attack", OnAttack);
+        RegisterAction("WaitAndStartPatrol", (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
+        RegisterAction("RotateToTarget", OnRotateToTarget);
+        RegisterAction("AimAtTarget", OnAimAtTarget);
+
         // Registra gli eventi disponibili
         RegisterEvent("StateChanged");
         RegisterEvent("TargetDetected");
         RegisterEvent("TargetLost");
         RegisterEvent("AttackStarted");
         RegisterEvent("AttackEnded");
-        
+
         // Examples of adding features to the NPC
         Experimental.Feature speedFeature = new(3.0f, Experimental.Feature.FeatureType.SPEED);
         AddFeature(speedFeature);
 
-        agentController.SetSpeed(speedFeature.GetCurrentValue());
+        agentController.Speed = speedFeature.GetCurrentValue();
+        agentController.AngularSpeed = angularSpeed;
 
-        // Experimental.Feature healthFeature = new(100.0f, Experimental.Feature.FeatureType.HEALTH);
-        // AddFeature(healthFeature);
+        OnStartPatrol(); // Start patrolling by default
     }
 
     // Update is called once per frame
@@ -153,7 +142,7 @@ public class NPC : InteractiveObject
 
         // Compute the current speed
         float currSpeed = features.Find(f => f.GetFeatureType() == Experimental.Feature.FeatureType.SPEED)?.GetCurrentValue() ?? 0.0f;
-        
+
         foreach (var component in components)
         {
             if (component.GetFeature(Experimental.Feature.FeatureType.SPEED) != null)
@@ -174,9 +163,7 @@ public class NPC : InteractiveObject
         }
 
         // Update the AgentController with the current speed
-        agentController.SetSpeed(currSpeed);
-
-        currAction.Invoke(); // Call the current action
+        agentController.Speed = currSpeed;
     }
 
     public void AddFeature(Experimental.Feature feature)
@@ -213,66 +200,51 @@ public class NPC : InteractiveObject
     }
 
     // Implementazioni delle azioni    
-    private void OnStartPatrol()
+    void OnStartPatrol()
     {
-        currAction = Patrol;
+        currentState = State.Patrol;
         AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 3.0f));
-        agentController.MoveTo(waypoints[currentPatrolIndex]);
+        StartCoroutine(PatrolRoutine());
     }
     
-    void OnWaitAtLastKnownPosition()
+    private void OnAttack(object[] p)
     {
-        currAction = WaitAtLastKnownPosition;
-        agentController.MoveTo(lastKnownPosition);
-    }
-    
-    private void OnAttack()
-    {
-        // currAction = Attack;
-        agentController.StopAgent();
-        
-        EmitEvent("AttackStarted", new object[] { targetTransform });
+        if (p.Length == 0 || p[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for attack action.");
+            return;
+        }
 
-        // Logica di attacco
-        Debug.Log("Attacking target!");
-        
-        // Torna alla modalità chase dopo l'attacco
+        currentState = State.Attack;
+        EmitEvent("AttackStarted", new object[] { target});
+
+        // Debug.Log("Attacking target!");
+    
         StartCoroutine(AttackCooldown());
     }
 
-    void OnRotateToTarget()
-    {        
-        // Ruota l'agente verso il target
-        agentController.RotateToDirection(targetTransform.position, rotationSpeed);
+    void OnRotateToTarget(object[] p)
+    {
+        if (p.Length == 0 || p[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for rotation.");
+            return;
+        }       
+        agentController.RotateToDirection(target.position, maxPitchAngle);
     }
 
-    void Idle() {}
-
-    void Patrol()
+    void Chase(object[] p)
     {
-        if (isWaiting || agentController.IsStuck())
+        if (p.Length == 0 || p[0] is not Transform target)
         {
-            waitTimer += Time.deltaTime;
-            if (waitTimer >= waitTime)
-            {
-                isWaiting = false;
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
-                agentController.MoveTo(waypoints[currentPatrolIndex]);
-            }
+            Debug.LogError("Invalid target for chase action.");
+            return;
         }
-        else if (agentController.HasReachedDestination())
-        {
-            isWaiting = true;
-            waitTimer = 0f;
-        } 
-    }
 
-    void Chase()
-    {
-        currAction = Idle;
-        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 2.0f));
+        currentState = State.Chase;
+        AddModifier(new Experimental.Modifier(Experimental.Feature.FeatureType.SPEED, 0.0f, 5.0f));
         pathUpdateTimer += Time.deltaTime;
-        Vector3 targetPosition = targetTransform.position;
+        Vector3 targetPosition = target.position;
         
         if (targetPosition != null)
         {
@@ -288,30 +260,70 @@ public class NPC : InteractiveObject
         }
     }
 
-    void WaitAtLastKnownPosition()
+    IEnumerator PatrolRoutine()
     {
-        if (agentController.HasReachedDestination() || agentController.IsStuck())
+        int currentPatrolIndex = 0;
+        while (currentState == State.Patrol)
         {
-            waitAtLastKnownPositionTimer += Time.deltaTime;
-            if (waitAtLastKnownPositionTimer >= waitAtLastKnownPosition)
-            {
-                waitAtLastKnownPositionTimer = 0f;
-                OnStartPatrol();
-            }
+            yield return StartCoroutine(WaitOnReachedPosition(waitAtWaypointTime, State.Patrol));
+
+            if (currentState != State.Patrol) yield break; // Exit if state changes
+            agentController.MoveTo(waypoints[currentPatrolIndex]);
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolCount;
+        }
+    }
+
+    IEnumerator OnWaitAtLastKnownPosition()
+    {
+        agentController.MoveTo(lastKnownPosition);
+        yield return StartCoroutine(WaitOnReachedPosition(waitAtLastKnownPositionTime, State.Chase));
+        if (currentState == State.Chase)
+        {
+            OnStartPatrol();
+        }
+    }
+
+    /// <summary>
+    /// Aspetta che l'agente raggiunga una posizione specificata e poi attende per un certo periodo di tempo.
+    /// Se lo stato dell'agente cambia durante l'attesa, la coroutine si interrompe.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    IEnumerator WaitOnReachedPosition(float time, State initialState)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < time && currentState == initialState)
+        {
+            if (agentController.HasReachedDestination)
+                elapsedTime += Time.deltaTime;
+            else
+                elapsedTime = 0f; // Reset the timer if the agent is still moving
+
+            yield return null;
         }
     }
 
     // Coroutine per il cooldown dell'attacco
-    private IEnumerator AttackCooldown()
+    IEnumerator AttackCooldown()
     {
-        if (anim)
-        {
-            anim.SetTrigger("attack");
-        }
-        yield return new WaitForSeconds(1.0f);
-        
-        agentController.ResumeAgent();
+        agentController.IsAttacking = true;
+        yield return new WaitForSeconds(attackDuration);
+        agentController.IsAttacking = false;
+
+        // agentController.ResumeAgent();
         // EmitEvent("AttackEnded");
+    }
+
+    private void OnAimAtTarget(object[] obj)
+    {
+        if (obj.Length == 0 || obj[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for aiming.");
+            return;
+        }
+
+        agentController.StopAgent();
+        agentController.RotateToDirection(target.position, maxPitchAngle);
     }
     
     void OnDrawGizmosSelected()
@@ -326,38 +338,4 @@ public class NPC : InteractiveObject
             }
         }
     }
-    // void OnDrawGizmosSelected()
-    // {
-    //     Gizmos.color = Color.yellow;
-    //     Gizmos.DrawWireSphere(transform.position, detectionRange);
-        
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireSphere(transform.position, attackRange);
-    // }
-
-    // void OnDrawGizmos()
-    // {
-    //     // // Draw a sphere at the NPC's position with a radius of 0.5f
-    //     // Gizmos.color = Color.red;
-    //     // Gizmos.DrawSphere(transform.position, 0.5f);
-        
-    //     // // Draw the path of the NPC
-    //     // // foreach (var component in components)
-    //     // // {
-    //     // //     if (component is Patrol patrolComponent)
-    //     // //     {
-    //     // //         RandomPointGeneratorExtensions.DrawGizmos(patrolComponent.patrolPoints);
-    //     // //     }
-    //     // // }
-
-    //     // // Draw the patrol points
-    //     // Gizmos.color = Color.blue;
-    //     // foreach (var point in patrolPoints)
-    //     // {
-    //     //     if (point.IsValid)
-    //     //     {
-    //     //         Gizmos.DrawSphere(point.Position, 0.5f);
-    //     //     }
-    //     // }
-    // }
 }

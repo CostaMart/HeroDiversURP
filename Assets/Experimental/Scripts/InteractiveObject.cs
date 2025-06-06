@@ -19,6 +19,8 @@ public interface IEventEmitter
 // Classe base che combina azione ed eventi
 public abstract class InteractiveObject : MonoBehaviour
 {
+    public string objectId;
+
     // Dictionary per memorizzare le azioni disponibili
     protected Dictionary<string, Action<object[]>> actions = new();
 
@@ -31,25 +33,29 @@ public abstract class InteractiveObject : MonoBehaviour
 
     protected virtual void Start()
     {
-        _createEvent = "OnCreate" + gameObject.name;
-        _destroyEvent = "OnDestroy" + gameObject.name;
+        if (string.IsNullOrEmpty(objectId))
+        {
+            objectId = gameObject.name;
+        }
+        _createEvent = "OnCreate" + name;
+        _destroyEvent = "OnDestroy" + name;
         RegisterEvent(_createEvent);
         RegisterEvent(_destroyEvent);
         EmitEvent(_createEvent, new object[] { gameObject });
-        if (!EntityManager.Instance.HasEntity(gameObject.name))
-        {
-            EntityManager.Instance.RegisterEntity(gameObject.name, gameObject);
-        }
+        // if (!EntityManager.Instance.HasEntity(name))
+        // {
+        //     EntityManager.Instance.RegisterEntity(name, gameObject);
+        // }
     }
 
     protected virtual void OnDestroy()
     {
         EmitEvent(_destroyEvent, new object[] { gameObject });
         
-        if (EntityManager.Instance.HasEntity(gameObject.name))
-        {
-            EntityManager.Instance.RemoveEntity(gameObject.name);
-        }
+        // if (EntityManager.Instance.HasEntity(name))
+        // {
+        //     EntityManager.Instance.RemoveEntity(name);
+        // }
     }
 
     // Implementazione IActionable
@@ -74,7 +80,7 @@ public abstract class InteractiveObject : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Event '{eventId}' not found on {gameObject.name}");
+            Debug.LogWarning($"Event '{eventId}' not found on {name}");
         }
     }
 

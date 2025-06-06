@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,135 +5,141 @@ public class AgentController : MonoBehaviour
 {
     private NavMeshAgent agent;
 
-    private Vector3 currentDestination;
+    private PitchRotator pitchRotator;
 
-    public float speed;
+    private bool isAttacking = false;
 
-    public Vector3 position => transform.position;
+    public float Speed
+    {
+        get => agent.enabled ? agent.speed : 0f;
+        set
+        {
+            if (agent.enabled) agent.speed = value;
+        }
+    }
 
-    public Vector3 forward => transform.forward;
+    public float AngularSpeed
+    {
+        get => agent.enabled ? agent.angularSpeed : 0f;
+        set
+        {
+            if (agent.enabled) agent.angularSpeed = value;
+        }
+    }
+
+    public Vector3 Position => transform.position;
+
+    public Vector3 Forward => transform.forward;
+
+    public bool IsStopped => agent.enabled && agent.isStopped;
+
+    public bool IsAttacking
+    {
+        get => isAttacking;
+        set => isAttacking = value;
+    }
+
     Animator anim;
 
-    private void Awake()
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        pitchRotator = GetComponentInChildren<PitchRotator>();
         anim = GetComponent<Animator>();
-        currentDestination = transform.position;
-        speed = agent.speed;
+        if (anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
     }
 
     private void Update()
     {
-        agent.speed = speed;
-        agent.SetDestination(currentDestination);
-
-        if (anim)
-        {
-            if (IsMoving())
-            {
-                anim.speed = agent.velocity.magnitude;
-                anim.SetBool("isMoving", true);
-            }
-            else
-            {
-                anim.speed = 1f;
-                anim.SetBool("isMoving", false);
-            }
-        }
-    }
-
-    public void MoveTo(Vector3 destination)
-    {
-        currentDestination = destination;
-    }
-
-    public float rotationSpeed = 3f; // Velocità di rotazione (più alto = più veloce)
-
-    /// <summary>
-    /// Ruota gradualmente l'oggetto verso una direzione data, mantenendo l'asse Y costante.
-    /// Aggiorna anche le animazioni se necessario.
-    /// </summary>
-    public void RotateToDirection(Vector3 lookAtPosition, float rotationSpeed)
-    {
-        if (agent.isStopped) return;
-
-        // Calcola la direzione orizzontale verso il punto da guardare
-        Vector3 directionToTarget = lookAtPosition - transform.position;
-        directionToTarget.y = 0f;
-
-        // Se la distanza sul piano XZ è trascurabile, non fare nulla
-        if (directionToTarget.sqrMagnitude < 0.01f)
-            return;
-
-        directionToTarget.Normalize(); // Normalizza per ottenere solo la direzione
-
-        // Verifica se siamo già quasi allineati con la direzione target
-        float dot = Vector3.Dot(transform.forward, directionToTarget);
-        if (dot > 0.999f) // Corrisponde a un angolo di circa < 2.5 gradi. (cos(2.5°) ≈ 0.9990)
-        {
-            return;
-        }
-
-        // Ruota gradualmente verso la direzione target
-        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
-
-        // Gestione animazione
-        if (anim != null)
-        {
-            // Il componente Y del prodotto vettoriale tra transform.forward (direzione attuale) e directionToTarget (direzione desiderata)
-            // indica la direzione della svolta: un valore positivo e uno negativo indicano svolte opposte (es. y > 0 per sinistra).
-            float turnDirection = Vector3.Cross(transform.forward, directionToTarget).y;
-
-            if (turnDirection > 0.1f)
-            {
-                anim.SetTrigger("turnLeft");
-            }
-            else if (turnDirection < -0.1f)
-            {
-                anim.SetTrigger("turnRight");
-            }
-        }
+        if (anim == null) return;
+        anim.SetFloat("moveSpeed", agent.velocity.sqrMagnitude);
+        anim.SetBool("isMoving", IsMoving);
+        anim.SetBool("isAttacking", isAttacking);
     }
 
 
-    public bool HasReachedDestination()
-    {
-        return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
-    }
+    public bool HasReachedDestination => agent.enabled && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
 
-    public bool IsMoving()
-    {
-        return agent.velocity.sqrMagnitude > 0.03f && !agent.isStopped;
-    }
+    public bool IsMoving => agent.enabled && agent.velocity.sqrMagnitude > 0.03f;
 
-    public bool IsStuck()
-    {
-        return !IsMoving() && !HasReachedDestination();
-    }
+    public bool IsStucked => agent.enabled && !IsMoving && !HasReachedDestination;
 
-    public Vector3 GetCurrentVelocity()
-    {
-        return agent.velocity;
-    }
-
-    public void SetSpeed(float newSpeed)
-    {
-        speed = newSpeed;
-        agent.speed = newSpeed;
-    }
+    public Vector3 CurrentVelocity => agent.enabled ? agent.velocity : Vector3.zero;
 
     public void StopAgent()
     {
-        agent.isStopped = true;
+        if (agent.enabled)
+            agent.isStopped = true;
     }
 
     public void ResumeAgent()
     {
-        agent.isStopped = false;
+        if (agent.enabled)
+            agent.isStopped = false;
     }
+
+    public void MoveTo(Vector3 destination)
+    {
+        if (agent.enabled)
+            agent.SetDestination(destination);
+    }
+
+    /// <summary>
+    /// Ruota gradualmente l'oggetto verso una direzione data,
+    /// mantenendo l'asse Y costante (yaw) e consentendo una rotazione limitata sull'asse X (pitch).
+    /// Aggiorna anche le animazioni se necessario.
+    /// </summary>
+    /// <param name="lookAtPosition">La posizione verso cui ruotare.</param>
+    /// <param name="maxPitchAngle">L'angolo massimo (in gradi) di pitch consentito (asse X).</param>
+    public void RotateToDirection(Vector3 lookAtPosition, float maxPitchAngle)
+    {
+        if (!agent.enabled || IsAttacking || IsMoving) return;
+
+        Vector3 directionToTarget = lookAtPosition - transform.position;
+
+        if (pitchRotator != null)
+        {
+            pitchRotator.RotatePitch(directionToTarget, maxPitchAngle, AngularSpeed);
+        }
+
+        // Calcolo direzione orizzontale (solo yaw)
+        Vector3 flatDirection = directionToTarget;
+        flatDirection.y = 0f;
+
+        if (flatDirection.sqrMagnitude < 0.01f)
+            return;
+
+        flatDirection.Normalize();
+
+        float dot = Vector3.Dot(transform.forward, flatDirection);
+        if (dot > 0.999f)
+            return;
+
+        // Calcolo la rotazione desiderata (includendo yaw)
+        Quaternion yawRotation = Quaternion.LookRotation(flatDirection);
+        // Rotazione graduale verso la rotazione desiderata
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            yawRotation,
+            AngularSpeed * Time.deltaTime
+        );
+
+        if (anim == null) return;
+
+        float turnDirection = Vector3.Cross(transform.forward, flatDirection).y;
+
+        // anim.speed = _animSpeed + (AngularSpeed * 0.01f);
+        if (turnDirection > 0.01f)
+        {
+            anim.SetTrigger("turnRight");
+        }
+        else if (turnDirection < -0.01f)
+        {
+            anim.SetTrigger("turnLeft");
+        }
+    }
+
 }

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1271972933542957556}
-  - component: {fileID: -9157070571887331685}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -32,57 +31,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-9157070571887331685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 344581118224426214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00d59e194eb6e9d438b1a2f47cbdae3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: spawner
-  prefabsToSpawn: []
-  spawnContainer: {fileID: 0}
-  maxSpawnCount: 5
-  autoStart: 1
-  spawnStrategyType: 0
-  areaSettings:
-    shape: 0
-    radius: 10
-    width: 20
-    length: 20
-    distribution: 0
-    minDistance: 1
-    spawnAsBatch: 0
-    batchSize: 5
-  gridSettings:
-    spacing: 5
-    jitter: 0.2
-    width: 20
-    length: 20
-    fillAllAtOnce: 0
-    randomTraversal: 0
-  pathSettings:
-    pathNodes: []
-    closedPath: 0
-    spacing: 2
-    randomOffset: 0
-  timingSettings:
-    initialDelay: 0
-    interval: 5
-    useRandomInterval: 0
-    minInterval: 1
-    maxInterval: 5
-  OnObjectSpawned:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSpawningCompleted:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSpawningStarted:
-    m_PersistentCalls:
-      m_Calls: []

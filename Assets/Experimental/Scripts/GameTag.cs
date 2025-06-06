@@ -191,6 +191,8 @@ public class GameTag : InteractiveObject
             UpdateIterator();
         }
     }
+
+    protected override void OnDestroy(){}
 }
 
 public interface ITagIterator

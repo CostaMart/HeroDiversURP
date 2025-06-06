@@ -14,15 +14,32 @@ public class EntityManager : MonoBehaviour
     public static EntityManager Instance { get; private set; }
 
     // Dizionario per tracciare le entità
-    private Dictionary<string, GameObject> _entities = new();
+    private readonly Dictionary<string, GameObject> _entities = new();
 
+    // lista delle entità registrate da visualizzare nell'Inspector
+    [Header("Registered Entities")]
+    [SerializeField] private List<string> _registeredEntities = new();
+
+    void Update()
+    {
+        // Aggiorna la lista delle entità registrate per l'Inspector
+        _registeredEntities.Clear();
+        foreach (var entity in _entities.Keys)
+        {
+            if (entity != null)
+            {
+                _registeredEntities.Add(entity);
+            }
+        }
+    }
+    
     // Eventi per notificare altre classi quando entità vengono aggiunte o rimosse
     // public event Action<string, GameObject> OnEntityRegistered;
     // public event Action<string, GameObject> OnEntityRemoved;
 
     [Header("Debug Settings")]
     [SerializeField] private bool _logRegistrations = false;
-
+    
     [Header("Default Prefabs")]
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _spawnerPrefab;
@@ -33,6 +50,7 @@ public class EntityManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -52,10 +70,18 @@ public class EntityManager : MonoBehaviour
     /// </summary>
     public void InitializeDefaultEntities()
     {
+        GameObject player = GameObject.Find("Player");
+        RegisterEntity("Player", player);
+
         // Istanzia il player solo se il prefab è assegnato
         // if (_playerPrefab != null)
         // {
         //     GameObject player = InstantiateEntity("Player", _playerPrefab, _playerPrefab.transform.position, Quaternion.identity);
+        // }
+
+        // if (_spawnerPrefab != null)
+        // {
+        //     GameObject spawner = InstantiateEntity("Spawner", _spawnerPrefab, Vector3.zero, Quaternion.identity);
         // }
         // else
         // {
@@ -79,32 +105,32 @@ public class EntityManager : MonoBehaviour
     /// <param name="id">Identificatore unico per l'entità</param>
     /// <param name="entity">GameObject da registrare</param>
     /// <returns>L'ID con cui l'entità è stata effettivamente registrata</returns>
-    public string RegisterEntity(string id, GameObject entity)
+    public void RegisterEntity(string id, GameObject entity)
     {
         if (entity == null)
         {
             Debug.LogError("Attempted to register a null entity!");
-            return null;
+            return ;
         }
-
-        string uniqueId = id;
 
         // Genera un ID unico se quello fornito è già in uso
-        if (_entities.ContainsKey(uniqueId))
+        if (_entities.ContainsKey(id))
         {
-            Debug.LogWarning($"Entity ID '{uniqueId}' already exists!");
-            return uniqueId;
+            Debug.LogWarning($"Entity ID '{id}' already exists!");
+            return;
         }
 
-        _entities.Add(uniqueId, entity);
-        entity.name = uniqueId; // Aggiorna il nome dell'oggetto per riflettere l'ID
+        if (entity.TryGetComponent(out InteractiveObject interactiveObject))
+        {
+            interactiveObject.objectId = id;
+        }
+        
+        _entities.Add(id, entity);
 
         if (_logRegistrations)
         {
-            Debug.Log($"Entity registered - ID: {uniqueId}, GameObject: {entity.name}");
+            Debug.Log($"Entity registered - ID: {id}, GameObject: {entity.name}");
         }
-
-        return uniqueId;
     }
 
     /// <summary>
@@ -124,15 +150,15 @@ public class EntityManager : MonoBehaviour
         {
             return entity;
         }
-
+        
         if (_logRegistrations)
         {
             Debug.LogWarning($"Entity with ID '{id}' not found!");
         }
-
+        
         return null;
     }
-
+    
     /// <summary>
     /// Controlla se un'entità con un determinato ID esiste nel sistema di gestione.
     public bool HasEntity(string id)
@@ -178,7 +204,6 @@ public class EntityManager : MonoBehaviour
             Debug.LogError($"Cannot instantiate entity '{id}': prefab is null!");
             return null;
         }
-
         GameObject entity = Instantiate(prefab, position, rotation);
 
         if (parent != null)
@@ -190,16 +215,8 @@ public class EntityManager : MonoBehaviour
             entity.transform.SetParent(transform); // Imposta l'EntityManager come genitore se non specificato
         }
 
-        string uniqueId = RegisterEntity(id, entity);
-
+        RegisterEntity(id, entity);
+        
         return entity;
-    }
-    void OnEnable()
-    {
-        if (!_entities.ContainsKey("Player"))
-        {
-            GameObject player = GameObject.Find("Player");
-            RegisterEntity("Player", player);
-        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 using Utility.Positioning;
 
@@ -12,8 +13,6 @@ namespace Spawning
     /// </summary>
     public class Spawner : InteractiveObject
     {
-        [SerializeField] private string id = "spawner";
-
         [Header("Prefab Settings")]
         [Tooltip("The prefabs to spawn. If multiple are provided, one will be selected randomly")]
         [SerializeField] private GameObject[] prefabsToSpawn;
@@ -27,6 +26,9 @@ namespace Spawning
         
         [Tooltip("Whether to start spawning automatically on start")]
         [SerializeField] private bool autoStart = true;
+
+        [Tooltip("Optional target for orientation of spawned objects (e.g. to face a specific direction)")]
+        [SerializeField] private Transform orientationTarget;
         
         [Header("Spawn Strategy")]
         [Tooltip("The strategy to use for spawning objects")]
@@ -46,11 +48,8 @@ namespace Spawning
 
         [Header("General Settings")]
         [SerializeField] private GeneralSettings generalSettings = new();
-        
-        [Header("Events")]
-        public UnityEvent<GameObject> OnObjectSpawned;
-        public UnityEvent OnSpawningCompleted;
-        public UnityEvent OnSpawningStarted;
+
+
         
         // Runtime state
         private int currentSpawnCount;
@@ -153,27 +152,36 @@ namespace Spawning
             [Tooltip("Maximum random interval")]
             public float maxInterval = 5f;
         }
-        
+
         [Serializable]
         public class GeneralSettings
         {
             [Tooltip("Height offset for spawned objects")]
             public float heightOffset = 0.5f;
-            
-            [Tooltip("Whether to validate spawn positions on NavMesh")]
-            public bool validateOnNavMesh = true;
-            
-            [Tooltip("Maximum search distance for NavMesh validation")]
-            public float navMeshSearchDistance = 5f;
-            
+
             [Tooltip("Whether to avoid overlaps with other objects")]
             public bool avoidOverlaps = true;
-            
+
             [Tooltip("Radius to check for overlaps")]
             public float overlapCheckRadius = 0.5f;
-            
+
             [Tooltip("Layers to check for overlaps")]
             public LayerMask overlapLayerMask = default;
+
+            [Tooltip("Whether to validate spawn positions on NavMesh")]
+            public bool validateOnNavMesh = true;
+
+            [Tooltip("Maximum search distance for NavMesh validation")]
+            public float navMeshSearchDistance = 5f;
+
+            [Tooltip("NavMesh area mask for validation (0 = all areas)")]
+            public int navMeshAreaMask = 0;
+            
+            [Tooltip("Whether to validate spawn positions on terrain")]
+            public bool validateOnTerrain = true;
+
+            [Tooltip("Maximum terrain slope angle for valid spawn positions (in degrees)")]
+            public float maxTerrainSteepness = 45f;
         }
         
         #endregion
@@ -243,6 +251,12 @@ namespace Spawning
             
             private void GenerateBatchPositions()
             {
+                if (pointGenerator == null)
+                {
+                    cachedPositions = new List<Vector3>(); // Ensure list is initialized
+                    return;
+                }
+                
                 Vector3 size = GetSizeVector();
                 var results = pointGenerator.GeneratePoints(
                     spawner.transform.position,
@@ -347,6 +361,14 @@ namespace Spawning
             
             private void GenerateGridPositions()
             {
+                gridPositions = new List<Vector3>();
+
+                if (pointGenerator == null)
+                {
+                    currentIndex = 0;
+                    return;
+                }
+
                 var results = pointGenerator.GenerateGridPoints(
                     spawner.transform.position,
                     new Vector2(spawner.gridSettings.width, spawner.gridSettings.length),
@@ -354,7 +376,6 @@ namespace Spawning
                     spawner.gridSettings.jitter
                 );
                 
-                gridPositions = new List<Vector3>();
                 foreach (var result in results)
                 {
                     if (result.IsValid)
@@ -373,9 +394,7 @@ namespace Spawning
                 {
                     n--;
                     int k = UnityEngine.Random.Range(0, n + 1);
-                    Vector3 temp = gridPositions[k];
-                    gridPositions[k] = gridPositions[n];
-                    gridPositions[n] = temp;
+                    (gridPositions[n], gridPositions[k]) = (gridPositions[k], gridPositions[n]);
                 }
             }
             
@@ -528,7 +547,7 @@ namespace Spawning
                 int i = Mathf.FloorToInt(scaledT);
                 float fraction = scaledT - i;
                 
-                i = i % nodes.Length;
+                i %= nodes.Length;
                 int nextI = (i + 1) % nodes.Length;
                 
                 return Vector3.Lerp(nodes[i].position, nodes[nextI].position, fraction);
@@ -547,9 +566,9 @@ namespace Spawning
                         Gizmos.DrawLine(nodes[i].position, nodes[i+1].position);
                 }
                 
-                if (spawner.pathSettings.closedPath && nodes[0] != null && nodes[nodes.Length-1] != null)
+                if (spawner.pathSettings.closedPath && nodes[0] != null && nodes[^1] != null)
                 {
-                    Gizmos.DrawLine(nodes[nodes.Length-1].position, nodes[0].position);
+                    Gizmos.DrawLine(nodes[^1].position, nodes[0].position);
                 }
                 
                 // Draw nodes
@@ -585,7 +604,6 @@ namespace Spawning
         
         private void Awake()
         {
-            name = gameObject.name;
             InitializeSystem();
         }
         
@@ -595,7 +613,7 @@ namespace Spawning
             // Register with entity manager
             if (EntityManager.Instance != null)
             {
-                EntityManager.Instance.RegisterEntity(id, gameObject);
+                EntityManager.Instance.RegisterEntity(objectId, gameObject);
             }
             
             if (autoStart)
@@ -625,20 +643,14 @@ namespace Spawning
             else
             {
                 // If not playing, create temporary strategy for gizmos
-                ISpawnStrategy tempStrategy = null;
-                switch (spawnStrategyType)
+                ISpawnStrategy tempStrategy = spawnStrategyType switch
                 {
-                    case SpawnStrategyType.Area:
-                        tempStrategy = new AreaSpawnStrategy();
-                        break;
-                    case SpawnStrategyType.Grid:
-                        tempStrategy = new GridSpawnStrategy();
-                        break;
-                    case SpawnStrategyType.Path:
-                        tempStrategy = new PathSpawnStrategy();
-                        break;
-                }
-                
+                    SpawnStrategyType.Area => new AreaSpawnStrategy(),
+                    SpawnStrategyType.Grid => new GridSpawnStrategy(),
+                    SpawnStrategyType.Path => new PathSpawnStrategy(),
+                    _ => null
+                };
+
                 if (tempStrategy != null)
                 {
                     tempStrategy.Initialize(this, null);
@@ -673,8 +685,6 @@ namespace Spawning
                     spawnRoutine = StartCoroutine(SpawnRoutine());
                     break;
             }
-            
-            OnSpawningStarted?.Invoke();
         }
         
         /// <summary>
@@ -732,16 +742,28 @@ namespace Spawning
                 entityId = prefabToSpawn.name + "_" + ++count;
             }
 
+            Quaternion rotation = Quaternion.identity;
+            if (orientationTarget != null)
+            {
+                // Align the spawned object with the orientation target
+                Vector3 direction = (orientationTarget.position - nextPosition.Value).normalized;
+                rotation = Quaternion.LookRotation(direction);
+            }
+
             GameObject spawnedObject = EntityManager.Instance.InstantiateEntity(
                 entityId, 
                 prefabToSpawn, 
                 nextPosition.Value, 
-                Quaternion.identity,
+                rotation,
                 spawnContainer
             );
-            
-            OnObjectSpawned?.Invoke(spawnedObject);
             currentSpawnCount++;
+
+            var anim = spawnedObject.GetComponentInChildren<SpawnAnimation>();
+            if (anim != null)
+            {
+                anim.Play();
+            }
             
             return spawnedObject;
         }
@@ -814,32 +836,28 @@ namespace Spawning
             // Create point generator with appropriate settings
             var options = new RandomPointGenerator.PointGeneratorOptions
             {
-                PointHeight = generalSettings.heightOffset,
+                HeightOffset = generalSettings.heightOffset,
                 Distribution = areaSettings.distribution,
                 ValidateOnNavMesh = generalSettings.validateOnNavMesh,
                 NavMeshSearchDistance = generalSettings.navMeshSearchDistance,
+                NavMeshAreaMask = 1 << generalSettings.navMeshAreaMask,
                 AvoidOverlaps = generalSettings.avoidOverlaps,
                 OverlapCheckRadius = generalSettings.overlapCheckRadius,
-                OverlapLayerMask = generalSettings.overlapLayerMask
+                OverlapLayerMask = generalSettings.overlapLayerMask,
+                ValidateOnTerrain = generalSettings.validateOnTerrain,
+                MaxTerrainSteepness = generalSettings.maxTerrainSteepness
             };
             
             pointGenerator = new RandomPointGenerator(options);
             
             // Create the appropriate strategy
-            switch (spawnStrategyType)
+            activeStrategy = spawnStrategyType switch
             {
-                case SpawnStrategyType.Area:
-                    activeStrategy = new AreaSpawnStrategy();
-                    break;
-                    
-                case SpawnStrategyType.Grid:
-                    activeStrategy = new GridSpawnStrategy();
-                    break;
-                    
-                case SpawnStrategyType.Path:
-                    activeStrategy = new PathSpawnStrategy();
-                    break;
-            }
+                SpawnStrategyType.Area => new AreaSpawnStrategy(),
+                SpawnStrategyType.Grid => new GridSpawnStrategy(),
+                SpawnStrategyType.Path => new PathSpawnStrategy(),
+                _ => null
+            };
             
             // Initialize the strategy
             activeStrategy?.Initialize(this, pointGenerator);
@@ -859,7 +877,6 @@ namespace Spawning
             }
             
             isSpawning = false;
-            OnSpawningCompleted?.Invoke();
         }
         
         private IEnumerator SpawnRoutine()
@@ -879,7 +896,6 @@ namespace Spawning
             }
             
             isSpawning = false;
-            OnSpawningCompleted?.Invoke();
         }
         
         #endregion
