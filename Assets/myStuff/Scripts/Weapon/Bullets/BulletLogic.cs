@@ -512,8 +512,7 @@ public class BulletLogic : MonoBehaviour
             {
                 Collider[] colliders = Physics.OverlapSphere(
                     position,
-                    radius,
-                    1 << NPCLayer
+                    radius
                 );
 
                 foreach (Collider col in colliders)
@@ -523,6 +522,8 @@ public class BulletLogic : MonoBehaviour
 
                     if (col.TryGetComponent<EffectsDispatcher>(out var d))
                     {
+
+                        if (d.GetAllFeatureByType<bool>(FeatureType.antiExplosionSuit).Last()) continue;
                         d.AttachModifierFromOtherDispatcher(dispatcher, mod);
                     }
                 }

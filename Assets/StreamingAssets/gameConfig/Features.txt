@@ -13,6 +13,7 @@ strafeBurstDuration = 0.3 ID:12
 strafePower = 70.0 ID:15
 strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
+antiExplosionSuit = false ID:18
 ##
 
 #Player-HeatStats
@@ -79,7 +80,7 @@ bulletBounciness = 0.0 ID:27 range: 0.0-1.0 // if bounciness is 0 the bullet wil
 bulletTickRate = 1.0 ID:28 // How often the bullet applies its modifier on prolongated contact after first collision with a target
 antigravitational = true ID:29 // if true the bullet will not be affected by gravity
 bulletDeviationSpeed = 100.0 ID:30 // the speed with which a bullet can deviate from its path to follow the "bulletFollowTarget" target
-bulletDestructionExplosionRadius = 10.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
+bulletDestructionExplosionRadius = 5.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
 bulletDestructionExplosionEffect = 0 ID:32 // the effect to play on bullet destruction (set as the index of bulletlist modfiier), -1 is no effect
 ##
 
