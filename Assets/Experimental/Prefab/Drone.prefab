@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 3548407098811895849}
   - component: {fileID: 2902186960262327752}
   - component: {fileID: -566884327487376229}
-  - component: {fileID: 5534464963375633621}
+  - component: {fileID: 9058447427260633323}
   m_Layer: 10
   m_Name: Drone
   m_TagString: Untagged
@@ -208,7 +208,7 @@ MonoBehaviour:
   recoveryTime: 2
   continuousForceThreshold: 2
   forceCheckInterval: 0.1
---- !u!114 &5534464963375633621
+--- !u!114 &9058447427260633323
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,10 +217,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4106629171390645862}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caa9f7da8a5dc7b4782806c101aed000, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ac0cbf5a5d1efb4fbd7a03abdf1ce95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 2
+  duration: 3
   yOffset: -1
 --- !u!1 &5092828938355308574
 GameObject:

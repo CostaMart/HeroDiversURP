@@ -221,7 +221,7 @@ namespace Utility.Positioning
             public bool ValidateOnNavMesh { get; set; } = true;
 
             /// <summary>Distanza massima per la ricerca di punti NavMesh</summary>
-            public float NavMeshSearchDistance { get; set; } = 5f;
+            public float NavMeshSearchDistance { get; set; } = 50f;
 
             /// <summary>Tipi di area NavMesh da considerare validi</summary>
             public int NavMeshAreaMask { get; set; } = NavMesh.AllAreas;

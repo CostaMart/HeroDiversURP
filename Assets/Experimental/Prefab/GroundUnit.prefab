@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 5255288954025309510}
   - component: {fileID: 2157121539832970873}
   - component: {fileID: 1076308476008740256}
-  - component: {fileID: 8636329291317370717}
+  - component: {fileID: 9064832899495457510}
   m_Layer: 11
   m_Name: GroundUnit
   m_TagString: Untagged
@@ -208,7 +208,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8636329291317370717
+--- !u!114 &9064832899495457510
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,10 +217,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1582545835967444999}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caa9f7da8a5dc7b4782806c101aed000, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ac0cbf5a5d1efb4fbd7a03abdf1ce95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 1
+  duration: 2
   yOffset: -1
 --- !u!1 &2123759486985323436
 GameObject:

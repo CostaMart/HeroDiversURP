@@ -74,7 +74,7 @@ public class NPC : InteractiveObject
         };
 
         var points = new RandomPointGenerator(options).GeneratePoints(
-            agentController.transform.position, // Starting position
+            transform.position, // Starting position
             new Vector3(patrolRadius, 0, patrolRadius), // Patrol area size
             patrolCount, // Number of points to generate
             RandomPointGenerator.AreaShape.Rectangle,
