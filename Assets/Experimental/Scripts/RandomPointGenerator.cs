@@ -708,14 +708,13 @@ namespace Utility.Positioning
                 return new PointResult(candidatePosition, isPointConsideredValidByTerrain, false, 0,
                     isOnTerrain, actualTerrainHeight, terrainNormal, terrainSteepness);
             }
-
+            
             // Controlla se la candidatePosition è su NavMesh.
             if (NavMesh.SamplePosition(candidatePosition, out NavMeshHit navHit,
                 options.NavMeshSearchDistance, options.NavMeshAreaMask))
             {
                 // Il punto finale effettivo è quello campionato sulla NavMesh.
                 Vector3 finalPositionOnNavMesh = navHit.position;
-
                 // Controlla di nuovo sovrapposizioni alla posizione finale sulla NavMesh.
                 if (options.AvoidOverlaps &&
                     Physics.CheckSphere(finalPositionOnNavMesh, options.OverlapCheckRadius, options.OverlapLayerMask))

@@ -14,7 +14,7 @@
       "ignoreObstacles": false,
       "targetLayerName": "Player",
       "useVerticalRange": false,
-      "detectionBufferSize": 1
+      "detectionBufferSize": 5
     },
     "DroneLongRangeView": {
       "OnEnterAction": "Chase",
@@ -30,7 +30,7 @@
       "ignoreObstacles": false,
       "targetLayerName": "Player",
       "useVerticalRange": false,
-      "detectionBufferSize": 1
+      "detectionBufferSize": 5
     },
     "DroneShortRangeView": {
       "OnEnterAction": "Chase",
@@ -45,7 +45,7 @@
       "ignoreObstacles": false,
       "targetLayerName": "Player",
       "useVerticalRange": false,
-      "detectionBufferSize": 1
+      "detectionBufferSize": 5
     },
     "DroneAttackRange": {
       "OnStayAction": "Attack",
@@ -56,19 +56,19 @@
       "ignoreObstacles": false,
       "targetLayerName": "Player",
       "useVerticalRange": true,
-      "detectionBufferSize": 1
+      "detectionBufferSize": 5
     },
     "DroneAimPerceiver": {
-      "OnEnterAction": "Stop",
       "OnExitAction": "Resume",
+      "OnStayAction": "AimAtTarget",
       "detectionRange": 14.0,
       "detectionAngle": 360.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
       "ignoreObstacles": false,
       "targetLayerName": "Player",
-      "useVerticalRange": false,
-      "detectionBufferSize": 1
+      "useVerticalRange": true,
+      "detectionBufferSize": 5
     },
     "DronePerception": {
       "OnStayAction": "RotateToTarget",
@@ -79,7 +79,7 @@
       "ignoreObstacles": true,
       "targetLayerName": "Player",
       "useVerticalRange": false,
-      "detectionBufferSize": 1
+      "detectionBufferSize": 5
     }
   }
 }

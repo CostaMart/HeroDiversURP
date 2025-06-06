@@ -32,9 +32,6 @@ public class NPC : InteractiveObject
     List<Vector3> waypoints = new(); // List of patrol points
 
     // Chase Settings
-    public float viewRange = 30f;       // Raggio di visione
-    public float viewAngle = 60f;       // Angolo di visione
-    public float detectionRange = 2f;   // Raggio di rilevamento
     public float pathUpdateRate = 0.5f; // Frequenza di aggiornamento del percorso
     public float waitAtLastKnownPositionTime = 1.0f; // Tempo di attesa all'ultima posizione nota
     public LayerMask obstacleLayer;     // Layer degli ostacoli
@@ -104,6 +101,7 @@ public class NPC : InteractiveObject
         RegisterAction("Attack", OnAttack);
         RegisterAction("WaitAndStartPatrol", (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
         RegisterAction("RotateToTarget", OnRotateToTarget);
+        RegisterAction("AimAtTarget", OnAimAtTarget);
 
         // Registra gli eventi disponibili
         RegisterEvent("StateChanged");
@@ -118,6 +116,8 @@ public class NPC : InteractiveObject
 
         agentController.Speed = speedFeature.GetCurrentValue();
         agentController.AngularSpeed = angularSpeed;
+
+        OnStartPatrol(); // Start patrolling by default
     }
 
     // Update is called once per frame
@@ -312,6 +312,18 @@ public class NPC : InteractiveObject
 
         // agentController.ResumeAgent();
         // EmitEvent("AttackEnded");
+    }
+
+    private void OnAimAtTarget(object[] obj)
+    {
+        if (obj.Length == 0 || obj[0] is not Transform target)
+        {
+            Debug.LogError("Invalid target for aiming.");
+            return;
+        }
+
+        agentController.StopAgent();
+        agentController.RotateToDirection(target.position, maxPitchAngle);
     }
     
     void OnDrawGizmosSelected()

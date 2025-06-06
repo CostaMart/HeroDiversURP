@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 3548407098811895849}
   - component: {fileID: 2902186960262327752}
   - component: {fileID: -566884327487376229}
+  - component: {fileID: 5534464963375633621}
   m_Layer: 10
   m_Name: Drone
   m_TagString: Untagged
@@ -77,7 +78,7 @@ Transform:
   m_GameObject: {fileID: 4106629171390645862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.759447, y: 6.1429954, z: -5.906424}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -104,7 +105,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 1.8
   m_BaseOffset: 1
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 8
   m_ObstacleAvoidanceType: 4
 --- !u!114 &671293641579659077
 MonoBehaviour:
@@ -137,9 +138,6 @@ MonoBehaviour:
   patrolRadius: 10
   patrolCount: 5
   minDistance: 2
-  viewRange: 30
-  viewAngle: 60
-  detectionRange: 2
   pathUpdateRate: 0.5
   waitAtLastKnownPositionTime: 1
   obstacleLayer:
@@ -210,6 +208,20 @@ MonoBehaviour:
   recoveryTime: 2
   continuousForceThreshold: 2
   forceCheckInterval: 0.1
+--- !u!114 &5534464963375633621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caa9f7da8a5dc7b4782806c101aed000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 2
+  yOffset: -1
 --- !u!1 &5092828938355308574
 GameObject:
   m_ObjectHideFlags: 0

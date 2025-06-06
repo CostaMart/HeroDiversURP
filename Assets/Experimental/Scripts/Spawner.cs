@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 using Utility.Positioning;
 
@@ -25,6 +26,9 @@ namespace Spawning
         
         [Tooltip("Whether to start spawning automatically on start")]
         [SerializeField] private bool autoStart = true;
+
+        [Tooltip("Optional target for orientation of spawned objects (e.g. to face a specific direction)")]
+        [SerializeField] private Transform orientationTarget;
         
         [Header("Spawn Strategy")]
         [Tooltip("The strategy to use for spawning objects")]
@@ -44,11 +48,8 @@ namespace Spawning
 
         [Header("General Settings")]
         [SerializeField] private GeneralSettings generalSettings = new();
-        
-        [Header("Events")]
-        public UnityEvent<GameObject> OnObjectSpawned;
-        public UnityEvent OnSpawningCompleted;
-        public UnityEvent OnSpawningStarted;
+
+
         
         // Runtime state
         private int currentSpawnCount;
@@ -173,6 +174,9 @@ namespace Spawning
             [Tooltip("Maximum search distance for NavMesh validation")]
             public float navMeshSearchDistance = 5f;
 
+            [Tooltip("NavMesh area mask for validation (0 = all areas)")]
+            public int navMeshAreaMask = 0;
+            
             [Tooltip("Whether to validate spawn positions on terrain")]
             public bool validateOnTerrain = true;
 
@@ -681,8 +685,6 @@ namespace Spawning
                     spawnRoutine = StartCoroutine(SpawnRoutine());
                     break;
             }
-            
-            OnSpawningStarted?.Invoke();
         }
         
         /// <summary>
@@ -740,16 +742,28 @@ namespace Spawning
                 entityId = prefabToSpawn.name + "_" + ++count;
             }
 
+            Quaternion rotation = Quaternion.identity;
+            if (orientationTarget != null)
+            {
+                // Align the spawned object with the orientation target
+                Vector3 direction = (orientationTarget.position - nextPosition.Value).normalized;
+                rotation = Quaternion.LookRotation(direction);
+            }
+
             GameObject spawnedObject = EntityManager.Instance.InstantiateEntity(
                 entityId, 
                 prefabToSpawn, 
                 nextPosition.Value, 
-                Quaternion.identity,
+                rotation,
                 spawnContainer
             );
-            
-            OnObjectSpawned?.Invoke(spawnedObject);
             currentSpawnCount++;
+
+            var anim = spawnedObject.GetComponentInChildren<SpawnAnimation>();
+            if (anim != null)
+            {
+                anim.Play();
+            }
             
             return spawnedObject;
         }
@@ -826,6 +840,7 @@ namespace Spawning
                 Distribution = areaSettings.distribution,
                 ValidateOnNavMesh = generalSettings.validateOnNavMesh,
                 NavMeshSearchDistance = generalSettings.navMeshSearchDistance,
+                NavMeshAreaMask = 1 << generalSettings.navMeshAreaMask,
                 AvoidOverlaps = generalSettings.avoidOverlaps,
                 OverlapCheckRadius = generalSettings.overlapCheckRadius,
                 OverlapLayerMask = generalSettings.overlapLayerMask,
@@ -862,7 +877,6 @@ namespace Spawning
             }
             
             isSpawning = false;
-            OnSpawningCompleted?.Invoke();
         }
         
         private IEnumerator SpawnRoutine()
@@ -882,7 +896,6 @@ namespace Spawning
             }
             
             isSpawning = false;
-            OnSpawningCompleted?.Invoke();
         }
         
         #endregion
