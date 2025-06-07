@@ -82,7 +82,6 @@ public class PhysicsResponsiveAgent : MonoBehaviour
         }
     }
     
-    // Alternativa: usa OnCollisionStay per controlli più diretti
     void OnCollisionStay(Collision collision)
     {
         if (inPhysicsMode) return;

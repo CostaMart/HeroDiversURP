@@ -33,15 +33,12 @@ public class TagManager : MonoBehaviour
             return;
         }
 
-        if (!TryGetComponent<TagConfigLoader>(out _tagConfigLoader))
+        if (!TryGetComponent(out _tagConfigLoader))
         {
             // Crea un nuovo TagConfigLoader se non esiste
             _tagConfigLoader = gameObject.AddComponent<TagConfigLoader>();
         }
-    }
 
-    private void Start()
-    {
         // Carica i tag da un file di configurazione, se necessario
         _tagConfigLoader.LoadTagsFromConfig();
     }
@@ -114,7 +111,7 @@ public class TagManager : MonoBehaviour
     public List<GameObject> GetObjectsInTag(string tagName)
     {
         GameTag tag = GetTag(tagName);
-        return tag.taggedObjects ?? new List<GameObject>();
+        return tag.activeObjects ?? new List<GameObject>();
     }
 
     // public HashSet<string> GetTagsForObject(GameObject obj)

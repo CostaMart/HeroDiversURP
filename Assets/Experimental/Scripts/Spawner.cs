@@ -13,10 +13,15 @@ namespace Spawning
     /// </summary>
     public class Spawner : InteractiveObject
     {
-        [Header("Prefab Settings")]
-        [Tooltip("The prefabs to spawn. If multiple are provided, one will be selected randomly")]
-        [SerializeField] private GameObject[] prefabsToSpawn;
+    //     [Header("Prefab Settings")]
+    //     [Tooltip("The prefabs to spawn. If multiple are provided, one will be selected randomly")]
+    //     [SerializeField] private GameObject[] prefabsToSpawn;
+    
         
+        [Header("Spawner Settings")]
+        [Tooltip("Tag for the objects to spawn.")]
+        [SerializeField] private string tagName;
+
         [Tooltip("Optional container to parent spawned objects to")]
         [SerializeField] private Transform spawnContainer;
         
@@ -57,9 +62,10 @@ namespace Spawning
         private Coroutine spawnRoutine;
         private ISpawnStrategy activeStrategy;
         private RandomPointGenerator pointGenerator;
+        private GameTag gameTag;
         
         #region Spawn Strategy Settings Classes
-        
+
         [Serializable]
         public enum SpawnStrategyType
         {
@@ -602,19 +608,15 @@ namespace Spawning
         
         #region Unity Lifecycle
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             InitializeSystem();
         }
         
-        protected override void Start()
+        void Start()
         {
-            base.Start();
-            // Register with entity manager
-            if (EntityManager.Instance != null)
-            {
-                EntityManager.Instance.RegisterEntity(objectId, gameObject);
-            }
+            gameTag = TagManager.Instance.GetTag(tagName);
             
             if (autoStart)
             {
@@ -717,29 +719,11 @@ namespace Spawning
         /// </summary>
         /// <returns>The spawned GameObject, or null if spawn failed</returns>
         public GameObject SpawnSingleObject()
-        {
-            if (prefabsToSpawn == null || prefabsToSpawn.Length == 0)
-            {
-                Debug.LogWarning("No prefabs configured for spawning");
-                return null;
-            }
-            
+        {            
             Vector3? nextPosition = activeStrategy?.GetNextSpawnPosition();
             if (!nextPosition.HasValue)
             {
                 return null;
-            }
-            
-            // Choose a random prefab
-            int randomIndex = UnityEngine.Random.Range(0, prefabsToSpawn.Length);
-            GameObject prefabToSpawn = prefabsToSpawn[randomIndex];
-
-            // Spawn using EntityManager
-            string entityId = prefabToSpawn.name;
-            int count = 0;
-            while (EntityManager.Instance.HasEntity(entityId))
-            {
-                entityId = prefabToSpawn.name + "_" + ++count;
             }
 
             Quaternion rotation = Quaternion.identity;
@@ -750,13 +734,8 @@ namespace Spawning
                 rotation = Quaternion.LookRotation(direction);
             }
 
-            GameObject spawnedObject = EntityManager.Instance.InstantiateEntity(
-                entityId, 
-                prefabToSpawn, 
-                nextPosition.Value, 
-                rotation,
-                spawnContainer
-            );
+            GameObject spawnedObject = gameTag.CreateNextObject(nextPosition.Value, rotation);
+
             currentSpawnCount++;
 
             var anim = spawnedObject.GetComponentInChildren<SpawnAnimation>();
@@ -767,45 +746,6 @@ namespace Spawning
             
             return spawnedObject;
         }
-        
-        /// <summary>
-        /// Spawn an object at a specific position
-        /// </summary>
-        /// <param name="entityId">ID to register with the EntityManager</param>
-        /// <param name="position">Position to spawn at</param>
-        /// <returns>The spawned GameObject</returns>
-        // public GameObject SpawnAtPosition(string entityId, Vector3 position)
-        // {
-        //     if (prefabsToSpawn == null || prefabsToSpawn.Length == 0)
-        //     {
-        //         Debug.LogWarning("No prefabs configured for spawning");
-        //         return null;
-        //     }
-            
-        //     int randomIndex = UnityEngine.Random.Range(0, prefabsToSpawn.Length);
-        //     GameObject prefabToSpawn = prefabsToSpawn[randomIndex];
-            
-        //     GameObject spawnedObject = EntityManager.Instance.InstantiateEntity(
-        //         entityId, 
-        //         prefabToSpawn, 
-        //         position, 
-        //         Quaternion.identity, 
-        //         spawnContainer
-        //     );
-            
-        //     OnObjectSpawned?.Invoke(spawnedObject);
-        //     currentSpawnCount++;
-            
-        //     return spawnedObject;
-        // }
-        
-        /// <summary>
-        /// Get the current number of spawned objects
-        /// </summary>
-        // public int GetCurrentSpawnCount()
-        // {
-        //     return currentSpawnCount;
-        // }
         
         /// <summary>
         /// Change the spawn strategy at runtime

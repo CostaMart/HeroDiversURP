@@ -33,6 +33,11 @@ public class TagConfigLoader : MonoBehaviour
             configContent = string.Empty;
         }
     }
+
+    void Start()
+    {
+        ConfigPlayerTag();
+    }
     
     public void LoadTagsFromConfig()
     {
@@ -41,19 +46,30 @@ public class TagConfigLoader : MonoBehaviour
             Debug.LogError("No config content available.");
             return;
         }
-        
+
         TagsConfiguration config = JsonUtility.FromJson<TagsConfiguration>(configContent);
-        
+
         foreach (TagConfiguration tagConfig in config.tags)
         {
             // Trova o crea il tag
             GameTag tag = FindOrCreateTag(tagConfig);
-            
+
             // Configura gli oggetti del tag
             ConfigureTaggedObjects(tag, tagConfig);
         }
     }
-    
+
+    private static void ConfigPlayerTag()
+    {
+        GameObject playerTag = new("PlayerTag");
+        GameTag newTag = playerTag.AddComponent<GameTag>();
+        newTag.tagName = "PlayerTag";
+        newTag.tagType = GameTag.TagType.Random;
+        newTag.transform.SetParent(TagManager.Instance.transform);
+        newTag.AddObject(GameObject.FindWithTag("Player"));
+        TagManager.Instance.RegisterTag(newTag);
+    }
+
     private GameTag FindOrCreateTag(TagConfiguration tagConfig)
     {
         // Cerca un tag esistente con lo stesso nome
@@ -70,22 +86,19 @@ public class TagConfigLoader : MonoBehaviour
         GameTag newTag = tagObject.AddComponent<GameTag>();
         newTag.tagName = tagConfig.name;
         newTag.tagType = (GameTag.TagType)System.Enum.Parse(typeof(GameTag.TagType), tagConfig.type);
-
+        newTag.transform.SetParent(TagManager.Instance.transform);
         TagManager.Instance.RegisterTag(newTag);
         return newTag;
     }
     
     private void ConfigureTaggedObjects(GameTag tag, TagConfiguration tagConfig)
-    {        
+    {
         // Aggiungi gli oggetti specificati per nome
         foreach (string objectName in tagConfig.members)
         {
-            tag.RegisterToObjectCreateEvent(objectName);
-            GameObject obj = EntityManager.Instance.GetEntity(objectName);
-            if (obj != null)
-            {
-                tag.AddObject(obj);
-            }
+            tag.trackedObjectNames.Add(objectName);
+            tag.RegisterToObjectEnableEvent(objectName);
+            tag.RegisterToObjectDisableEvents(objectName);
         }
     }
 }

@@ -11,70 +11,62 @@ public class GameTag : InteractiveObject
 
     public string tagName;
     public TagType tagType;
-    public List<GameObject> taggedObjects = new();
+    public List<GameObject> activeObjects = new();
+    public List<string> trackedObjectNames = new();
 
-    public ITagIterator iteratorStrategy;
+    public IIterator iteratorStrategy;
 
-    void Awake()
+    protected override void Awake()
     {
         InitializeIterator();
     }
 
-    protected override void Start()
+    void Start()
     {
-        // Non emette l'evento di creazione, poiché è un tag
-
         // Registra eventi per gestire l'aggiunta e la rimozione di oggetti
-        RegisterAction("AddCreatedObject", AddCreatedObjectAction);
-        RegisterAction("RemoveDestroyedObject", RemoveDestroyedObjectAction);
-
-        // Registra agli eventi di distruzione per gli oggetti già presenti nella lista
-        foreach (var obj in taggedObjects)
-        {
-            if (obj != null)
-            {
-                RegisterToObjectDestroyEvent(obj);
-            }
-        }
-
+        RegisterAction("AddEnabledObject", AddEnabledObjectAction);
+        RegisterAction("RemoveDisabledObject", RemoveDisabledObjectAction);
     }
 
     private void InitializeIterator()
     {
-        switch (tagType)
+        iteratorStrategy = tagType switch
         {
-            case TagType.Random:
-                iteratorStrategy = new RandomTagIterator(taggedObjects);
-                break;
-            case TagType.Sequential:
-                iteratorStrategy = new SequentialTagIterator(taggedObjects);
-                break;
+            TagType.Random => new RandomIterator(),
+            TagType.Sequential => new SequentialIterator(),
+            _ => null
+        };
+    }
+
+    public GameObject GetActiveObject()
+    {
+        return iteratorStrategy?.NextElement(activeObjects);
+    }
+
+    public GameObject CreateNextObject(Vector3 position, Quaternion rotation)
+    {
+        if (trackedObjectNames.Count == 0)
+        {
+            Debug.LogWarning("No tracked object names available to create an object.");
+            return null;
         }
-    }
 
-    public void UpdateIterator()
-    {
-        InitializeIterator();
-    }
+        string objName = iteratorStrategy?.NextElement(trackedObjectNames);
 
-    public GameObject NextElement()
-    {
-        return iteratorStrategy?.NextElement();
+        return ObjectPool.Instance.Get(objName, position, rotation);
     }
 
     // Aggiunge un oggetto alla lista dei tagged objects e aggiorna l'iteratore
     public void AddObject(GameObject obj)
     {
-        if (obj != null && !taggedObjects.Contains(obj))
+        if (obj != null && !activeObjects.Contains(obj))
         {
-            taggedObjects.Add(obj);
-            RegisterToObjectDestroyEvent(obj);
-            UpdateIterator();
+            activeObjects.Add(obj);
         }
     }
 
     // Ascolta l'evento di creazione di un oggetto non ancora creato
-    public void RegisterToObjectCreateEvent(string objName)
+    public void RegisterToObjectEnableEvent(string objName)
     {
         if (string.IsNullOrEmpty(objName))
         {
@@ -84,12 +76,12 @@ public class GameTag : InteractiveObject
 
         EventConfiguration configuration = new()
         {
-            name = "OnCreate" + objName,
+            name = "OnEnable" + objName,
             actions = new List<ActionConfig>
             {
                 new()
                 {
-                    action = "AddCreatedObject",
+                    action = "AddEnabledObject",
                     tag = tagName,
                     isTagAction = true,
                 }
@@ -97,53 +89,34 @@ public class GameTag : InteractiveObject
         };
 
         EventActionManager.Instance.SetEventConfiguration(configuration);
-        // if (!_trackedObjectNames.Contains(objName))
-        // {
-        //     string createEventName = "OnCreate" + objName;
-        //     _trackedObjectNames.Add(objName);
-
-        //     // Registra l'evento nel sistema se non esiste già
-        //     EventActionManager.Instance.RegisterEvent(createEventName);
-
-        //     Debug.Log($"GameTag '{tagName}' registered to listen for create event: {createEventName}");
-        // }
     }
 
     // Registra questo tag per ascoltare l'evento di distruzione dell'oggetto
-    private void RegisterToObjectDestroyEvent(GameObject obj)
+    public void RegisterToObjectDisableEvents(string objName)
     {
-        if (obj == null)
+        if (string.IsNullOrEmpty(objName))
         {
-            Debug.LogWarning("Object is null, cannot register for destroy event.");
+            Debug.LogWarning("Object name is empty, cannot register for destroy event.");
             return;
         }
+
         EventConfiguration configuration = new()
         {
-            name = "OnDestroy" + obj.name,
+            name = "OnDisable" + objName,
             actions = new List<ActionConfig>
             {
                 new() {
-                    action = "RemoveDestroyedObject",
+                    action = "RemoveDisabledObject",
                     tag = tagName,
                     isTagAction = true,
                 }
             }
         };
         EventActionManager.Instance.SetEventConfiguration(configuration);
-        // if (obj != null && !_trackedObjectNames.Contains(obj.name))
-        // {
-        //     string destroyEventName = "OnDestroy" + obj.name;
-        //     _trackedObjectNames.Add(obj.name);
-
-        //     // Registra l'evento nel sistema se non esiste già
-        //     EventActionManager.Instance.RegisterEvent(destroyEventName);
-
-        //     Debug.Log($"GameTag '{tagName}' registered to listen for destroy event: {destroyEventName}");
-        // }
     }
 
     // Azione che viene chiamata quando un oggetto viene creato
-    private void AddCreatedObjectAction(object[] parameters)
+    private void AddEnabledObjectAction(object[] parameters)
     {
         if (parameters != null && parameters.Length > 0 && parameters[0] is GameObject createdObj)
         {
@@ -152,50 +125,36 @@ public class GameTag : InteractiveObject
         }
     }
 
-    // Azione che viene chiamata quando un oggetto viene distrutto
-    private void RemoveDestroyedObjectAction(object[] parameters)
+    // Azione che viene chiamata quando un oggetto viene distrutto o disabilitato
+    private void RemoveDisabledObjectAction(object[] parameters)
     {
         if (parameters != null && parameters.Length > 0 && parameters[0] is GameObject destroyedObj)
         {
             RemoveObject(destroyedObj);
-            Debug.Log($"GameTag '{tagName}' removed destroyed object: {destroyedObj.name}");
+            Debug.Log($"GameTag '{tagName}' removed object: {destroyedObj.name}");
         }
-    }
-
-    // Rimuove tutti gli oggetti dalla lista e aggiorna l'iteratore
-    public void ClearObjects()
-    {
-        taggedObjects.Clear();
-        UpdateIterator();
     }
 
     public bool Contains(GameObject obj)
     {
-        return taggedObjects.Contains(obj);
+        return activeObjects.Contains(obj);
     }
 
     public GameObject[] GetObjects()
     {
-        return taggedObjects.ToArray();
+        return activeObjects.ToArray();
     }
 
     public void RemoveObject(GameObject obj)
     {
-        if (taggedObjects.Contains(obj))
+        if (activeObjects.Contains(obj))
         {
-            taggedObjects.Remove(obj);
-            // if (obj != null)
-            // {
-            //     _trackedObjectNames.Remove(obj.name);
-            // }
-            UpdateIterator();
+            activeObjects.Remove(obj);
         }
     }
 
-    protected override void OnDestroy(){}
-}
 
-public interface ITagIterator
-{
-    GameObject NextElement();
+    // I tag non emettono eventi di OnEnable e OnDisable
+    protected override void OnEnable() { }
+    protected override void OnDisable() { }
 }

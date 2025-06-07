@@ -6,14 +6,14 @@ namespace Utility
     {
         private AgentController agentController;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             name = "Player";
         }
         
-        protected override void Start()
+        void Start()
         {
-            base.Start();
             agentController = GetComponent<AgentController>();
             EntityManager.Instance.RegisterEntity(name, gameObject);
             RegisterAction("MoveTo", MoveTo);

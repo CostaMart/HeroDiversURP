@@ -28,34 +28,30 @@ public abstract class InteractiveObject : MonoBehaviour
     // Con eventi di default
     protected List<string> events = new();
 
-    string _createEvent;
-    string _destroyEvent;
+    string _enableEvent;
+    string _disableEvent;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
+        name = name.Replace("(Clone)", "").Trim();
         if (string.IsNullOrEmpty(objectId))
         {
-            objectId = gameObject.name;
+            objectId = name;
         }
-        _createEvent = "OnCreate" + name;
-        _destroyEvent = "OnDestroy" + name;
-        RegisterEvent(_createEvent);
-        RegisterEvent(_destroyEvent);
-        EmitEvent(_createEvent, new object[] { gameObject });
-        // if (!EntityManager.Instance.HasEntity(name))
-        // {
-        //     EntityManager.Instance.RegisterEntity(name, gameObject);
-        // }
+        _enableEvent = "OnEnable" + name;
+        _disableEvent = "OnDisable" + name;
     }
 
-    protected virtual void OnDestroy()
+    protected virtual void OnEnable()
     {
-        EmitEvent(_destroyEvent, new object[] { gameObject });
-        
-        // if (EntityManager.Instance.HasEntity(name))
-        // {
-        //     EntityManager.Instance.RemoveEntity(name);
-        // }
+        RegisterEvent(_enableEvent);
+        RegisterEvent(_disableEvent);
+        EmitEvent(_enableEvent, new object[] { gameObject });
+    }
+
+    protected virtual void OnDisable()
+    {
+        EmitEvent(_disableEvent, new object[] { gameObject });
     }
 
     // Implementazione IActionable
