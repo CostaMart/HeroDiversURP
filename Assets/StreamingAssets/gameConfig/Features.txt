@@ -16,6 +16,24 @@ maxStrafes = 4 ID:16
 antiExplosionSuit = false ID:18
 ##
 
+#GroundUnit-CharStats
+maxHealth = 100.0 ID:9
+health = 100.0  ID:1 
+speed = 10.0 ID:2
+rotationSpeed = 10.0  ID:13
+aimRotationSpeed = 100.0 ID:14
+jumpSpeedy = 30.0  ID:3
+jumpSpeedx = 10.0 ID:4  
+jumpSpeedz = 10.0 ID:5
+speedLimitBeforeRagdolling = 1000.0 ID:6
+maxJumps = 1 ID:7
+strafeBurstDuration = 0.3 ID:12
+strafePower = 70.0 ID:15
+strafeCooldown = 2.0 ID:17
+maxStrafes = 4 ID:16
+antiExplosionSuit = false ID:18
+##
+
 #Player-HeatStats
 heatingPerSecond = 5.0 ID:0 
 coolingRate = 1.0 ID:1
@@ -60,9 +78,9 @@ activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 1.0 ID:9
 bulletHitNumber = 1.0 ID:10 // if -1 infinite limit, if sticky is active this is the count of bounces before sticking
-widthScale = 100.0 ID:11
-heightScale = 100.0 ID:12
-lengthScale = 100.0 ID:13
+widthScale = 20.0 ID:11
+heightScale = 20.0 ID:12
+lengthScale = 20.0 ID:13
 bulletEffects = 0 ID:14 // if -1 no effect will be applyed on hit
 damage = 10.0 ID:15
 recoilStrengthVertical = 0.1 ID:16
