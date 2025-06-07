@@ -59,7 +59,7 @@ automatic = true ID:6
 activeLogicIndex = 0  ID:7
 mass = 2.0 ID:8
 explosionRadius = 1.0 ID:9
-bulletHitNumber = 2.0 ID:10 // if -1 infinite limit, if sticky is active this is the count of bounces before sticking
+bulletHitNumber = 1.0 ID:10 // if -1 infinite limit, if sticky is active this is the count of bounces before sticking
 widthScale = 100.0 ID:11
 heightScale = 100.0 ID:12
 lengthScale = 100.0 ID:13
@@ -80,7 +80,7 @@ bulletBounciness = 0.0 ID:27 range: 0.0-1.0 // if bounciness is 0 the bullet wil
 bulletTickRate = 1.0 ID:28 // How often the bullet applies its modifier on prolongated contact after first collision with a target
 antigravitational = true ID:29 // if true the bullet will not be affected by gravity
 bulletDeviationSpeed = 100.0 ID:30 // the speed with which a bullet can deviate from its path to follow the "bulletFollowTarget" target
-bulletDestructionExplosionRadius = 5.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
+bulletDestructionExplosionRadius = 0.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
 bulletDestructionExplosionEffect = 0 ID:32 // the effect to play on bullet destruction (set as the index of bulletlist modfiier), -1 is no effect
 ##
 
