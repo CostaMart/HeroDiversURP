@@ -5,173 +5,32 @@ using System.Linq;
 using UnityEngine;
 
 [DefaultExecutionOrder(-99)]
-/// <summary>
-/// A status class that wants to participate to the item upgrade system must implement this interface, 
-/// the effect dispatcher will look for these classes in the gameobject hierarchy.
-/// </summary>
 public abstract class AbstractStatus : MonoBehaviour
 {
+    // ====== FIELDS ======
     protected string symbolicName = null;
     public Dictionary<int, Feature> features = new();
 
     private List<AbstractEffect> activeEffects = new List<AbstractEffect>();
-
-    public bool dirty = false;
-
     private List<AbstractEffect> effectsToRemove = new List<AbstractEffect>();
 
-    /// <summary>
-    /// ID of this affectable type 
-    /// </summary>
+    public bool dirty = false;
     public int ID { get; private set; }
 
-    public AbstractStatus()
-    {
-
-    }
-
-    public Dictionary<int, Feature> LoadFeatures()
-    {
-
-        string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/Features.txt");
-        bool found = false;
-        bool hasBeenFound = false;
-        Dictionary<int, Feature> features = new();
-
-        /// semplice parsing del file Features.txt per recuperare le features
-        foreach (var thisLine in lines)
-        {
-
-            var line = thisLine.Trim();
-            line = line.Split("//")[0];
-
-            if (found && line.Contains("##"))
-            {
-                found = false;
-            }
-
-
-            if (found)
-            {
-
-                try
-                {
-                    string[] parts = line.Split("=");
-
-                    Type t;
-                    FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
-
-                    if (featureType == FeatureType.money || featureType == FeatureType.keys)
-                    {
-                        Debug.LogWarning("AbstractStatus: money and keys are special features, not customizable");
-                        continue;
-                    }
-
-                    Debug.Log("starting parsing ");
-                    parts = parts[1].Split("ID:");
-
-                    string value = parts[0].Trim();
-                    int ID = int.Parse(parts[1].Split("range:")[0].Trim());
-
-
-                    string rangeString = (parts[1].Split("range:").Length > 1) ? parts[1].Split("range:")[1].Trim() : null;
-                    string maxVal = null;
-                    string minVal = null;
-
-                    if (rangeString != null)
-                    {
-                        maxVal = rangeString.Split("-")[1].Trim();
-                        minVal = rangeString.Split("-")[0].Trim();
-                    }
-
-                    var splittedComment = parts[1].Split('\\');
-
-                    if (int.TryParse(parts[0], out _))
-                    {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[0]
-                         + " ID: " + parts[1] + " as int");
-
-                        Feature f = new Feature(featureType, int.Parse(parts[0]), typeof(int));
-                        f.SetValue(int.Parse(parts[0]));
-                        if (maxVal != null)
-                        {
-                            f.maxVal = int.Parse(maxVal);
-                            f.minVal = int.Parse(minVal);
-                        }
-                        features.Add(ID, f);
-                    }
-                    else if (float.TryParse(parts[0], System.Globalization.NumberStyles.Float,
-                    System.Globalization.CultureInfo.InvariantCulture, out _))
-                    {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1]
-                        + " ID: " + parts[0] + " as float");
-
-                        Feature f = new Feature(featureType, float.Parse(parts[0],
-                        System.Globalization.CultureInfo.InvariantCulture), typeof(float));
-                        f.SetValue(float.Parse(parts[0].Replace(" ", ""),
-                        System.Globalization.CultureInfo.InvariantCulture));
-
-                        if (maxVal != null)
-                        {
-                            f.maxVal = float.Parse(maxVal, System.Globalization.CultureInfo.InvariantCulture);
-
-                            f.minVal = float.Parse(minVal, System.Globalization.CultureInfo.InvariantCulture);
-                        }
-
-                        features.Add(ID, f);
-                    }
-                    else
-                    {
-                        Debug.Log("gameobject" + this.gameObject.name + " parsed value: " + parts[1] +
-                         " ID: " + parts[0] + " as bool");
-
-                        Feature f = new Feature(featureType, bool.Parse(parts[0]), typeof(bool));
-                        f.SetValue(bool.Parse(parts[0]));
-                        features.Add(ID, f);
-                    }
-
-                }
-                catch
-                (Exception e)
-                {
-                    Debug.LogError("Abstract Status: Error in parsing line: " + line + " " + e.Message);
-                }
-
-            }
-
-            var name = symbolicName != null ? symbolicName : this.GetType().Name;
-            if (line.Contains("#" + this.gameObject.name + "-" + name))
-            {
-                found = true;
-                hasBeenFound = true;
-            }
-        }
-
-
-        if (hasBeenFound)
-            return features;
-
-        /// simply empty
-        return new Dictionary<int, Feature>();
-
-
-    }
-
-    protected abstract int ComputeID();
-
-    protected virtual void Update()
-    {
-        this.ActivateEffects();
-
-        foreach (var ef in effectsToRemove)
-        {
-            activeEffects.Remove(ef);
-        }
-
-        effectsToRemove.Clear();
-    }
-
     public EffectsDispatcher mydispatcher = null;
+
+    // ====== MONOBEHAVIOUR LIFECYCLE ======
+    protected virtual void Awake()
+    {
+        if (gameObject.name.Contains("Clone"))
+            gameObject.name = gameObject.name.Replace("(Clone)", "");
+
+        ID = ComputeID();
+        features = LoadFeatures();
+        Debug.Log("Assigning ID to status class " + this.GetType().Name);
+        this.dirty = true;
+    }
+
     public virtual void OnEnable()
     {
         mydispatcher = FindEffectDispatcherInParents(transform);
@@ -186,55 +45,128 @@ public abstract class AbstractStatus : MonoBehaviour
         }
     }
 
-
     public virtual void OnDisable() { }
 
-
-    protected virtual void Awake()
+    protected virtual void Update()
     {
-        // removes useless (Clone) from the name of the gameobject
-        if (gameObject.name.Contains("Clone"))
-            gameObject.name = gameObject.name.Replace("(Clone)", "");
+        ActivateEffects();
+        foreach (var ef in effectsToRemove)
+            activeEffects.Remove(ef);
 
-        ID = ComputeID();
-        features = LoadFeatures();
-        Debug.Log("Assigning ID to status class " + this.GetType().Name);
-        new ItemManager();
-        this.dirty = true;
+        effectsToRemove.Clear();
     }
 
-    /// <summary>
-    /// This method shall apply new values to attributes of this class referenced by their ID
-    /// <paramref name="id"/> ID of the attribute to change
-    /// <paramref name="newValue"/> new value to apply
-    /// </summary>
+    // ====== INIZIALIZZAZIONE / PARSING ======
+    public AbstractStatus() { }
+
+    protected abstract int ComputeID();
+
+    public Dictionary<int, Feature> LoadFeatures()
+    {
+        string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/Features.txt");
+        bool found = false;
+        bool hasBeenFound = false;
+        Dictionary<int, Feature> features = new();
+
+        foreach (var thisLine in lines)
+        {
+            var line = thisLine.Trim();
+            line = line.Split("//")[0];
+
+            if (found && line.Contains("##")) found = false;
+
+            if (found)
+            {
+                try
+                {
+                    string[] parts = line.Split("=");
+                    FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
+
+                    if (featureType == FeatureType.money || featureType == FeatureType.keys)
+                    {
+                        Debug.LogWarning("AbstractStatus: money and keys are special features, not customizable");
+                        continue;
+                    }
+
+                    parts = parts[1].Split("ID:");
+                    string value = parts[0].Trim();
+                    int ID = int.Parse(parts[1].Split("range:")[0].Trim());
+
+                    string rangeString = (parts[1].Split("range:").Length > 1) ? parts[1].Split("range:")[1].Trim() : null;
+                    string maxVal = null, minVal = null;
+
+                    if (rangeString != null)
+                    {
+                        maxVal = rangeString.Split("-")[1].Trim();
+                        minVal = rangeString.Split("-")[0].Trim();
+                    }
+
+                    if (int.TryParse(value, out _))
+                    {
+                        Feature f = new Feature(featureType, int.Parse(value), typeof(int));
+                        f.SetValue(int.Parse(value));
+                        if (maxVal != null)
+                        {
+                            f.maxVal = int.Parse(maxVal);
+                            f.minVal = int.Parse(minVal);
+                        }
+                        features.Add(ID, f);
+                    }
+                    else if (float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+                    {
+                        Feature f = new Feature(featureType, float.Parse(value, System.Globalization.CultureInfo.InvariantCulture), typeof(float));
+                        f.SetValue(float.Parse(value.Replace(" ", ""), System.Globalization.CultureInfo.InvariantCulture));
+                        if (maxVal != null)
+                        {
+                            f.maxVal = float.Parse(maxVal, System.Globalization.CultureInfo.InvariantCulture);
+                            f.minVal = float.Parse(minVal, System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        features.Add(ID, f);
+                    }
+                    else
+                    {
+                        Feature f = new Feature(featureType, bool.Parse(value), typeof(bool));
+                        f.SetValue(bool.Parse(value));
+                        features.Add(ID, f);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Abstract Status: Error in parsing line: " + line + " " + e.Message);
+                }
+            }
+
+            var name = symbolicName != null ? symbolicName : this.GetType().Name;
+            if (line.Contains("#" + this.gameObject.name + "-" + name))
+            {
+                found = true;
+                hasBeenFound = true;
+            }
+        }
+
+        return hasBeenFound ? features : new Dictionary<int, Feature>();
+    }
+
+    // ====== GESTIONE DELLE FEATURE ======
     public void SetStatByID(int id, object newValue)
     {
         features[id].SetValue(Convert.ChangeType(newValue, features[id].currentValue.GetType()));
         dirty = true;
     }
 
-    /// <summary>
-    /// This method shall resolve and return the value of a parameter by its ID
-    /// <paramref name="id"/> ID of the parameter to resolve
-    /// </summary>
     public T GetStatByID<T>(int id)
     {
         try
         {
             return (T)features[id].currentValue;
         }
-
         catch (KeyNotFoundException)
         {
-            Debug.LogError("invoked GetStatByID of object: " + this.GetType().Name
-            + " in gameobject " + this.gameObject.name + " for " + id +
-            " but the feature as not been assigned");
+            Debug.LogError($"GetStatByID: Feature ID {id} not found in {this.GetType().Name} on {this.gameObject.name}");
         }
         catch (InvalidCastException)
         {
-            Debug.LogError("invoked GestStatByID with id: " + id + " and type: " + typeof(T) +
-            " but the value is of type: " + features[id].currentValue.GetType());
+            Debug.LogError($"GetStatByID: Invalid cast for ID {id} in {this.GetType().Name}");
         }
 
         return default(T);
@@ -244,72 +176,54 @@ public abstract class AbstractStatus : MonoBehaviour
     {
         List<T> values = new List<T>();
 
-        foreach (var feature in features)
+        foreach (var feature in features.Values)
         {
-            if (feature.Value.id == type)
-            {
-                values.Add((T)feature.Value.currentValue);
-            }
+            if (feature.id == type)
+                values.Add((T)feature.currentValue);
         }
 
         return values.ToArray();
     }
 
-    /// <summary>
-    /// Attach an effect to this status class.
-    /// </summary>
-    /// <param name="effect"></param>
+    // ====== GESTIONE EFFETTI ======
     public virtual void AttachEffect(AbstractEffect effect)
     {
         this.activeEffects.Add(effect);
     }
 
-    /// <summary>
-    /// Remove an effect from this status class.
-    /// </summary>
-    /// <param name="effect"></param>
+    // dal momento che C# non consente di rimuover oggetti da una lista durante l'iterazione,
+    // si usa una lista temporanea per rimuovere gli effetti quando sono gli effetti stessi a richiedere l'eliminazione
     public virtual void RemoveEffect(AbstractEffect effect)
     {
         this.effectsToRemove.Add(effect);
     }
 
-    /// <summary>
-    /// Activate effect in the effect list
-    /// </summary>
     protected virtual void ActivateEffects()
     {
-        object toApply;
         try
         {
-
             foreach (var effect in activeEffects)
             {
                 int targetID = effect.targetAttributeID;
 
-                Feature target = features[targetID];
+                if (!features.TryGetValue(targetID, out var target))
+                    continue;
 
                 if (target.type == typeof(int))
                 {
-                    int inthelper = (int)features[targetID].currentValue;
-                    inthelper = Convert.ToInt32(effect.Activate(this));
-                    toApply = inthelper;
-                    target.SetValue(inthelper);
+                    int value = Convert.ToInt32(effect.Activate(this));
+                    target.SetValue(value);
                 }
                 else if (target.type == typeof(float))
                 {
-                    float? floathelper = (float)features[targetID].currentValue;
-                    floathelper = Convert.ToSingle(effect.Activate(this));
-
-                    floathelper = floathelper != -1 ? floathelper : (float)target.currentValue;
-
-                    target.SetValue(floathelper);
+                    float result = Convert.ToSingle(effect.Activate(this));
+                    result = result != -1 ? result : (float)target.currentValue;
+                    target.SetValue(result);
                 }
                 else if (target.type == typeof(bool))
                 {
-                    bool boolhelper = (bool)features[targetID].currentValue;
-                    boolhelper = (bool)effect.Activate(this);
-                    toApply = boolhelper;
-                    target.SetValue(boolhelper);
+                    bool result = (bool)effect.Activate(this);
+                    target.SetValue(result);
                 }
                 else
                 {
@@ -317,21 +231,13 @@ public abstract class AbstractStatus : MonoBehaviour
                 }
             }
         }
-        catch (KeyNotFoundException e)
+        catch (Exception e)
         {
-            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
+            Debug.LogWarning("AbstractStatus: Error during ActivateEffects - " + e.Message);
         }
-        catch (InvalidCastException e)
-        {
-            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
-        }
-        catch (ArgumentException e)
-        {
-            Debug.LogWarning("AbstractStatus: tried to apply effect to a non existing features, this might be a normal behaviour if intended");
-        }
-
-
     }
+
+    // ====== UTILITÀ ======
     private static EffectsDispatcher FindEffectDispatcherInParents(Transform start)
     {
         Transform current = start;
@@ -344,6 +250,6 @@ public abstract class AbstractStatus : MonoBehaviour
             current = current.parent;
         }
 
-        return null; // Nessun EffectDispatcher trovato
+        return null;
     }
 }

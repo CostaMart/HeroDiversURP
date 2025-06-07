@@ -17,8 +17,8 @@ public class InGameAmmoCountController : MonoBehaviour
     }
     void Update()
     {
-        int magCount = dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
-        int magSize = dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
+        int magCount = dispatcher.GetFeatureByType<int>(FeatureType.magCount).Sum();
+        int magSize = dispatcher.GetFeatureByType<int>(FeatureType.magSize).Sum();
         int currentAmmoIndex = weaponLogicContainer.currentAmmo;
 
         int currentAmmo = magSize - currentAmmoIndex;

@@ -70,7 +70,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         InitAmmoModifiers();
 
         // Initialize ammo count
-        magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
+        magCount = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magCount).Sum();
         timer = 0;
         chargeTimer = 0f;
     }
@@ -86,7 +86,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     public override void onFireStart()
     {
         // manage chargin sound if necessary
-        var chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
+        var chargeTime = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.chargeTime).Sum();
         if (!ChargingSoundPlaying && chargeTime > 0)
         {
             weaponContainer.audioMuzzleManager.EmitChargeSound(chargeTime);
@@ -104,7 +104,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
         if (!weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic))
         {
-            float chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
+            float chargeTime = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.chargeTime).Sum();
 
             if (chargeTime > 0f && chargeTimer >= chargeTime)
             {
@@ -138,10 +138,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
     bool ChargingSoundPlaying = false;
     public override void UpdateWeaponBehaviour()
     {
-        magCount = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum();
+        magCount = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magCount).Sum();
         CheckbulletsConsistency();
 
-        float chargeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.chargeTime).Sum();
+        float chargeTime = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.chargeTime).Sum();
         bool isAutomatic = weaponContainer.dispatcher.GetMostRecentFeatureValue<bool>(FeatureType.automatic);
 
         if (shooting)
@@ -186,7 +186,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     {
         if (weaponContainer.animations.reloading) return;
 
-        int magSize = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
+        int magSize = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magSize).Sum();
         if (weaponContainer.currentAmmo >= magSize)
         {
             if (!weaponContainer.audioMuzzleManager.isPlaying())
@@ -194,7 +194,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
             return;
         }
 
-        float fireDelay = 1f / weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.fireRate).Sum();
+        float fireDelay = 1f / weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.fireRate).Sum();
         if (Time.time - timer < fireDelay) return;
         timer = Time.time;
 
@@ -216,7 +216,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
             Rigidbody rb = bulletTrio.Item2;
             BulletLogic logic = bulletTrio.Item3;
 
-            var offset = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletOffsetSpawn).Sum();
+            var offset = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletOffsetSpawn).Sum();
             bulletToShoot.transform.position = weaponContainer.muzzle.position + weaponContainer.muzzle.forward * offset;
 
             int row = i / columns;
@@ -233,7 +233,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
             BulletSetUp(bulletToShoot, rb, logic);
             bulletToShoot.SetActive(true);
-            rb.linearVelocity = direction * weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletSpeed).Sum();
+            rb.linearVelocity = direction * weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletSpeed).Sum();
 
             weaponContainer.currentAmmo++;
             if (weaponContainer.currentAmmo >= magSize)
@@ -289,7 +289,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     private void CheckbulletsConsistency()
     {
-        int singleMagSize = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.magSize).Sum();
+        int singleMagSize = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magSize).Sum();
         while (weaponContainer.bullets.Count < singleMagSize * 5)
         {
             var newBull = Instantiate(bulletPrefab, weaponContainer.pool.transform);
@@ -311,22 +311,22 @@ public class FireWeaponLogic : AbstractWeaponLogic
             bulletLogic.onDestroyModifier = bulletPool[onExplodeKey];
 
         bulletLogic.dispatcher = weaponContainer.dispatcher;
-        bulletLogic.bulletLifeTime = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletLifeTime).Sum();
-        bulletLogic.MaxhitCount = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletHitNumber).Sum();
-        bulletLogic.maxDistance = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletMaxDistance).Sum();
-        bulletLogic.followSomething = weaponContainer.dispatcher.GetAllFeatureByType<int>(FeatureType.bulletFollowTarget).LastOrDefault();
-        bulletLogic.resetOnFireRelease = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.resetOnFireRelease).LastOrDefault();
-        bulletLogic.bounciness = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletBounciness).Sum();
-        bulletLogic.tickRate = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletTickRate).Sum();
-        bulletLogic.antigravitational = weaponContainer.dispatcher.GetAllFeatureByType<bool>(FeatureType.antigravitational).LastOrDefault();
-        bulletLogic.speed = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletDeviationSpeed).Sum();
-        bulletLogic.destroyExplosionRadius = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.bulletDestructionExplosionRadius).Sum();
+        bulletLogic.bulletLifeTime = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletLifeTime).Sum();
+        bulletLogic.MaxhitCount = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletHitNumber).Sum();
+        bulletLogic.maxDistance = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletMaxDistance).Sum();
+        bulletLogic.followSomething = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.bulletFollowTarget).LastOrDefault();
+        bulletLogic.resetOnFireRelease = weaponContainer.dispatcher.GetFeatureByType<bool>(FeatureType.resetOnFireRelease).LastOrDefault();
+        bulletLogic.bounciness = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletBounciness).Sum();
+        bulletLogic.tickRate = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletTickRate).Sum();
+        bulletLogic.antigravitational = weaponContainer.dispatcher.GetFeatureByType<bool>(FeatureType.antigravitational).LastOrDefault();
+        bulletLogic.speed = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletDeviationSpeed).Sum();
+        bulletLogic.destroyExplosionRadius = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletDestructionExplosionRadius).Sum();
         bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(
-            weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.widthScale).Sum(),
-            weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.heightScale).Sum(),
-            weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.lengthScale).Sum());
+            weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.widthScale).Sum(),
+            weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.heightScale).Sum(),
+            weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.lengthScale).Sum());
 
         b.transform.localScale = newScale;
         bulletLogic.ThisTrio = (b, rb, bulletLogic);
@@ -335,10 +335,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     private void ApplyRecoil()
     {
-        float vertical = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
-        float horizontal = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilStrengthLateral).Sum();
-        float recoilRecvoerySp = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilRecoverySpeed).Sum();
-        float recoilMax = weaponContainer.dispatcher.GetAllFeatureByType<float>(FeatureType.recoilMax).Sum();
+        float vertical = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.recoilStrengthVertical).Sum();
+        float horizontal = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.recoilStrengthLateral).Sum();
+        float recoilRecvoerySp = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.recoilRecoverySpeed).Sum();
+        float recoilMax = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.recoilMax).Sum();
 
         weaponContainer.cameraController.ApplyRecoil(vertical, horizontal, recoilMax, recoilRecvoerySp);
     }

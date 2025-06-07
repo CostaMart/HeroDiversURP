@@ -11,6 +11,6 @@ public class AimFollowReference : MonoBehaviour
     {
 
         transform.position = Vector3.Lerp(transform.position, aimTransform.position,
-        dispatcher.GetAllFeatureByType<float>(FeatureType.aimRotationSpeed).Sum() * Time.fixedDeltaTime);
+        dispatcher.GetFeatureByType<float>(FeatureType.aimRotationSpeed).Sum() * Time.fixedDeltaTime);
     }
 }

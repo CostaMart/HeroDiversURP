@@ -20,7 +20,7 @@ public class Seller : MonoBehaviour
     private GameObject guiCam;
     float offset = 0f;
     int rigtOrLeft = 1;
-    List<ItemManager.Item> it;
+    List<ItemManager.EnrichedModifier> it;
     private InteractiveShopMan shopMan;
     private GameObject shopManContainer;
     private PlayerInput input;
@@ -30,7 +30,7 @@ public class Seller : MonoBehaviour
     {
         ReadSellingPool();
         var itemNum = Random.Range(itemNumRange.Item1, itemNumRange.Item2);
-        it = new List<ItemManager.Item>();
+        it = new List<ItemManager.EnrichedModifier>();
 
         for (var x = 0; x < itemNum; x++)
         {
@@ -123,7 +123,7 @@ public class Seller : MonoBehaviour
     /// removes an item from the pool of this seller, used when the item is sold
     /// </summary>
     /// <param name="item"></param>
-    public void Sold(ItemManager.Item item)
+    public void Sold(ItemManager.EnrichedModifier item)
     {
         this.it.Remove(item);
     }

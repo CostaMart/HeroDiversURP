@@ -11,6 +11,7 @@ public class PauseSettingsManager : MonoBehaviour
     bool pause = false;
     void Awake()
     {
+        // just to force the ItemManager to be loaded
         float valueInDb = PlayerPrefs.GetFloat("sfxVolume", 1f);
         audioMixer.SetFloat("SFX", valueInDb);
 

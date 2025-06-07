@@ -16,8 +16,8 @@ public class Health : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var h = dispatcher.GetAllFeatureByType<float>(FeatureType.health).Sum();
-        var max = dispatcher.GetAllFeatureByType<float>(FeatureType.maxHealth).Sum();
+        var h = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum();
+        var max = dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum();
         var x = 100 * (h / max);
 
         health.fillAmount = x / empty;

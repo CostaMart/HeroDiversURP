@@ -9,24 +9,29 @@ using Random = System.Random;
 /// <summary>
 /// This class converts the JSON file into a list of items
 /// </summary>
-public class ItemManager
+[DefaultExecutionOrder(-100)]
+public class ItemManager : MonoBehaviour
 {
-    public int id;
-    public List<AbstractEffect> effects;
+
+
+    private static ItemManager instance = null;
+    public static ItemManager Instance
+    {
+        get
+        {
+            return Instance;
+        }
+    }
+
     public static Dictionary<string, int> statClassToIdRegistry;
-    public bool added = false;
-    ItemIconsList list;
-
-
-    public static Dictionary<int, Item> globalItemPool = new Dictionary<int, Item>(); /// this contains all the items created by the game from the JSON file
+    public static Dictionary<int, EnrichedModifier> globalItemPool = new Dictionary<int, EnrichedModifier>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
-
-    public static object Collider { get; internal set; }
-
     /// this contains all the items created by the game from the JSON file 
 
-    static ItemManager()
+    private void Awake()
     {
+        DontDestroyOnLoad(this.gameObject);
+
         // Initialize the statClass dictionary with some values
         statClassToIdRegistry = new Dictionary<string, int>
         {
@@ -44,8 +49,19 @@ public class ItemManager
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);
         bulletPool = ComputeAllBullets(Application.streamingAssetsPath + "/gameConfig/Bullets.json");
 
-        Debug.Log("items compiled");
+    }
 
+    void Start()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     /// <summary>
@@ -53,7 +69,7 @@ public class ItemManager
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static Dictionary<int, Item> ComputeAllItems(string path, bool isbullet)
+    public static Dictionary<int, EnrichedModifier> ComputeAllItems(string path, bool isbullet)
     {
         Debug.Log("ComputeAnItem called");
 
@@ -67,14 +83,14 @@ public class ItemManager
         // stadio molto prototipale, hardcoded la crezione di questo specifico tipo di effetto
         // ma i parametri sono presi dinamicaente dal file JSON
         // Accesso ai dati
-        Dictionary<int, Item> itemsCollection = new Dictionary<int, Item>();
+        Dictionary<int, EnrichedModifier> itemsCollection = new Dictionary<int, EnrichedModifier>();
 
 
         try
         {
             foreach (var itemFromData in data.mods)  // per ogni item json
             {
-                Item itemInCreation = new Item();
+                EnrichedModifier itemInCreation = new EnrichedModifier();
                 var modifier = new Modifier
                 {
                     effects = new List<AbstractEffect>()
@@ -84,9 +100,16 @@ public class ItemManager
                 itemInCreation.id = itemFromData.id;
                 itemInCreation.gameIconId = itemFromData.gameIconId;
                 itemInCreation.inGamePrice = itemFromData.inGamePrice;
+                itemInCreation.astroCreditPrice = itemFromData.astroCreditPrice;
                 itemInCreation.description = itemFromData.description;
                 modifier.bullet = isbullet;
                 int effectID = 0;
+
+
+                //check if this item is free or unlockable 
+                if (itemFromData.requiresUnlocking) // item designed as locked, check if it has been unlocked by the player, 1 means unlocked
+                    itemInCreation.locked = PlayerPrefs.GetInt($"unlocked: {itemInCreation.id}", 0) == 0 ? true : false;
+                else itemInCreation.locked = false; // item designed as free, so it is not locked
 
                 foreach (var effect in itemFromData.effects) // per ogni effetto nella lista
                 {
@@ -216,16 +239,19 @@ public class ItemManager
 
 
     /// <summary>
-    /// given a pool of indexes, it returns a random item from the pool
+    /// given a pool index, it returns the item if the drop is successful, null otherwise.
     /// </summary>
     /// <param name="poolIndexes"></param>
     /// <returns></returns>
-    public static Item DropFromPool(int[] indexes, int[] raritiesVals)
+    public static EnrichedModifier DropFromPool(int[] indexes, int[] raritiesVals)
     {
         Random rand = new Random();
         var total = raritiesVals.Sum();
         var choosen = rand.Next(0, total);
         var rarityRange = 0;
+
+        // la selezione del drop viene fatta solo sugli item non bloccati
+        if (globalItemPool[indexes[0]].locked) return null;
 
         for (int i = 0; i < raritiesVals.Length; i++)
         {
@@ -243,6 +269,20 @@ public class ItemManager
             throw new Exception("ItemManager: Unable to select an item to drop, rarities are null");
 
         throw new Exception("ItemManager: Unable to select an item to drop");
+    }
+
+    public static void UnlockItem(int itemId)
+    {
+        if (globalItemPool.ContainsKey(itemId))
+        {
+            globalItemPool[itemId].locked = false;
+            PlayerPrefs.SetInt($"unlocked: {itemId}", 1); // set the item as unlocked
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            Debug.LogError($"Item with ID {itemId} does not exist in the global item pool.");
+        }
     }
 
 
@@ -271,7 +311,8 @@ public class ItemManager
     {
         public int id;
         public string name;
-        public bool isBullet;
+        public float astroCreditPrice;
+        public bool requiresUnlocking; // if true, the item is locked and must be unlocked by the player
         public int inGamePrice;
         public string description;
         public int gameIconId;
@@ -279,12 +320,14 @@ public class ItemManager
     }
 
     /// <summary>
-    /// represents an item in the game
+    /// this represents a modifer with supplementary information that can be incapsulted in an item.
     /// </summary>
-    public class Item
+    public class EnrichedModifier
     {
         public int id;
         public string name;
+        public float astroCreditPrice;
+        public bool locked;
         public int inGamePrice;
         public string description;
         public int gameIconId;
@@ -298,6 +341,8 @@ public class ItemManager
 /// <summary>
 /// represents a modifier, which is a collection of effects
 /// can be applied to a target.
+/// This class is used for pure modifers that will not be used as items.
+/// e.g. climate change modifier
 /// </summary>
 public class Modifier
 {

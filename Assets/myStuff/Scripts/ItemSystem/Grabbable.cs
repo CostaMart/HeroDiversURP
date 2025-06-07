@@ -9,7 +9,7 @@ using static UnityEngine.InputSystem.InputAction;
 public class Grabbable : MonoBehaviour
 {
     public TMP_Text text;
-    public Item item;
+    public EnrichedModifier item;
     private bool active = false;
     private bool inRange = false;
     public bool selling = false;

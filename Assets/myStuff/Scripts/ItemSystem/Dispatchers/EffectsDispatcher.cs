@@ -6,7 +6,6 @@ using UnityEngine;
 using Weapon.State;
 using static ItemManager;
 
-[DefaultExecutionOrder(-100)]
 /// <summary>
 /// This component is responsible for dispatching the effects to the correct classes, and serves as a
 /// bridge between the upgrades and all the gameobject components which could be useful to implement effects
@@ -34,8 +33,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
 
     void Start()
     {
-        new ItemManager();
-
         // register the dispatcher for dipsatching effects
         if (bulletPoolPrimary != null)
             this.affectables.Add(bulletPoolPrimary.ID, bulletPoolPrimary);
@@ -188,7 +185,7 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// <typeparam name="T"></typeparam>
     /// <param name="f"></param>
     /// <returns></returns>
-    public T[] GetAllFeatureByType<T>(FeatureType f)
+    public T[] GetFeatureByType<T>(FeatureType f)
     {
         return affectables.Values
             .Where(status => enabledStatClass.ContainsKey(status.ID) && enabledStatClass[status.ID])

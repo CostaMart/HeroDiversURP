@@ -124,7 +124,7 @@ public class Dropper : MonoBehaviour
     {
         Debug.Log("dropping");
         if (!inRange) return;
-        Item it = null;
+        EnrichedModifier it = null;
         used = true;
 
 
@@ -148,12 +148,14 @@ public class Dropper : MonoBehaviour
         foreach (var item in fixedDropPool)
         {
             it = DropFromPool(new int[] { item }, new int[] { 100 });
+            if (it == null) continue;
             Drop(it);
         }
 
         for (int i = 0; i < numbersOfDrops; i++)
         {
             it = DropFromPool(pool, rarities);
+            if (it == null) continue;
             Drop(it);
         }
     }
@@ -165,7 +167,7 @@ public class Dropper : MonoBehaviour
         helper.HideMessage();
     }
 
-    private void Drop(Item it)
+    private void Drop(EnrichedModifier it)
     {
         GameObject prefab = Resources.Load("prefabs/ItemContainer") as GameObject;
         GameObject container = Instantiate(prefab, spawn.position, Quaternion.identity);

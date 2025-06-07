@@ -9,7 +9,7 @@ public class ShopItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private Image image;
     private Color originalColor;
     public Color highlightColor = Color.yellow;
-    public Item item;
+    public EnrichedModifier item;
     private bool bought = false;
     public EffectsDispatcher dispatcher;
     public Seller seller;

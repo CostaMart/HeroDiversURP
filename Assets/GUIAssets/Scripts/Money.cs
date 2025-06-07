@@ -10,6 +10,6 @@ public class Money : MonoBehaviour
 
     void Update()
     {
-        text.text = dispatcher.GetAllFeatureByType<int>(FeatureType.money).Aggregate((a, b) => a + b).ToString();
+        text.text = dispatcher.GetFeatureByType<int>(FeatureType.money).Aggregate((a, b) => a + b).ToString();
     }
 }

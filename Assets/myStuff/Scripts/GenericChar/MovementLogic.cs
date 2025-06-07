@@ -100,7 +100,7 @@ public class MovementLogic : MonoBehaviour
 
     void Start()
     {
-        jumpsAvailable = dispatcher.GetAllFeatureByType<int>(FeatureType.maxJumps).Sum();
+        jumpsAvailable = dispatcher.GetFeatureByType<int>(FeatureType.maxJumps).Sum();
         col = GetComponent<Collider>();
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -110,7 +110,7 @@ public class MovementLogic : MonoBehaviour
     {
         if (rb.isKinematic) return;
 
-        temperature = dispatcher.GetAllFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum();
+        temperature = dispatcher.GetFeatureByType<float>(FeatureType.heat).DefaultIfEmpty(10).Sum();
 
         HandleMovement();
         HandleStrafeCooldown();
@@ -152,7 +152,7 @@ public class MovementLogic : MonoBehaviour
         }
         else if (direction != Vector3.zero)
         {
-            float rotSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.rotationSpeed)
+            float rotSpeed = dispatcher.GetFeatureByType<float>(FeatureType.rotationSpeed)
                 .DefaultIfEmpty(defaultRotationSpeed).Sum();
 
             targetRotation = Quaternion.LookRotation(direction);
@@ -161,12 +161,12 @@ public class MovementLogic : MonoBehaviour
 
         if (allowMovement)
         {
-            float moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.speed).DefaultIfEmpty(defaultSpeed).Sum();
+            float moveSpeed = dispatcher.GetFeatureByType<float>(FeatureType.speed).DefaultIfEmpty(defaultSpeed).Sum();
             float speedMultiplier = 1f;
 
             if (isBursting)
             {
-                moveSpeed = dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum();
+                moveSpeed = dispatcher.GetFeatureByType<float>(FeatureType.strafePower).Sum();
                 speedMultiplier = 10f;
                 isGrounded = false;
             }
@@ -194,9 +194,9 @@ public class MovementLogic : MonoBehaviour
         direction.y = 0;
         direction.Normalize();
 
-        float jumpForceVertical = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedy)
+        float jumpForceVertical = dispatcher.GetFeatureByType<float>(FeatureType.jumpSpeedy)
             .DefaultIfEmpty(5f).Sum();
-        float jumpForceHorizontal = dispatcher.GetAllFeatureByType<float>(FeatureType.jumpSpeedx)
+        float jumpForceHorizontal = dispatcher.GetFeatureByType<float>(FeatureType.jumpSpeedx)
             .DefaultIfEmpty(0f).Sum();
 
         rb.linearVelocity = new Vector3(
@@ -216,7 +216,7 @@ public class MovementLogic : MonoBehaviour
 
     private void HandleStrafeCooldown()
     {
-        var strafeCooldownFeat = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeCooldown)
+        var strafeCooldownFeat = dispatcher.GetFeatureByType<float>(FeatureType.strafeCooldown)
             .DefaultIfEmpty(strafeCooldown).Sum();
 
         if (usedStrafes > 0)
@@ -232,7 +232,7 @@ public class MovementLogic : MonoBehaviour
 
     private void HandleBurstTimer()
     {
-        var burstDurationFeat = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeBurstDuration)
+        var burstDurationFeat = dispatcher.GetFeatureByType<float>(FeatureType.strafeBurstDuration)
             .DefaultIfEmpty(burstDuration).Sum();
 
         if (isBursting)
@@ -264,7 +264,7 @@ public class MovementLogic : MonoBehaviour
     public void TryStrafe(CallbackContext ctx)
     {
 
-        if (dispatcher.GetAllFeatureByType<float>(FeatureType.strafePower).Sum() == 0)
+        if (dispatcher.GetFeatureByType<float>(FeatureType.strafePower).Sum() == 0)
         {
             burstEngineFail.Invoke();
             return; // non puoi strafeare se la velocità di strafe è 0
@@ -278,7 +278,7 @@ public class MovementLogic : MonoBehaviour
             return;
         }
 
-        if (usedStrafes < dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
+        if (usedStrafes < dispatcher.GetFeatureByType<int>(FeatureType.maxStrafes).DefaultIfEmpty(maxStrafes).Sum())
         {
 
             isBursting = true;
@@ -318,7 +318,7 @@ public class MovementLogic : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("terrain"))
         {
-            jumpsAvailable = dispatcher.GetAllFeatureByType<int>(FeatureType.maxJumps).Sum();
+            jumpsAvailable = dispatcher.GetFeatureByType<int>(FeatureType.maxJumps).Sum();
             isGrounded = true;
         }
     }

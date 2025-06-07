@@ -37,7 +37,7 @@ public class Heatindicator : MonoBehaviour
 
     void Update()
     {
-        float maxHeat = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).DefaultIfEmpty(100).Sum();
+        float maxHeat = dispatcher.GetFeatureByType<float>(FeatureType.overHeatLimit).DefaultIfEmpty(100).Sum();
         float heatPercent = logic.temperature / maxHeat;
 
         if (logic.temperature >= maxHeat && !alarmed)

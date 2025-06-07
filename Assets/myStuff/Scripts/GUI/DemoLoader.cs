@@ -24,11 +24,17 @@ public class DemoLoader : MonoBehaviour
 
     private Vector3 originalCameraPosition;
     private bool loading = false;
+    public GameObject unlockpanel;
 
     public void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
+    }
+
+    public void OEnable()
+    {
+        unlockpanel.SetActive(false);
     }
     public void LoadDemo()
     {
@@ -110,5 +116,10 @@ public class DemoLoader : MonoBehaviour
         }
 
         mainCamera.transform.localPosition = originalCameraPosition;
+    }
+
+    public void OnUnlockPanelButtonPressed()
+    {
+        unlockpanel.SetActive(true);
     }
 }

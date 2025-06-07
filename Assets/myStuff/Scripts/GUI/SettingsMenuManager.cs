@@ -6,6 +6,7 @@ public class SettingsMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject settingsMenu;
     [SerializeField] private GameObject startButton;
+    [SerializeField] private GameObject unlockPanel;
 
     public void OnButtonPressed()
     {
@@ -22,6 +23,8 @@ public class SettingsMenuManager : MonoBehaviour
             this.gameObject.GetComponent<UnityEngine.UI.Button>().interactable = true;
         }
     }
+
+
 
     public void OnSavePress()
     {

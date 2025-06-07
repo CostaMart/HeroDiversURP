@@ -316,7 +316,7 @@ public class BulletLogic : MonoBehaviour
         hiteffectTransform.position = collision.contacts[0].point;
 
         // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
-        hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+        hiteffectTransform.localScale = Vector3.one * dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
         hitEffect.Play();
 
         if (bounciness != 0)
@@ -365,8 +365,8 @@ public class BulletLogic : MonoBehaviour
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
 
             // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
-            var radius = dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
-            hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+            var radius = dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
+            hiteffectTransform.localScale = Vector3.one * dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
             hitEffect.Play();
 
 
@@ -411,7 +411,7 @@ public class BulletLogic : MonoBehaviour
 
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
-            var radius = dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
+            var radius = dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
 
             // Imposta il raggio dell'effetto in base al raggio di esplosione
             hiteffectTransform.localScale = Vector3.one * radius;
@@ -519,7 +519,7 @@ public class BulletLogic : MonoBehaviour
                     if (col.TryGetComponent<EffectsDispatcher>(out var d))
                     {
 
-                        if (d.GetAllFeatureByType<bool>(FeatureType.antiExplosionSuit).Last()) continue;
+                        if (d.GetFeatureByType<bool>(FeatureType.antiExplosionSuit).Last()) continue;
                         d.AttachModifierFromOtherDispatcher(dispatcher, mod);
                     }
                 }

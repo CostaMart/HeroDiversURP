@@ -8,12 +8,12 @@ public class EconomyManager : MonoBehaviour
     [SerializeField] private EffectsDispatcher dispatcher;
     [SerializeField] private Modifier transactionModifier;
 
-
-    private bool ModifyMoney(int amount, bool isKeyTransaction)
+    // only exectued in trasnaction with vendors
+    private bool ModifyMoney(int amount, bool isAstroCreditsTransaction)
     {
         var stat = 100;
-        if (isKeyTransaction)
-            stat = 101;
+        if (isAstroCreditsTransaction)
+            stat = 102;
 
         Dictionary<string, string> data = new Dictionary<string, string> {
             {"targetType", "ext"},
@@ -37,16 +37,16 @@ public class EconomyManager : MonoBehaviour
 
     public bool TryBuyItem(int cost, bool isKeyTransaction)
     {
-        if (dispatcher.GetAllFeatureByType<int>(FeatureType.money).Sum() < cost)
+        if (dispatcher.GetFeatureByType<int>(FeatureType.money).Sum() < cost)
             return false;
 
         ModifyMoney(-cost, isKeyTransaction);
         return true;
     }
 
-    public bool GetMoney(int cost, bool isKeyTransaction)
+    public float GetTotalAstroCredits()
     {
-        ModifyMoney(cost, isKeyTransaction);
-        return true;
+        return dispatcher.GetFeatureByType<float>(FeatureType.astroCredits).Sum();
     }
+
 }

@@ -112,10 +112,10 @@ public class HeatStats : AbstractStatus
     private void Update()
     {
         base.Update();
-        var heatInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.heatingRate).Sum();
-        var coolingInterval = 1 / dispatcher.GetAllFeatureByType<float>(FeatureType.coolingRate).Sum();
-        var currentHeatLvl = dispatcher.GetAllFeatureByType<float>(FeatureType.heat).Sum();
-        var overHeatLimit = dispatcher.GetAllFeatureByType<float>(FeatureType.overHeatLimit).Sum();
+        var heatInterval = 1 / dispatcher.GetFeatureByType<float>(FeatureType.heatingRate).Sum();
+        var coolingInterval = 1 / dispatcher.GetFeatureByType<float>(FeatureType.coolingRate).Sum();
+        var currentHeatLvl = dispatcher.GetFeatureByType<float>(FeatureType.heat).Sum();
+        var overHeatLimit = dispatcher.GetFeatureByType<float>(FeatureType.overHeatLimit).Sum();
 
 
 

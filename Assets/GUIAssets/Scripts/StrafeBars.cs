@@ -33,7 +33,7 @@ public class StrafeBars : MonoBehaviour
 
     void Start()
     {
-        var strafes = dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes)
+        var strafes = dispatcher.GetFeatureByType<int>(FeatureType.maxStrafes)
                 .DefaultIfEmpty(movementLogic.maxStrafes).Sum();
 
         for (int i = 0; i <= strafes * 2; i++)
@@ -164,7 +164,7 @@ public class StrafeBars : MonoBehaviour
 
     void Update()
     {
-        magCount.text = $"{dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).DefaultIfEmpty(0).Sum()}";
+        magCount.text = $"{dispatcher.GetFeatureByType<int>(FeatureType.magCount).DefaultIfEmpty(0).Sum()}";
 
         img.color = original;
         burstIndicator.color = original;
@@ -181,7 +181,7 @@ public class StrafeBars : MonoBehaviour
         }
 
 
-        maxStrafes = dispatcher.GetAllFeatureByType<int>(FeatureType.maxStrafes)
+        maxStrafes = dispatcher.GetFeatureByType<int>(FeatureType.maxStrafes)
             .DefaultIfEmpty(movementLogic.maxStrafes).Sum();
 
         if (maxStrafes > indicatorContainer.transform.childCount)
@@ -201,7 +201,7 @@ public class StrafeBars : MonoBehaviour
 
         if (movementLogic.usedStrafes > 0)
         {
-            cooldown = dispatcher.GetAllFeatureByType<float>(FeatureType.strafeCooldown)
+            cooldown = dispatcher.GetFeatureByType<float>(FeatureType.strafeCooldown)
                 .DefaultIfEmpty(movementLogic.strafeCooldown).Sum();
 
             img.fillAmount = movementLogic.strafeTimer / cooldown;

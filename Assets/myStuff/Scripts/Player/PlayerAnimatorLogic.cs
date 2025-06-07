@@ -186,14 +186,14 @@ public class PlayerAnimatorLogic : MonoBehaviour
     int reloadSpeedHash = Animator.StringToHash("ReloadMultiplier");
     void ReloadAnimate(CallbackContext ctx)
     {
-        if (dispatcher.GetAllFeatureByType<int>(FeatureType.magCount).Sum() <= 0)
+        if (dispatcher.GetFeatureByType<int>(FeatureType.magCount).Sum() <= 0)
             return;
 
         if (aiming)
             return;
 
         var duration = reloadAnimation.averageDuration;
-        var speed = duration / dispatcher.GetAllFeatureByType<float>(FeatureType.reloadTime).Sum();
+        var speed = duration / dispatcher.GetFeatureByType<float>(FeatureType.reloadTime).Sum();
         animator.SetFloat(reloadSpeedHash, speed);
         animator.SetBool(reloadHash, true);
         this.reloading = true;

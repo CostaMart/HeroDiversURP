@@ -7,6 +7,7 @@ using UnityEngine;
 [System.Serializable]
 public class CharStats : AbstractStatus
 {
+    [SerializeField] private bool isPlayer = false;
 
 
     protected new void Awake()
@@ -14,8 +15,12 @@ public class CharStats : AbstractStatus
         base.Awake();
 
         // money e keys feature trattate in modo speciale, solo a charstats è consentito averle
-        features.Add(100, new Feature(FeatureType.money, 100, typeof(int)));
-        features.Add(101, new Feature(FeatureType.keys, 100, typeof(int)));
+        if (isPlayer)
+        {
+            features.Add(100, new Feature(FeatureType.money, 100, typeof(int)));
+            features.Add(101, new Feature(FeatureType.keys, 100, typeof(int)));
+            features.Add(102, new Feature(FeatureType.astroCredits, PlayerPrefs.GetFloat("astroCredits", 0), typeof(int)));
+        }
     }
     protected override int ComputeID()
     {

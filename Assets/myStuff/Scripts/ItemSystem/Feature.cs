@@ -85,6 +85,7 @@ public enum FeatureType
 
     // === Economy ===
     money,
+    astroCredits,
 
     // === Misc ===
     keys,
