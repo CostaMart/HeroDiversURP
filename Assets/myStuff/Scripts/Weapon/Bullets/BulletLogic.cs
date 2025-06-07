@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Weapon.State;
 using Vector3 = UnityEngine.Vector3;
 
@@ -44,9 +46,11 @@ public class BulletLogic : MonoBehaviour
     // if 0 bullet has no hit limit
     private Transform hiteffectTransform;
     private ParticleSystem hitEffect;
+    private EffectReset hitReset;
 
     private Transform exploderTransform;
     private ParticleSystem explodeVfX;
+    private EffectReset explodeReset;
 
     public float maxDistance = 1000f;
     public int followSomething = 0;
@@ -69,6 +73,7 @@ public class BulletLogic : MonoBehaviour
     public Vector3 stopPointWithRespectToPlayer = Vector3.zero; // where the bullet should stop if it is following something
     float homingTimer = 0f;
     bool followTargetSet = false;
+    bool checkCollisions = true; // if false, the bullet will not check for collisions, useful for sticky bullets
 
     public float destroyExplosionRadius = 0f; // radius of the explosion, can be modified by the weapon
     public Modifier onDestroyModifier; // modifier to apply on explosion, can be modified by the weapon
@@ -90,11 +95,13 @@ public class BulletLogic : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         initialPos = transform.position;
 
-        hitEffect = transform.GetChild(0).GetComponent<ParticleSystem>();
-        hiteffectTransform = transform.GetChild(0);
+        hiteffectTransform = transform.GetChild(0).GetChild(0);
+        hitEffect = hiteffectTransform.GetComponent<ParticleSystem>();
+        hitReset = hiteffectTransform.GetComponent<EffectReset>();
 
-        explodeVfX = transform.GetChild(1).GetComponent<ParticleSystem>();
-        exploderTransform = transform.GetChild(1);
+        exploderTransform = transform.GetChild(0).GetChild(1);
+        explodeVfX = exploderTransform.GetComponent<ParticleSystem>();
+        explodeReset = exploderTransform.GetComponent<EffectReset>();
 
 
         bulletLayer = LayerMask.NameToLayer("Bullets");
@@ -299,6 +306,7 @@ public class BulletLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+
         Debug.Log("got a collission my freind, hit count is     " + bulletHitCount + " and max is " + MaxhitCount);
         Debug.Log("Collision with: " + collision.gameObject.name);
 
@@ -309,7 +317,6 @@ public class BulletLogic : MonoBehaviour
 
         // vorrei cambiare il raggio dell'effetto in base al raggio di esplosione del proiettile
         hiteffectTransform.localScale = Vector3.one * dispatcher.GetAllFeatureByType<float>(FeatureType.explosionRadius).Sum();
-
         hitEffect.Play();
 
         if (bounciness != 0)
@@ -325,13 +332,9 @@ public class BulletLogic : MonoBehaviour
 
                 bulletHitCount++;
 
-            if (sticky && bulletHitCount == MaxhitCount)
+            if (sticky)
             {
-                bulletHitCount++;
-                this.transform.SetParent(collision.transform);
-                rb.linearVelocity = Vector3.zero;
-                rb.isKinematic = true;
-                return;
+                TryStick(collision.contacts[0].point, collision.transform);
             }
 
 
@@ -349,6 +352,7 @@ public class BulletLogic : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
         if (bounciness == 0)
         {
 
@@ -371,13 +375,9 @@ public class BulletLogic : MonoBehaviour
 
             bulletHitCount++;
 
-            if (sticky && bulletHitCount == MaxhitCount)
+            if (sticky)
             {
-                bulletHitCount++;
-                this.transform.SetParent(other.transform);
-                rb.linearVelocity = Vector3.zero;
-                rb.isKinematic = true;
-                return;
+                TryStick(other.ClosestPointOnBounds(transform.position), other.transform);
             }
 
             if (bulletHitCount == MaxhitCount && MaxhitCount != -1) // -1 is not limit
@@ -392,7 +392,7 @@ public class BulletLogic : MonoBehaviour
 
 
     // Timer interno per controllare la cadenza
-    private float triggerStayTimer = 0.4f;
+    private float triggerStayTimer = 0f;
 
     private void OnTriggerStay(Collider other)
     {
@@ -419,15 +419,6 @@ public class BulletLogic : MonoBehaviour
 
             //applica l'effeto al bnersaglio colpito e se c'è una esplosione applica l'effetto di esplosione
             ApplyEffect(other.GetComponent<EffectsDispatcher>());
-            Explode(hiteffectTransform.position, other, radius, onHitModifier);
-
-
-            bulletHitCount++;
-            if (bulletHitCount >= MaxhitCount && MaxhitCount != -1) // -1 = infinito
-            {
-                Debug.Log("Bullet ha raggiunto il limite di colpi (trigger). Reset.");
-                ResetBullet();
-            }
         }
     }
 
@@ -442,6 +433,9 @@ public class BulletLogic : MonoBehaviour
     /// </summary>
     private void ResetBullet()
     {
+        explodeReset.StartResetTimer();
+        hitReset.StartResetTimer();
+
         if (isReset) return;
         isReset = true;
 
@@ -499,11 +493,13 @@ public class BulletLogic : MonoBehaviour
     public void Explode(Vector3 position, Collider toExclude, float radius, Modifier mod)
     {
 
+
         exploderTransform.SetParent(null);
         exploderTransform.position = position;
         exploderTransform.localScale = Vector3.one * radius;
         explodeVfX.Play();
         explosionAudioSource.PlayOneShot(explosionAudioClip);
+
         if (radius <= 0) return; // no explosion radius, no effect
 
         if (onDestroyModifier != null)
@@ -536,4 +532,19 @@ public class BulletLogic : MonoBehaviour
     }
 
 
+    private void TryStick(Vector3 positionTostick, Transform targetToStickTo)
+    {
+        if (bulletHitCount == MaxhitCount)
+        {
+            bulletHitCount++;
+            this.transform.SetParent(targetToStickTo);
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true;
+            c.enabled = false; // disable the collider to avoid further collisions
+            transform.position = positionTostick;
+            checkCollisions = false;
+            return;
+        }
+
+    }
 }

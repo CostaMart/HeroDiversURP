@@ -187,8 +187,38 @@
                 },
                 {
                     "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.11",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.12",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.13",
+                    "expr": "50.0"
+                },
+                {
+                    "effectType": "sa",
                     "target": "@PrimaryWeaponStats.22",
-                    "expr": "2"
+                    "expr": "1"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.6",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "1.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.10",
+                    "expr": "1.0"
                 },
                 {
                     "effectType": "sa",

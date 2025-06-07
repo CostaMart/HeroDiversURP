@@ -18,6 +18,7 @@ public class InteractiveShopMan : MonoBehaviour
     [SerializeField] EconomyManager economyManager;
     Item[] items;
     Seller seller;
+    CursorLockMode last;
 
 
     public void Start()
@@ -27,6 +28,7 @@ public class InteractiveShopMan : MonoBehaviour
 
     public void StartShopGui()
     {
+        last = Cursor.lockState;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         shopMenu.SetActive(true);
@@ -36,7 +38,7 @@ public class InteractiveShopMan : MonoBehaviour
 
         playerInput.actions["Esc"].performed -= CloseShopGui;
         playerInput.SwitchCurrentActionMap("Player");
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = last;
         Cursor.visible = false;
 
         foreach (Transform child in shopMenu.transform)

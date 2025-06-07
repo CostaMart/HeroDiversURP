@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 5974170837743034523}
   - component: {fileID: 3160611884731711461}
   - component: {fileID: 6923212239165406072}
-  - component: {fileID: 5193753982566843707}
-  - component: {fileID: 7111960373640172346}
   - component: {fileID: 2555534038968826511}
   m_Layer: 10
   m_Name: AlienFighter
@@ -89,46 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5193753982566843707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3683212510054738694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b9df8e986d41314f8592806407e890e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7111960373640172346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3683212510054738694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e61e647d69007b49befcdbb38681938, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectId: AlienFighter
-  angularSpeed: 90
-  maxPitchAngle: 40
-  waitAtWaypointTime: 2
-  patrolRadius: 10
-  patrolCount: 5
-  minDistance: 2
-  viewRange: 30
-  viewAngle: 60
-  detectionRange: 2
-  pathUpdateRate: 0.5
-  waitAtLastKnownPositionTime: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackDuration: 1
 --- !u!135 &2555534038968826511
 SphereCollider:
   m_ObjectHideFlags: 0
