@@ -34,6 +34,6 @@ public class SimpleBulletBehaviour : MonoBehaviour
             Debug.Log("Bullet hit player, applying effects from enemy dispatcher");
         }
 
-        ObjectPool.Instance.Return("EnemySphereBullet", gameObject);
+        ObjectPool.Instance.Return(gameObject);
     }
 }
