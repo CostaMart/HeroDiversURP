@@ -28,6 +28,9 @@ public enum FeatureType
     fireRate,
     automatic,
     activeLogicIndex,
+    perShotDispersion,
+    Maxdispersion,
+    dispersion,
 
     // === Recoil ===
     recoilMax,

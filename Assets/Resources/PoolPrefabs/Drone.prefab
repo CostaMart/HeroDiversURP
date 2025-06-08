@@ -62,6 +62,8 @@ GameObject:
   - component: {fileID: 2902186960262327752}
   - component: {fileID: 2317026799061121700}
   - component: {fileID: 8262927466537526708}
+  - component: {fileID: 1279261522518659264}
+  - component: {fileID: 4086637621376758284}
   m_Layer: 11
   m_Name: Drone
   m_TagString: Untagged
@@ -223,6 +225,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 3
   yOffset: -1
+--- !u!114 &1279261522518659264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b946f1119520603cfbf28e8ddb6ab7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPoolPrimary: {fileID: 0}
+  bulletPoolPoolSecondary: {fileID: 0}
+--- !u!114 &4086637621376758284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 300648d91b0b8d476997c685b120d12e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dirty: 0
+  mydispatcher: {fileID: 0}
+  isPlayer: 0
 --- !u!1 &5092828938355308574
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,7 +496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 4446342808756140147}
   canvas: {fileID: 6284868968953434200}
-  dispatcher: {fileID: 0}
+  dispatcher: {fileID: 1279261522518659264}
 --- !u!1 &6872666991310487847
 GameObject:
   m_ObjectHideFlags: 0

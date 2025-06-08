@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,6 +45,9 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private Material weaponMaterialInstance;
 
     private WeaponEffectControl weaponEffectControl;
+    private float currentDisperion = 0f;
+    private bool sequence = false;
+
 
     // == Lifecycle Methods ==
     public override void EnableWeaponBehaviour()
@@ -98,6 +102,10 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     public override void onFireStop()
     {
+        sequence = false;
+
+        currentDisperion = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.dispersion).Sum();
+
         // manage charging sound
         weaponContainer.audioMuzzleManager.StopChargeSound();
         ChargingSoundPlaying = false;
@@ -184,6 +192,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
     // == Shooting Logic ==
     public override void Shoot()
     {
+
         if (weaponContainer.animations.reloading) return;
 
         int magSize = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magSize).Sum();
@@ -230,6 +239,17 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
             Vector3 direction = rotation * weaponContainer.muzzle.forward;
             bulletToShoot.transform.rotation = Quaternion.LookRotation(direction);
+
+            if (weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.perShotDispersion).Sum() > 0f)
+            {
+                currentDisperion = Math.Min(currentDisperion + weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.perShotDispersion).Sum(),
+                                      weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.Maxdispersion).Sum());
+
+                float dispersionAngle = UnityEngine.Random.Range(-currentDisperion, currentDisperion);
+                direction = Quaternion.AngleAxis(dispersionAngle, weaponContainer.muzzle.up) * direction;
+
+                Debug.Log("Current dispersion: " + currentDisperion);
+            }
 
             BulletSetUp(bulletToShoot, rb, logic);
             bulletToShoot.SetActive(true);
