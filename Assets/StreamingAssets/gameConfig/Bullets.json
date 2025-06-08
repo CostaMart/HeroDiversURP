@@ -21,6 +21,17 @@
                     "expr": "!CharStats.1 - (@SecondaryWeaponStats.15)"
                 }
             ]
+        },
+        {
+            "id": 2,
+            "name": "bullet 1",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "!CharStats.1",
+                    "expr": "!CharStats.1 - (@CharStats.33)"
+                }
+            ]
         }
     ]
 }

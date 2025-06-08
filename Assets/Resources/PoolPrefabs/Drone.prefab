@@ -46,6 +46,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   configurationName: DroneLongRangeView
   reloadConfigInEditor: 0
+--- !u!1 &3483984559014767691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7083877418664539481}
+  m_Layer: 11
+  m_Name: shootingPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7083877418664539481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3483984559014767691}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.056, z: 0.659}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1110702425358156939}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4106629171390645862
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,9 +93,10 @@ GameObject:
   - component: {fileID: 2902186960262327752}
   - component: {fileID: 2317026799061121700}
   - component: {fileID: 8262927466537526708}
-  - component: {fileID: 1279261522518659264}
   - component: {fileID: 4086637621376758284}
   - component: {fileID: -3790830956408691179}
+  - component: {fileID: 6543437192502873596}
+  - component: {fileID: 3797279024142296691}
   m_Layer: 11
   m_Name: Drone
   m_TagString: NPC
@@ -226,20 +258,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 3
   yOffset: -1
---- !u!114 &1279261522518659264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4106629171390645862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b946f1119520603cfbf28e8ddb6ab7ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletPoolPrimary: {fileID: 0}
-  bulletPoolPoolSecondary: {fileID: 0}
 --- !u!114 &4086637621376758284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,6 +287,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 2
+--- !u!114 &6543437192502873596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ea38c1f6b33c6765aa3748fd483f08b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootingPoint: {fileID: 3483984559014767691}
+  dispatcher: {fileID: 3797279024142296691}
+  time: 0
+--- !u!114 &3797279024142296691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f4cdbdbe625dd8c2b44117def7b8cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5092828938355308574
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,6 +350,7 @@ Transform:
   - {fileID: 4348478073957296406}
   - {fileID: 6299141663843284329}
   - {fileID: 6388661499592569154}
+  - {fileID: 7083877418664539481}
   m_Father: {fileID: 698767324874233696}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1394037415802827122
@@ -511,7 +557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 4446342808756140147}
   canvas: {fileID: 6284868968953434200}
-  dispatcher: {fileID: 1279261522518659264}
+  dispatcher: {fileID: 3797279024142296691}
 --- !u!1 &6872666991310487847
 GameObject:
   m_ObjectHideFlags: 0

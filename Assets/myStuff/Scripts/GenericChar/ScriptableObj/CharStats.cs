@@ -38,7 +38,7 @@ public class CharStats : AbstractStatus
         if (hp <= 0)
         {
             this.gameObject.SetActive(false);
-            if (!isPlayer) dropper.DropItem();
+            if (!isPlayer) { dropper.DropItem(); }
         }
 
     }

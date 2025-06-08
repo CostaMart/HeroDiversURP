@@ -11,7 +11,7 @@ using static ItemManager;
 /// bridge between the upgrades and all the gameobject components which could be useful to implement effects
 /// this class shall manage overTime effects activation too
 /// </summary>
-public abstract class EffectsDispatcher : MonoBehaviour
+public class EffectsDispatcher : MonoBehaviour
 {
 
     /// <summary>
@@ -23,8 +23,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
     /// disabled stat calsses are not used to compute stat values, they still recive modifiers
     /// </summary>
     Dictionary<int, bool> enabledStatClass = new Dictionary<int, bool>();
-    [SerializeField] private BulletPoolStats bulletPoolPrimary;
-    [SerializeField] private BulletPoolStats bulletPoolPoolSecondary;
 
     /// <summary>
     /// mantiene uno storico degli id degli item attivati durante la partita
@@ -37,12 +35,6 @@ public abstract class EffectsDispatcher : MonoBehaviour
         {
             ItemManager.playerDispatcher = this;
         }
-        // register the dispatcher for dipsatching effects
-        if (bulletPoolPrimary != null)
-            this.affectables.Add(bulletPoolPrimary.ID, bulletPoolPrimary);
-
-        if (bulletPoolPoolSecondary != null)
-            this.affectables.Add(bulletPoolPoolSecondary.ID, bulletPoolPoolSecondary);
 
         //   FindComponentsInChildren<AbstractStatus>(transform);
     }

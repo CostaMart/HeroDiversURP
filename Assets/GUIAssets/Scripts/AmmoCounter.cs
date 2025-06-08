@@ -1,4 +1,4 @@
-using System;
+
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -13,6 +13,9 @@ public class AmmoCounter : MonoBehaviour
     private WeaponLogicContainer weaponLogicContainer;
     GameObject player;
     private bool isPirmarySelected = true;
+    Color originalColor;
+    Color lightOriginalColor;
+    public Light glow;
 
     void Awake()
     {
@@ -22,6 +25,10 @@ public class AmmoCounter : MonoBehaviour
         dispatcher = player.GetComponent<EffectsDispatcher>();
         weaponLogicContainer = player.GetComponent<WeaponLogicContainer>();
         playerInput = player.GetComponent<PlayerInput>();
+
+        originalColor = panel.color;
+        lightOriginalColor = glow.color;
+
 
         Debug.Log("AmmoCounter initialized");
     }
@@ -37,6 +44,9 @@ public class AmmoCounter : MonoBehaviour
 
         if (panel.gameObject.activeSelf)
             panel.text = $"{currentAmmo}/{magSize}";
+
+        panel.color = currentAmmo <= 0 ? Color.red : originalColor;
+        glow.color = currentAmmo <= 0 ? Color.red : lightOriginalColor;
 
     }
 }

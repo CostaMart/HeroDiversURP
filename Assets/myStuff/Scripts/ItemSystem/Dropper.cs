@@ -80,7 +80,7 @@ public class Dropper : MonoBehaviour
     {
         Debug.Log("dropping");
         if (!inRange) return;
-        List<EnrichedModifier> it = null;
+        List<EnrichedModifier> items = null;
         used = true;
 
 
@@ -100,8 +100,8 @@ public class Dropper : MonoBehaviour
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
 
-        it = DropFromPool(ID);
-        foreach (var item in it) { Drop(item); }
+        items = DropFromPool(ID);
+        foreach (var item in items) { Drop(item); }
 
     }
 

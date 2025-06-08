@@ -36,6 +36,11 @@ antiExplosionSuit = false ID:18
 
 #Drone-CharStats
 maxHealth = 200.0 ID:9
+bulletSpeed = 100.0 ID:20
+bulletEffects = 2 ID:21 
+widthScale = 10.0 ID:24
+heightScale = 10.0 ID:23
+lengthScale = 10.0 ID:22
 health = 200.0  ID:1 
 speed = 10.0 ID:2
 rotationSpeed = 10.0  ID:13
@@ -50,6 +55,7 @@ strafePower = 70.0 ID:15
 strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
 antiExplosionSuit = false ID:18
+damage = 10.0 ID:33
 ##
 
 

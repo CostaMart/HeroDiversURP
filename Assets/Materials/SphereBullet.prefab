@@ -34378,6 +34378,8 @@ MonoBehaviour:
   stopPointWithRespectToPlayer: {x: 0, y: 0, z: 0}
   destroyExplosionRadius: 0
   weaponContainer: {fileID: 0}
+  hitForce: 0
+  explosionForce: 0
   gizmo: {fileID: 2347042528479971692}
 --- !u!54 &2298636893042404977
 Rigidbody:

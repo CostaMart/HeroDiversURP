@@ -20,6 +20,8 @@ public class Heatindicator : MonoBehaviour
     [SerializeField] private EventChannels eventChannels;
     UnityEvent heatEvent = new UnityEvent();
     bool alarmed = false;
+    [SerializeField] Light light;
+
 
     private bool play = false;
     private float currentFill = 0f;
@@ -62,6 +64,7 @@ public class Heatindicator : MonoBehaviour
         : Color.Lerp(Color.yellow, Color.red, heatPercent);
 
         indicator.color = heatColor;
+        light.color = heatColor;
 
         if (heatDetector.isExposedToSun)
         {

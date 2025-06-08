@@ -271,9 +271,9 @@ public class ItemManager : MonoBehaviour
 
 
             var selected = rand.NextDouble();
-            var choosenIndex = 0;
             var lowerBound = 0f;
             var upperbound = 0f;
+            int index = 0;
 
             foreach (var prob in normalizeRarities)
             {
@@ -281,25 +281,25 @@ public class ItemManager : MonoBehaviour
 
                 if (selected <= upperbound && selected >= lowerBound)
                 {
-                    choosenIndex = Array.IndexOf(normalizeRarities, prob);
 
-                    if (items[choosenIndex] == -1) break;
+                    if (items[index] == -1) break;
 
-                    itemsToDrop.Add(globalItemPool[items[choosenIndex]]);
+                    itemsToDrop.Add(globalItemPool[items[index]]);
 
                     if (dropPools[id].withRipetition == false)
                     {
                         var momList = items.ToList();
-                        momList.RemoveAt(choosenIndex);
+                        momList.RemoveAt(index);
                         items = momList.ToArray(); // set the item to -1 to avoid duplicates
                         var momRarities = rarities.ToList();
-                        momRarities.RemoveAt(choosenIndex);
+                        momRarities.RemoveAt(index);
                         rarities = momRarities.ToArray(); // remove the rarity of the item from the pool to avoid duplicates
                     }
 
                     break;
                 }
 
+                index++;
                 lowerBound += prob;
             }
         }

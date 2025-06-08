@@ -11,7 +11,7 @@
       10
     ],
     "minDrops": 1,
-    "maxDrops": 1,
+    "maxDrops": 4,
     "withRipetition": true
   },
   "1": {
@@ -42,9 +42,9 @@
       -1
     ],
     "raritiesval": [
-      20,
-      60,
-      20
+      10,
+      10,
+      80
     ],
     "mindrops": 1,
     "maxdrops": 2,
