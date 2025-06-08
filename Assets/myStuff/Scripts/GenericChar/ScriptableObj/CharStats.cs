@@ -8,6 +8,7 @@ using UnityEngine;
 public class CharStats : AbstractStatus
 {
     [SerializeField] private bool isPlayer = false;
+    [SerializeField] private EnemyDropper dropper;
 
 
     protected new void Awake()
@@ -37,6 +38,7 @@ public class CharStats : AbstractStatus
         if (hp <= 0)
         {
             this.gameObject.SetActive(false);
+            if (!isPlayer) dropper.DropItem();
         }
 
     }

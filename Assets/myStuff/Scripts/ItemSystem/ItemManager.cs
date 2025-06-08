@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = System.Random;
 
 /// <summary>
@@ -12,6 +13,10 @@ using Random = System.Random;
 [DefaultExecutionOrder(-100)]
 public class ItemManager : MonoBehaviour
 {
+
+
+    public static EffectsDispatcher playerDispatcher;
+    public static PlayerInput playerInput;
 
 
     private static ItemManager instance = null;
@@ -26,6 +31,8 @@ public class ItemManager : MonoBehaviour
     public static Dictionary<string, int> statClassToIdRegistry;
     public static Dictionary<int, EnrichedModifier> globalItemPool = new Dictionary<int, EnrichedModifier>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
+    public static Dictionary<int, DropPool> dropPools = new();
+
     /// this contains all the items created by the game from the JSON file 
 
     private void Awake()
@@ -48,11 +55,14 @@ public class ItemManager : MonoBehaviour
 
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);
         bulletPool = ComputeAllBullets(Application.streamingAssetsPath + "/gameConfig/Bullets.json");
+        dropPools = ComputeDropPools();
 
     }
 
     void Start()
     {
+        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
+
         if (instance == null)
         {
             instance = this;
@@ -243,32 +253,58 @@ public class ItemManager : MonoBehaviour
     /// </summary>
     /// <param name="poolIndexes"></param>
     /// <returns></returns>
-    public static EnrichedModifier DropFromPool(int[] indexes, int[] raritiesVals)
+    public static List<EnrichedModifier> DropFromPool(int id)
     {
+        List<EnrichedModifier> itemsToDrop = new List<EnrichedModifier>();
         Random rand = new Random();
-        var total = raritiesVals.Sum();
-        var choosen = rand.Next(0, total);
-        var rarityRange = 0;
+        var numberOfDrops = rand.Next(dropPools[id].minDrops, dropPools[id].maxDrops + 1);
+        var items = dropPools[id].indexes.ToArray(); // get the items from the pool
+        var rarities = (int[])dropPools[id].raritiesVal.Clone();
 
-        // la selezione del drop viene fatta solo sugli item non bloccati
-        if (globalItemPool[indexes[0]].locked) return null;
-
-        for (int i = 0; i < raritiesVals.Length; i++)
+        for (int i = 0; i < numberOfDrops; i++)
         {
-            rarityRange += raritiesVals[i];
-            if (choosen >= rarityRange)
-                continue;
 
-            return globalItemPool[indexes[i]];
+
+            var totalRarity = rarities.Sum();
+            var normalizeRarities = rarities.Select(r => (float)r / totalRarity).ToArray();
+
+
+
+            var selected = rand.NextDouble();
+            var choosenIndex = 0;
+            var lowerBound = 0f;
+            var upperbound = 0f;
+
+            foreach (var prob in normalizeRarities)
+            {
+                upperbound = upperbound + prob;
+
+                if (selected <= upperbound && selected >= lowerBound)
+                {
+                    choosenIndex = Array.IndexOf(normalizeRarities, prob);
+
+                    if (items[choosenIndex] == -1) break;
+
+                    itemsToDrop.Add(globalItemPool[items[choosenIndex]]);
+
+                    if (dropPools[id].withRipetition == false)
+                    {
+                        var momList = items.ToList();
+                        momList.RemoveAt(choosenIndex);
+                        items = momList.ToArray(); // set the item to -1 to avoid duplicates
+                        var momRarities = rarities.ToList();
+                        momRarities.RemoveAt(choosenIndex);
+                        rarities = momRarities.ToArray(); // remove the rarity of the item from the pool to avoid duplicates
+                    }
+
+                    break;
+                }
+
+                lowerBound += prob;
+            }
         }
 
-        if (indexes == null)
-            throw new Exception("ItemManager: Unable to select an item to drop, indexes are null");
-
-        if (raritiesVals == null)
-            throw new Exception("ItemManager: Unable to select an item to drop, rarities are null");
-
-        throw new Exception("ItemManager: Unable to select an item to drop");
+        return itemsToDrop;
     }
 
     public static void UnlockItem(int itemId)
@@ -285,11 +321,14 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-
-    /// <summary>
-    /// used just to deserializing the JSON file
-    /// </summary>
+    public static Dictionary<int, DropPool> ComputeDropPools()
+    {
+        string lines = File.ReadAllText(Application.streamingAssetsPath + "/gameConfig/ItemPools.json");
+        Dictionary<int, DropPool> dropPools = JsonConvert.DeserializeObject<Dictionary<int, DropPool>>(lines);
+        return dropPools;
+    }
     private class ItemJson
+
     {
         public List<ItemDeserializing> mods;
     }
@@ -359,4 +398,14 @@ public class Modifier
         }
         return s;
     }
+}
+
+public class DropPool
+{
+    public int[] indexes;
+    public int[] raritiesVal;
+
+    public int minDrops;
+    public int maxDrops;
+    public bool withRipetition = false; // if true, the same item can be dropped multiple times
 }

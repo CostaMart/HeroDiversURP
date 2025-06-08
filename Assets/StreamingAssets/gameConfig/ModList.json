@@ -25,8 +25,8 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@CharStats.8",
-                    "expr": "5 + @CharStats.8"
+                    "target": "@CharStats.100",
+                    "expr": "5 + @CharStats.100"
                 }
             ]
         },

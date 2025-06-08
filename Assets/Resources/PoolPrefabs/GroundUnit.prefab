@@ -64,6 +64,7 @@ GameObject:
   - component: {fileID: 9092677127573688164}
   - component: {fileID: 4307079999385837824}
   - component: {fileID: 8458685994587393254}
+  - component: {fileID: 7855717922795911030}
   m_Layer: 10
   m_Name: GroundUnit
   m_TagString: Untagged
@@ -239,6 +240,7 @@ MonoBehaviour:
   dirty: 0
   mydispatcher: {fileID: 0}
   isPlayer: 0
+  dropper: {fileID: 7855717922795911030}
 --- !u!114 &8458685994587393254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +255,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPoolPrimary: {fileID: 0}
   bulletPoolPoolSecondary: {fileID: 0}
+--- !u!114 &7855717922795911030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582545835967444999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd543247f1480628db0ec3628c292ccf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 2
 --- !u!1 &2123759486985323436
 GameObject:
   m_ObjectHideFlags: 0

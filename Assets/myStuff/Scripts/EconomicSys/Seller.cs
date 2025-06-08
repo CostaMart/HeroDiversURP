@@ -25,17 +25,12 @@ public class Seller : MonoBehaviour
     private GameObject shopManContainer;
     private PlayerInput input;
     private EffectsDispatcher dispatcher;
+    public int ID; // ID of this seller
 
     void Start()
     {
-        ReadSellingPool();
-        var itemNum = Random.Range(itemNumRange.Item1, itemNumRange.Item2);
-        it = new List<ItemManager.EnrichedModifier>();
 
-        for (var x = 0; x < itemNum; x++)
-        {
-            it.Add(ItemManager.DropFromPool(itIds.ToArray(), rarities.ToArray()));
-        }
+        it = ItemManager.DropFromPool(ID);
 
         guiCam = GameObject.Find("GUICam");
 
@@ -65,59 +60,7 @@ public class Seller : MonoBehaviour
         shopMan.gameObject.SetActive(true);
     }
 
-    private void ReadSellingPool()
-    {
-        string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/ItemPools.txt");
-        string name = gameObject.name;
 
-        bool found = false;
-        List<int> fixedDropPool = new();
-        List<int> myPool = new();
-        List<int> ratrities = new();
-
-        foreach (var line in lines)
-        {
-            /// found pool start
-            if (line.Contains(name))
-            {
-                found = true;
-                var rangeS = line.Split(' ')[1];
-                itemNumRange.Item1 = int.Parse(rangeS.Split('-')[0]);
-                itemNumRange.Item2 = int.Parse(rangeS.Split('-')[1]);
-                continue;
-            }
-
-            /// pool completely loaded
-            if (line.Contains("##") && found)
-                break;
-
-            if (found)
-            {
-                var item = (0, 0);
-
-                //Debug.Log("Dropper: itempool item with ID: " +
-                //int.Parse(line.Split("rarity: ")[0].Split(' ')[0] + " added in object " + name));
-                if (line.Contains("fixed"))
-                {
-                    fixedDropPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
-                    continue;
-                }
-
-                myPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
-                ratrities.Add(int.Parse(line.Split("rarity: ")[1]));
-            }
-
-        }
-
-        itIds = myPool.ToList();
-
-        if (itIds.Count == 0)
-        {
-            throw new Exception("Seller: " + gameObject.name + "'s itempool was not defined.");
-        }
-
-        rarities = ratrities.ToList();
-    }
 
     /// <summary>
     /// removes an item from the pool of this seller, used when the item is sold

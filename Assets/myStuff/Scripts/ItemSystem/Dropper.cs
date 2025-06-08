@@ -25,8 +25,9 @@ public class Dropper : MonoBehaviour
     PlayerInput playerInput;
     private Transform player;
     private MessageHelper helper;
-    public EffectsDispatcher dispatcher;
     private AudioSource audioSource;
+
+    public int ID; // ID of the itempool to refer to for dops
 
 
     /// <summary>
@@ -56,51 +57,6 @@ public class Dropper : MonoBehaviour
 
         spawn = transform.GetChild(0);
 
-        string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/ItemPools.txt");
-        string name = gameObject.name;
-
-        bool found = false;
-        List<int> fixedDropPool = new();
-        List<int> myPool = new();
-        List<int> ratrities = new();
-
-        foreach (var line in lines)
-        {
-            /// found pool start
-            if (line.Contains(name))
-            {
-                found = true;
-                var rangeS = line.Split(' ')[1];
-                range.Item1 = int.Parse(rangeS.Split('-')[0]);
-                range.Item2 = int.Parse(rangeS.Split('-')[1]);
-                continue;
-            }
-
-            /// pool completely loaded
-            if (line.Contains("##") && found)
-                break;
-
-            if (found)
-            {
-                var item = (0, 0);
-
-                //Debug.Log("Dropper: itempool item with ID: " +
-                //int.Parse(line.Split("rarity: ")[0].Split(' ')[0] + " added in object " + name));
-                if (line.Contains("fixed"))
-                {
-                    fixedDropPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
-                    continue;
-                }
-
-                myPool.Add(int.Parse(line.Split("rarity: ")[0].Split(' ')[0]));
-                ratrities.Add(int.Parse(line.Split("rarity: ")[1]));
-            }
-
-        }
-
-        this.fixedDropPool = fixedDropPool.ToArray();
-        pool = myPool.ToArray();
-        rarities = ratrities.ToArray();
     }
 
     public void OnTriggerEnter(Collider other)
@@ -124,7 +80,7 @@ public class Dropper : MonoBehaviour
     {
         Debug.Log("dropping");
         if (!inRange) return;
-        EnrichedModifier it = null;
+        List<EnrichedModifier> it = null;
         used = true;
 
 
@@ -143,21 +99,10 @@ public class Dropper : MonoBehaviour
 
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
-        var numbersOfDrops = Random.Range(range.Item1, range.Item2 + 1);
 
-        foreach (var item in fixedDropPool)
-        {
-            it = DropFromPool(new int[] { item }, new int[] { 100 });
-            if (it == null) continue;
-            Drop(it);
-        }
+        it = DropFromPool(ID);
+        foreach (var item in it) { Drop(item); }
 
-        for (int i = 0; i < numbersOfDrops; i++)
-        {
-            it = DropFromPool(pool, rarities);
-            if (it == null) continue;
-            Drop(it);
-        }
     }
 
     public void OnTriggerExit(Collider other)
@@ -174,8 +119,6 @@ public class Dropper : MonoBehaviour
 
         var grabbable = container.transform.GetChild(0).GetComponent<Grabbable>();
         grabbable.item = it;
-        grabbable.helper = helper;
-        grabbable.playerInput = playerInput;
         grabbable.dispatcher = helper.dispatcher;
 
         if (container.TryGetComponent(out Rigidbody rb))
@@ -192,3 +135,5 @@ public class Dropper : MonoBehaviour
     }
 
 }
+
+

@@ -33,6 +33,10 @@ public abstract class EffectsDispatcher : MonoBehaviour
 
     void Start()
     {
+        if (gameObject.name.Contains("Player"))
+        {
+            ItemManager.playerDispatcher = this;
+        }
         // register the dispatcher for dipsatching effects
         if (bulletPoolPrimary != null)
             this.affectables.Add(bulletPoolPrimary.ID, bulletPoolPrimary);

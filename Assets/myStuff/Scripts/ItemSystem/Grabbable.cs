@@ -18,12 +18,16 @@ public class Grabbable : MonoBehaviour
 
     [SerializeField] private ItemIconsList itemIconsList;
     private RectTransform rectTransform;
-    public MessageHelper helper;
-    public PlayerInput playerInput;
+    private MessageHelper helper;
+    private PlayerInput playerInput;
     public EffectsDispatcher dispatcher;
 
     public void Start()
     {
+
+        helper = GameObject.Find("InGameManagers").GetComponent<MessageHelper>();
+        playerInput = ItemManager.playerInput;
+        dispatcher = ItemManager.playerDispatcher;
 
         playerInput.actions["Interact"].performed += TryGrab;
         text.text = item.name;

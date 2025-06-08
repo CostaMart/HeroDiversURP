@@ -64,6 +64,7 @@ GameObject:
   - component: {fileID: 8262927466537526708}
   - component: {fileID: 1279261522518659264}
   - component: {fileID: 4086637621376758284}
+  - component: {fileID: -3790830956408691179}
   m_Layer: 11
   m_Name: Drone
   m_TagString: NPC
@@ -254,6 +255,20 @@ MonoBehaviour:
   dirty: 0
   mydispatcher: {fileID: 0}
   isPlayer: 0
+  dropper: {fileID: -3790830956408691179}
+--- !u!114 &-3790830956408691179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4106629171390645862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd543247f1480628db0ec3628c292ccf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 2
 --- !u!1 &5092828938355308574
 GameObject:
   m_ObjectHideFlags: 0

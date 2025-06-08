@@ -1,0 +1,53 @@
+{
+  "0": {
+    "indexes": [
+      1,
+      7,
+      6
+    ],
+    "raritiesVal": [
+      10,
+      10,
+      10
+    ],
+    "minDrops": 1,
+    "maxDrops": 1,
+    "withRipetition": true
+  },
+  "1": {
+    "indexes": [
+      4,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "raritiesval": [
+      30,
+      30,
+      30,
+      30,
+      50,
+      50
+    ],
+    "mindrops": 10,
+    "maxdrops": 10,
+    "withRipetition": true
+  },
+  "2": {
+    "indexes": [
+      6,
+      3,
+      -1
+    ],
+    "raritiesval": [
+      20,
+      60,
+      20
+    ],
+    "mindrops": 1,
+    "maxdrops": 2,
+    "withRipetition": false
+  }
+}
