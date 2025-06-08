@@ -9,6 +9,11 @@
             "name": "GroundUnitSpawnTag",
             "type": "Random",
             "members": ["GroundUnit"]
+        },
+        {
+            "name": "ItemSpawnTag",
+            "type": "Sequential",
+            "members": ["BoxCommon 1", "Key"]
         }
     ]
 }
