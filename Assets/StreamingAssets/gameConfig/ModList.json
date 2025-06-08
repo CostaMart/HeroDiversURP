@@ -242,8 +242,28 @@
                 },
                 {
                     "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.31",
+                    "expr": "5.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.11",
+                    "expr": "40.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.12",
+                    "expr": "40.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.13",
+                    "expr": "40.0"
+                },
+                {
+                    "effectType": "sa",
                     "target": "@PrimaryWeaponStats.9",
-                    "expr": "10.0"
+                    "expr": "0.0"
                 },
                 {
                     "effectType": "sa",
@@ -258,7 +278,7 @@
                 {
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.4",
-                    "expr": "50.0"
+                    "expr": "40.0"
                 },
                 {
                     "effectType": "sa",
@@ -269,6 +289,11 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.3",
                     "expr": "2.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.29",
+                    "expr": "false"
                 }
             ]
         },

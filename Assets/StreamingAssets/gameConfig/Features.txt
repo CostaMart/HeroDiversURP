@@ -120,8 +120,10 @@ bulletDeviationSpeed = 100.0 ID:30 // the speed with which a bullet can deviate 
 bulletDestructionExplosionRadius = 0.0 ID:31 // if greater than 0, the bullet will explode on destruction with this radius
 bulletDestructionExplosionEffect = 0 ID:32 // the effect to play on bullet destruction (set as the index of bulletlist modfiier), -1 is no effect
 dispersion = 0.0 ID:33 // the initial dispersion of the bullet, when the fire burst is started
-Maxdispersion = 10.0 ID:34 // the maximum value of the dispersion, if greater than 0 the bullet will not go straight but will have a random deviation from its path
-perShotDispersion = 1.0 ID:35
+Maxdispersion = 0.0 ID:34 // the maximum value of the dispersion, if greater than 0 the bullet will not go straight but will have a random deviation from its path
+perShotDispersion = 0.0 ID:35
+hitForce = 100.0 ID:36 // the force applied to the target on hit, if greater than 0 the bullet will push the target
+explosionForce = 100.0 ID:37 // the force applied to the target on explosion, if greater than 0 the bullet will push the target
 ##
 
 #Pistol-SecondaryWeaponStats

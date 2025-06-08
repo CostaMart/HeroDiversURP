@@ -36,7 +36,6 @@ public class CharStats : AbstractStatus
 
         if (hp <= 0)
         {
-            Debug.Log("Charstats: dead: " + this.name);
             this.gameObject.SetActive(false);
         }
 

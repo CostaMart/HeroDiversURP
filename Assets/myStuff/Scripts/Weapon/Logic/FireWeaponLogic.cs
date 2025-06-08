@@ -45,9 +45,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
     private Material weaponMaterialInstance;
 
     private WeaponEffectControl weaponEffectControl;
-    private float currentDisperion = 0f;
-    private bool sequence = false;
 
+    private float dispersion = 0;
 
     // == Lifecycle Methods ==
     public override void EnableWeaponBehaviour()
@@ -77,6 +76,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
         magCount = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magCount).Sum();
         timer = 0;
         chargeTimer = 0f;
+        dispersion = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.dispersion).Sum();
     }
 
     public override void DisableWeaponBehaviour() { }
@@ -102,9 +102,7 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     public override void onFireStop()
     {
-        sequence = false;
-
-        currentDisperion = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.dispersion).Sum();
+        dispersion = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.dispersion).Sum();
 
         // manage charging sound
         weaponContainer.audioMuzzleManager.StopChargeSound();
@@ -192,7 +190,6 @@ public class FireWeaponLogic : AbstractWeaponLogic
     // == Shooting Logic ==
     public override void Shoot()
     {
-
         if (weaponContainer.animations.reloading) return;
 
         int magSize = weaponContainer.dispatcher.GetFeatureByType<int>(FeatureType.magSize).Sum();
@@ -240,20 +237,20 @@ public class FireWeaponLogic : AbstractWeaponLogic
             Vector3 direction = rotation * weaponContainer.muzzle.forward;
             bulletToShoot.transform.rotation = Quaternion.LookRotation(direction);
 
-            if (weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.perShotDispersion).Sum() > 0f)
+            var perShotDispersion = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.perShotDispersion).Sum();
+            dispersion = Math.Min(dispersion + perShotDispersion, weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.Maxdispersion).Sum());
+
+            if (perShotDispersion > 0f)
             {
-                currentDisperion = Math.Min(currentDisperion + weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.perShotDispersion).Sum(),
-                                      weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.Maxdispersion).Sum());
-
-                float dispersionAngle = UnityEngine.Random.Range(-currentDisperion, currentDisperion);
-                direction = Quaternion.AngleAxis(dispersionAngle, weaponContainer.muzzle.up) * direction;
-
-                Debug.Log("Current dispersion: " + currentDisperion);
+                float randomAngle = UnityEngine.Random.Range(-dispersion, dispersion);
+                float randomAngleY = UnityEngine.Random.Range(-dispersion, dispersion);
+                direction = Quaternion.Euler(randomAngle, randomAngleY, 0) * direction;
             }
 
             BulletSetUp(bulletToShoot, rb, logic);
             bulletToShoot.SetActive(true);
             rb.linearVelocity = direction * weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletSpeed).Sum();
+
 
             weaponContainer.currentAmmo++;
             if (weaponContainer.currentAmmo >= magSize)
@@ -341,6 +338,8 @@ public class FireWeaponLogic : AbstractWeaponLogic
         bulletLogic.antigravitational = weaponContainer.dispatcher.GetFeatureByType<bool>(FeatureType.antigravitational).LastOrDefault();
         bulletLogic.speed = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletDeviationSpeed).Sum();
         bulletLogic.destroyExplosionRadius = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.bulletDestructionExplosionRadius).Sum();
+        bulletLogic.explosionForce = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.explosionForce).Sum();
+        bulletLogic.hitForce = weaponContainer.dispatcher.GetFeatureByType<float>(FeatureType.hitForce).Sum();
         bulletLogic.weaponContainer = weaponContainer;
 
         Vector3 newScale = new Vector3(

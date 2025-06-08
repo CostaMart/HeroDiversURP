@@ -476,12 +476,14 @@ public class BulletLogic : MonoBehaviour
 
 
     // ====== Utility methods ======
+    public float hitForce = 0f;
     public void ApplyEffect(EffectsDispatcher otherdDispathcer)
     {
         if (onHitModifier == null) return;
 
         try
         {
+            otherdDispathcer.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward.normalized * hitForce, ForceMode.Impulse);
             otherdDispathcer.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
         }
         catch (Exception e)
@@ -490,15 +492,18 @@ public class BulletLogic : MonoBehaviour
         }
     }
 
+    public float explosionForce = 0f;
     public void Explode(Vector3 position, Collider toExclude, float radius, Modifier mod)
     {
 
 
+        gizmo.StartDrawing(radius, position);
         exploderTransform.SetParent(null);
         exploderTransform.position = position;
-        exploderTransform.localScale = Vector3.one * radius;
+        exploderTransform.localScale = Vector3.one * radius / 2;
         explodeVfX.Play();
         explosionAudioSource.PlayOneShot(explosionAudioClip);
+
 
         if (radius <= 0) return; // no explosion radius, no effect
 
@@ -513,6 +518,14 @@ public class BulletLogic : MonoBehaviour
 
                 foreach (Collider col in colliders)
                 {
+                    col.attachedRigidbody.AddExplosionForce(
+                                     explosionForce,
+                                     position,
+                                    radius,
+                                     3f,
+                                     ForceMode.Impulse
+                                 );
+
                     if (col != null)
                         if (col == toExclude) continue; // skip the collider that was excluded
 
@@ -547,4 +560,7 @@ public class BulletLogic : MonoBehaviour
         }
 
     }
+
+    public DrawExplosionGizmo gizmo;
+
 }

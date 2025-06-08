@@ -20,6 +20,8 @@ public enum FeatureType
     bulletTickRate,
     antigravitational,
     bulletDeviationSpeed,
+    hitForce,
+    explosionForce,
 
     // === Shooting logic ===
     resetOnFireRelease,
