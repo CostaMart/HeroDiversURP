@@ -110,23 +110,14 @@ public class EventActionManager : MonoBehaviour
             ActionConfig actionConfig = new()
             {
                 action = actionCfg.action,
-                tag = actionCfg.tag
+                tag = actionCfg.tag,
+                isTagAction = actionCfg.isTagAction
             };
 
             eventTable[eventName].Add(actionConfig);
             Debug.Log($"Event '{eventName}' configured with action '{actionConfig.action}' for tag '{actionConfig.tag}'.");
         }
     }
-    
-    // public void RegisterAction(string actionName, InteractiveObject target)
-    // {
-    //     if (!eventTable.ContainsKey(actionName))
-    //     {
-    //         actions[actionName] = new List<InteractiveObject>();
-    //     }
-    //     actions[actionName].Add(target);
-    //     Debug.Log($"Action '{actionName}' registered successfully for {target.name}.");
-    // }
 
     public void RegisterEvent(string eventKey)
     {

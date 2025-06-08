@@ -1,14 +1,19 @@
 {
     "tags": [
         {
-            "name": "EnemySpawnTag",
+            "name": "DroneSpawnTag",
             "type": "Random",
-            "members": ["AlienFighter","AlienFighter_1","AlienFighter_2","AlienFighter_3"]
+            "members": ["Drone"]
         },
         {
-            "name": "PlayerTag",
+            "name": "GroundUnitSpawnTag",
             "type": "Random",
-            "members": ["Player"]
+            "members": ["GroundUnit"]
+        },
+        {
+            "name": "ItemSpawnTag",
+            "type": "Sequential",
+            "members": ["BoxCommon 1", "Key"]
         }
     ]
 }

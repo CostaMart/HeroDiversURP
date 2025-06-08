@@ -54,10 +54,9 @@ public class NPC : InteractiveObject
 
     State currentState = State.Idle;
 
-    protected override void Start()
+    void Start()
     {
         agentController = GetComponent<AgentController>();
-        // targetTransform = EntityManager.Instance.GetEntity("Player").transform;
 
         // Initialize components, features, and modifiers
         components = new List<Component>();

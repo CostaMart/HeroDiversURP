@@ -3,8 +3,7 @@
         {
             "id": 0,
             "gameIconId": 37,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "name": "Fast Shoes",
             "description": "nano fiber shoes, incredibily lighter, made by Nike for military porpouses, as strange as it may sound",
             "inGamePrice": 1,
@@ -18,10 +17,9 @@
         },
         {
             "id": 3,
-            "gameIconId": 9,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 1,
+            "gameIconId": 9,
             "name": "5 DodgeCoins",
             "description": "5 DodgeCoins, the currency of the future, used by the most advanced civilizations in the galaxy",
             "effects": [
@@ -35,8 +33,7 @@
         {
             "id": 1,
             "gameIconId": 48,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 1,
             "name": "Fast Bullets",
             "description": "Bullets made with a special alloy, they are lighter and faster than normal bullets, don't get used to them",
@@ -51,8 +48,7 @@
         {
             "id": 2,
             "gameIconId": 0,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 1,
             "name": "Poison",
             "description": "the most dangerous poison in the galaxy",
@@ -69,8 +65,7 @@
         {
             "id": 4,
             "gameIconId": 12,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 1,
             "name": "Laser Morpher",
             "description": "How would life get easier with a laser? Here it is for your morph gun",
@@ -85,8 +80,7 @@
         {
             "id": 5,
             "gameIconId": 12,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 1,
             "name": "Fire Weapon Morpher",
             "description": "Good old energy bullets, the most reliable weapon in the galaxy",
@@ -136,8 +130,7 @@
         {
             "id": 6,
             "gameIconId": 52,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 10,
             "name": "Ammo",
             "description": "Replanish any kind of weapon...How? Who knows? But it works",
@@ -152,8 +145,7 @@
         {
             "id": 7,
             "gameIconId": 32,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 50,
             "name": "Double Barrel",
             "description": "Omni weapon has a lot of intereseting functions, have you ever tried firing two bullets at once?",
@@ -183,8 +175,7 @@
         {
             "id": 8,
             "gameIconId": 12,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 50,
             "name": "Super Glue",
             "description": "I think they will not come off that easily, until they explode at least",
@@ -196,38 +187,8 @@
                 },
                 {
                     "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.11",
-                    "expr": "50.0"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.12",
-                    "expr": "50.0"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.13",
-                    "expr": "50.0"
-                },
-                {
-                    "effectType": "sa",
                     "target": "@PrimaryWeaponStats.22",
-                    "expr": "1"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.6",
-                    "expr": "false"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.3",
-                    "expr": "1.0"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.10",
-                    "expr": "1.0"
+                    "expr": "2"
                 },
                 {
                     "effectType": "sa",
@@ -259,8 +220,7 @@
         {
             "id": 9,
             "gameIconId": 12,
-            "requiresUnlocking": "true",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 50,
             "name": "Fat Bombs",
             "description": "big explotions and they hurts",
@@ -315,8 +275,7 @@
         {
             "id": 10,
             "gameIconId": 12,
-            "requiresUnlocking": "false",
-            "astroCreditPrice": 100,
+            "type": "normal",
             "inGamePrice": 50,
             "name": "Energy Deviation Channel",
             "description": "Deviate part of the energy of the exoSuit to the weapon, less strafes more firepower",
@@ -336,8 +295,6 @@
         {
             "id": 11,
             "gameIconId": 10,
-            "requiresUnlocking": "true",
-            "astroCreditPrice": 100,
             "type": "normal",
             "inGamePrice": 50,
             "name": "Radio controlled Bombs",
@@ -427,22 +384,6 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.32",
                     "expr": "0"
-                }
-            ]
-        },
-        {
-            "id": 12,
-            "gameIconId": 1,
-            "requiresUnlocking": "true",
-            "astroCreditPrice": 100,
-            "inGamePrice": 0,
-            "name": "Ancient Diamond",
-            "description": "incredbile Diamond, i think it's worth millions! Oh no, wait, its just a replica, maybe you can get 1000 Credits",
-            "effects": [
-                {
-                    "effectType": "sa",
-                    "target": "@CharStats.100",
-                    "expr": "@CharStats.100 + 1000"
                 }
             ]
         }

@@ -70,7 +70,7 @@
       "detectionAngle": 60.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
-      "ignoreObstacles": true,
+      "ignoreObstacles": false,
       "targetLayerName": "Player",
       "detectionBufferSize": 1
     },
