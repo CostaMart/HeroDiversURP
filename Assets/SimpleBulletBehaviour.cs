@@ -12,7 +12,7 @@ public class SimpleBulletBehaviour : MonoBehaviour
     {
         if (time > bulletLifeTime)
         {
-            ObjectPool.Instance.Return("EnemySphereBullet", gameObject);
+            ObjectPool.Instance.Return(gameObject);
         }
 
         time += Time.deltaTime;
