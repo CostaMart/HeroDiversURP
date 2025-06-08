@@ -24,8 +24,8 @@ public class GameTag : InteractiveObject
     void Start()
     {
         // Registra eventi per gestire l'aggiunta e la rimozione di oggetti
-        RegisterAction("AddEnabledObject", AddEnabledObjectAction);
-        RegisterAction("RemoveDisabledObject", RemoveDisabledObjectAction);
+        RegisterAction(ActionRegistry.ADD_ENABLED_OBJECT, AddEnabledObjectAction);
+        RegisterAction(ActionRegistry.REMOVE_DISABLED_OBJECT, RemoveDisabledObjectAction);
     }
 
     private void InitializeIterator()
@@ -76,12 +76,13 @@ public class GameTag : InteractiveObject
 
         EventConfiguration configuration = new()
         {
-            name = "OnEnable" + objName,
+            name = EventRegistry.OBJECT_ENABLED.name,
+            emitterFilters = new List<string> { objName },
             actions = new List<ActionConfig>
             {
                 new()
                 {
-                    action = "AddEnabledObject",
+                    action = ActionRegistry.ADD_ENABLED_OBJECT.name,
                     tag = tagName,
                     isTagAction = true,
                 }
@@ -102,11 +103,12 @@ public class GameTag : InteractiveObject
 
         EventConfiguration configuration = new()
         {
-            name = "OnDisable" + objName,
+            name = EventRegistry.OBJECT_DISABLED.name,
+            emitterFilters = new List<string> { objName },
             actions = new List<ActionConfig>
             {
                 new() {
-                    action = "RemoveDisabledObject",
+                    action = ActionRegistry.REMOVE_DISABLED_OBJECT.name,
                     tag = tagName,
                     isTagAction = true,
                 }
@@ -121,7 +123,6 @@ public class GameTag : InteractiveObject
         if (parameters != null && parameters.Length > 0 && parameters[0] is GameObject createdObj)
         {
             AddObject(createdObj);
-            Debug.Log($"GameTag '{tagName}' added created object: {createdObj.name}");
         }
     }
 

@@ -80,12 +80,15 @@ public class ObjectPool : MonoBehaviour
             return null;
         }
 
+        GameObject obj;
         if (poolDictionary[id].Count == 0)
         {
-            return Instantiate(prefabLookup[id], position, rotation);
+            obj = Instantiate(prefabLookup[id], position, rotation);
+            obj.name = id;
+            return obj;
         }
 
-        GameObject obj = poolDictionary[id].Dequeue();
+        obj = poolDictionary[id].Dequeue();
         obj.transform.SetPositionAndRotation(position, rotation);
         obj.name = id;
         obj.SetActive(true);
@@ -93,9 +96,10 @@ public class ObjectPool : MonoBehaviour
         return obj;
     }
 
-    public void Return(string id, GameObject obj)
+    public void Return(GameObject obj)
     {
         obj.SetActive(false);
+        string id = obj.name;
 
         if (!poolDictionary.ContainsKey(id))
             poolDictionary[id] = new Queue<GameObject>();

@@ -93,21 +93,21 @@ public class NPC : InteractiveObject
         obstacleLayer = LayerMask.GetMask("Default");
 
         // Registra le azioni disponibili
-        RegisterAction("StartPatrol", (_) => OnStartPatrol());
-        RegisterAction("Chase", Chase);
-        RegisterAction("Stop", (_) => agentController.StopAgent());
-        RegisterAction("Resume", (_) => agentController.ResumeAgent());
-        RegisterAction("Attack", OnAttack);
-        RegisterAction("WaitAndStartPatrol", (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
-        RegisterAction("RotateToTarget", OnRotateToTarget);
-        RegisterAction("AimAtTarget", OnAimAtTarget);
+        RegisterAction(ActionRegistry.START_PATROL, (_) => OnStartPatrol());
+        RegisterAction(ActionRegistry.CHASE, Chase);
+        RegisterAction(ActionRegistry.STOP, (_) => agentController.StopAgent());
+        RegisterAction(ActionRegistry.RESUME, (_) => agentController.ResumeAgent());
+        RegisterAction(ActionRegistry.ATTACK, OnAttack);
+        RegisterAction(ActionRegistry.WAIT_AND_START_PATROL, (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
+        RegisterAction(ActionRegistry.ROTATE_TO_TARGET, OnRotateToTarget);
+        RegisterAction(ActionRegistry.AIM_AT_TARGET, OnAimAtTarget);
 
-        // Registra gli eventi disponibili
-        RegisterEvent("StateChanged");
-        RegisterEvent("TargetDetected");
-        RegisterEvent("TargetLost");
-        RegisterEvent("AttackStarted");
-        RegisterEvent("AttackEnded");
+        // Registra gli eventi
+        RegisterEvent(EventRegistry.STATE_CHANGED);
+        RegisterEvent(EventRegistry.TARGET_DETECTED);
+        RegisterEvent(EventRegistry.TARGET_LOST);
+        RegisterEvent(EventRegistry.ATTACK_STARTED);
+        RegisterEvent(EventRegistry.ATTACK_ENDED);
 
         // Examples of adding features to the NPC
         Experimental.Feature speedFeature = new(3.0f, Experimental.Feature.FeatureType.SPEED);
@@ -215,9 +215,7 @@ public class NPC : InteractiveObject
         }
 
         currentState = State.Attack;
-        EmitEvent("AttackStarted", new object[] { target});
-
-        // Debug.Log("Attacking target!");
+        EmitEvent(EventRegistry.ATTACK_STARTED, new object[] { target });
     
         StartCoroutine(AttackCooldown());
     }

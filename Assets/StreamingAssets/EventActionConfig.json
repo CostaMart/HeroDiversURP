@@ -2,6 +2,7 @@
     "events": [
         {
             "name": "TargetDetected",
+            "emitterFilters": ["Enemy*", "Guard*"],
             "actions": [
                 {
                     "action": "MoveTo",
@@ -14,7 +15,23 @@
             "actions": [
                 {
                     "action": "MoveTo",
-                    "tag": "PlayerTag"
+                    "tag": "PlayerTag",
+                    "emitterFilters": ["EnemyBoss", "EliteGuard"]
+                },
+                {
+                    "action": "PlaySound",
+                    "tag": "AudioTag",
+                    "emitterFilters": ["Player"]
+                }
+            ]
+        },
+        {
+            "name": "ObjectEnabled",
+            "actions": [
+                {
+                    "action": "AddEnabledObject",
+                    "tag": "EnemyTag",
+                    "isTagAction": true
                 }
             ]
         }

@@ -1,4 +1,3 @@
-// Gestore centrale che configura i collegamenti tra eventi e azioni
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -8,19 +7,22 @@ public class ActionConfig
 {
     public string action;
     public string tag;
-
-    // Indica se l'azione deve essere eseguita su un tag
-    // Se isTagAction è true, action rappresenta il nome dell'azione da eseguire su un tag
-    // Se isTagAction è false, action rappresenta il nome dell'azione da eseguire sugli oggetti nel tag
     public bool isTagAction = false;
+    public List<string> emitterFilters = new();
+    
+    // Conversione automatica a ActionID
+    public ActionID ActionID => ActionRegistry.GetActionByName(action);
 }
 
 [System.Serializable]
 public class EventConfiguration
 {
-    // Corrisponde alla struttura del JSON aggiornato
-    public string name;                  // Nome dell'evento (es. "TargetDetected")
-    public List<ActionConfig> actions;   // Lista di azioni associate all'evento
+    public string name;
+    public List<ActionConfig> actions;
+    public List<string> emitterFilters = new();
+    
+    // Conversione automatica a EventID
+    public EventID EventID => EventRegistry.GetEventByName(name);
 }
 
 [System.Serializable]
@@ -31,13 +33,16 @@ public class EventsConfiguration
 
 public class EventActionManager : MonoBehaviour
 {
-    // Singleton per l'accesso globale
     public static EventActionManager Instance { get; private set; }
 
-    // Internal dictionary mapping event keys to multicast delegates
-    // key: eventKey, value: (action, tag)
-    readonly Dictionary<string, List<ActionConfig>> eventTable = new();
+    // Dizionario ottimizzato con EventID come chiave
+    readonly Dictionary<EventID, List<ActionConfig>> eventTable = new();
 
+    // Tracking degli emettitori per debugging e analytics
+    readonly Dictionary<EventID, HashSet<InteractiveObject>> eventEmitters = new();
+    readonly List<EventData> eventHistory = new();
+
+    [SerializeField] private int maxHistorySize = 100;
 
     private void Awake()
     {
@@ -53,151 +58,204 @@ public class EventActionManager : MonoBehaviour
     }
 
     public void LoadConfigFromJson()
-    {       
+    {
         string jsonContent = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "EventActionConfig.json"));
-        // Deserializza il JSON
         EventsConfiguration config = JsonUtility.FromJson<EventsConfiguration>(jsonContent);
-        
-        // Pulisci la mappa corrente
+
         eventTable.Clear();
-        
-        // Popola la mappa con i dati dal JSON
+
         foreach (var eventConfig in config.events)
         {
-            string eventName = eventConfig.name;
-            
-            // Assicurati che l'evento sia nella mappa
-            if (!eventTable.ContainsKey(eventName))
+            EventID eventId = eventConfig.EventID;
+
+            if (eventId.id == 0) // EventID non valido
             {
-                eventTable[eventName] = new List<ActionConfig>();
+                Debug.LogWarning($"Unknown event: {eventConfig.name}");
+                continue;
             }
-            
-            // Aggiungi tutte le azioni configurate per questo evento
+
+            if (!eventTable.ContainsKey(eventId))
+            {
+                eventTable[eventId] = new List<ActionConfig>();
+            }
+
             foreach (var actionCfg in eventConfig.actions)
             {
-                ActionConfig actionConfig = new()
+                if (actionCfg.ActionID.id == 0)
                 {
-                    action = actionCfg.action,
-                    tag = actionCfg.tag
-                };
-                
-                eventTable[eventName].Add(actionConfig);
-                Debug.Log($"Loaded event '{eventName}' mapped to action '{actionConfig.action}' for tag '{actionConfig.tag}'.");
+                    Debug.LogWarning($"Unknown action: {actionCfg.action}");
+                    continue;
+                }
+
+                eventTable[eventId].Add(actionCfg);
+                Debug.Log($"Loaded event '{eventId}' mapped to action '{actionCfg.ActionID}' for tag '{actionCfg.tag}'.");
             }
         }
     }
 
-    // metodo per registrare un evento con una o più azioni
+    public void RegisterEventEmitter(EventID eventId, InteractiveObject emitter)
+    {
+        if (!eventEmitters.ContainsKey(eventId))
+        {
+            eventEmitters[eventId] = new HashSet<InteractiveObject>();
+        }
+        eventEmitters[eventId].Add(emitter);
+    }
+
+    public void UnregisterEventEmitter(EventID eventId, InteractiveObject emitter)
+    {
+        if (eventEmitters.TryGetValue(eventId, out var emitters))
+        {
+            emitters.Remove(emitter);
+            if (emitters.Count == 0)
+            {
+                eventEmitters.Remove(eventId);
+            }
+        }
+    }
+
+    public void TriggerEvent(EventData eventData)
+    {
+        AddToHistory(eventData);
+
+        Debug.Log($"Triggering event '{eventData.eventId}' from {eventData.emitter.name ?? "Unknown"}");
+
+        if (eventTable.TryGetValue(eventData.eventId, out var actionConfigs))
+        {
+            foreach (var actionConfig in actionConfigs)
+            {
+                // Verifica se l'emettitore corrisponde ai filtri configurati
+                if (ShouldExecuteAction(actionConfig, eventData.emitter))
+                {
+                    ExecuteActionConfig(actionConfig, eventData);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Event '{eventData.eventId}' not configured.");
+        }
+    }
+
+    private bool ShouldExecuteAction(ActionConfig actionConfig, InteractiveObject emitter)
+    {
+        // Se non ci sono filtri, esegui sempre l'azione
+        if (actionConfig.emitterFilters == null || actionConfig.emitterFilters.Count == 0)
+        {
+            return true;
+        }
+
+        // Se non c'è un emettitore ma sono richiesti filtri, non eseguire
+        if (emitter == null)
+        {
+            return false;
+        }
+
+        // Controlla se il nome dell'emettitore corrisponde a uno dei filtri
+        string emitterName = emitter.name;
+        foreach (string filter in actionConfig.emitterFilters)
+        {
+            if (string.IsNullOrEmpty(filter)) continue;
+            
+            // Supporta wildcard semplici con *
+            if (filter.Contains("*"))
+            {
+                string pattern = filter.Replace("*", ".*");
+                if (System.Text.RegularExpressions.Regex.IsMatch(emitterName, pattern))
+                {
+                    return true;
+                }
+            }
+            else if (emitterName.Equals(filter, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void SetEventConfiguration(EventConfiguration eventConfig)
     {
-        if (eventConfig == null || string.IsNullOrEmpty(eventConfig.name))
+        if (eventConfig == null)
         {
             Debug.LogError("Invalid event configuration provided.");
             return;
         }
 
-        string eventName = eventConfig.name;
-
-        // Assicurati che l'evento sia nella mappa
-        if (!eventTable.ContainsKey(eventName))
+        EventID eventId = eventConfig.EventID;
+        
+        if (eventId.id == 0)
         {
-            eventTable[eventName] = new List<ActionConfig>();
+            Debug.LogError($"Unknown event: {eventConfig.name}");
+            return;
         }
 
-        // Aggiungi tutte le azioni configurate per questo evento
+        if (!eventTable.ContainsKey(eventId))
+        {
+            eventTable[eventId] = new List<ActionConfig>();
+        }
+
         foreach (var actionCfg in eventConfig.actions)
         {
-            ActionConfig actionConfig = new()
+            if (actionCfg.ActionID.id == 0)
             {
-                action = actionCfg.action,
-                tag = actionCfg.tag,
-                isTagAction = actionCfg.isTagAction
-            };
-
-            eventTable[eventName].Add(actionConfig);
-            Debug.Log($"Event '{eventName}' configured with action '{actionConfig.action}' for tag '{actionConfig.tag}'.");
+                Debug.LogWarning($"Unknown action: {actionCfg.action}");
+                continue;
+            }
+            
+            // Se l'evento ha filtri globali, applicali alle azioni che non hanno filtri specifici
+            if (eventConfig.emitterFilters != null && eventConfig.emitterFilters.Count > 0 && 
+                (actionCfg.emitterFilters == null || actionCfg.emitterFilters.Count == 0))
+            {
+                actionCfg.emitterFilters = new List<string>(eventConfig.emitterFilters);
+            }
+            
+            eventTable[eventId].Add(actionCfg);
+            string filtersInfo = actionCfg.emitterFilters?.Count > 0 ? 
+                $" (filters: {string.Join(", ", actionCfg.emitterFilters)})" : "";
+            Debug.Log($"Event '{eventId}' configured with action '{actionCfg.ActionID}' for tag '{actionCfg.tag}'{filtersInfo}.");
         }
     }
 
-    public void RegisterEvent(string eventKey)
+    private void ExecuteActionConfig(ActionConfig actionConfig, EventData eventData)
     {
-        if (!eventTable.ContainsKey(eventKey))
+        if (actionConfig.isTagAction)
         {
-            eventTable[eventKey] = null;
-            Debug.Log($"Event '{eventKey}' registered successfully.");
-        }
-        else
-        {
-            Debug.LogWarning($"Event '{eventKey}' already registered.");
-        }
-    }
-
-    // metodo per richiamare le azioni associate a un evento
-    public void TriggerEvent(string eventKey, object[] parameters)
-    {
-        Debug.Log($"Triggering event '{eventKey}' with parameters: {parameters}");
-        if (eventTable.TryGetValue(eventKey, out var actionConfigs))
-        {
-            Debug.Log($"Event '{eventKey}' found with {actionConfigs.Count} actions.");
-            Debug.Log($"Actions: {string.Join(", ", actionConfigs)}");
-            foreach (var actionConfig in actionConfigs)
+            var tag = TagManager.Instance.GetTag(actionConfig.tag);
+            if (tag != null)
             {
-                Debug.Log($"Action Config: {actionConfig.action}, Tag: {actionConfig.tag}");
-                string actionName = actionConfig.action;
-                string tagName = actionConfig.tag;
-
-                if (actionConfig.isTagAction)
-                {
-                    var tag = TagManager.Instance.GetTag(tagName);
-                    if (tag != null)
-                    {
-                        tag.ExecuteAction(actionName, parameters);
-                        Debug.Log($"Executing action '{actionName}' on tag '{tagName}' with parameters: {parameters}");
-                    }
-                }
-                else
-                {
-                    var objects = TagManager.Instance.GetObjectsInTag(tagName);
-                
-                    foreach (var obj in objects)
-                    {
-                        if (obj.TryGetComponent<InteractiveObject>(out var interactiveObject))
-                        {
-                            interactiveObject.ExecuteAction(actionName, parameters);
-                        }
-                    }
-                }
+                tag.ExecuteAction(actionConfig.ActionID, eventData.parameters);
             }
         }
         else
         {
-            Debug.LogWarning($"Event '{eventKey}' not found.");
+            var objects = TagManager.Instance.GetObjectsInTag(actionConfig.tag);
+            foreach (var obj in objects)
+            {
+                if (obj.TryGetComponent<InteractiveObject>(out var interactiveObject))
+                {
+                    interactiveObject.ExecuteAction(actionConfig.ActionID, eventData.parameters);
+                }
+            }
         }
     }
 
-    // // metodo per richiamare le azioni associate a un evento
-    // public void TriggerEvent(string eventKey, object[] parameters = null)
-    // {
-    //     Debug.Log($"Triggering event '{eventKey}' with parameters: {parameters}");
-    //     if (eventTable.TryGetValue(eventKey, out var actionKey))
-    //     {
-    //         if (actions.TryGetValue(actionKey, out var objects))
-    //         {
-    //             foreach (var obj in objects)
-    //             {
-    //                 Debug.Log($"Triggering action '{actionKey}' for event '{eventKey}' on {obj.name}.");
-    //                 obj.ExecuteAction(actionKey, parameters);
-    //             }
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning($"Action '{actionKey}' not found for event '{eventKey}'.");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning($"Event '{eventKey}' not found.");
-    //     }
-    // }
+    private void AddToHistory(EventData eventData)
+    {
+        eventHistory.Add(eventData);
+        if (eventHistory.Count > maxHistorySize)
+        {
+            eventHistory.RemoveAt(0);
+        }
+    }
 
+    // Metodi di utilità per debugging e analytics
+    public List<EventData> GetEventHistory() => new(eventHistory);
+
+    public HashSet<InteractiveObject> GetEmittersForEvent(EventID eventId)
+    {
+        return eventEmitters.TryGetValue(eventId, out var emitters) ? new HashSet<InteractiveObject>(emitters) : new HashSet<InteractiveObject>();
+    }
 }
+

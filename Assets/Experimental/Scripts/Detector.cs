@@ -210,16 +210,16 @@ public class Detector : MonoBehaviour
             if (inView && !wasInView)
             {
                 detectedTargets.Add(target);
-                TriggerEvent(config.OnEnterEvent, config.OnEnterAction, target);
+                TriggerEvent(config.OnEnterEventID, config.OnEnterActionID, target);
             }
             else if (!inView && wasInView)
             {
                 detectedTargets.Remove(target);
-                TriggerEvent(config.OnExitEvent, config.OnExitAction, target);
+                TriggerEvent(config.OnExitEventID, config.OnExitActionID, target);
             }
             else if (inView)
             {
-                TriggerEvent(config.OnStayEvent, config.OnStayAction, target);
+                TriggerEvent(config.OnStayEventID, config.OnStayActionID, target);
             }
         }
     }
@@ -313,22 +313,22 @@ public class Detector : MonoBehaviour
         if (detectedTargets.Contains(target))
         {
             detectedTargets.Remove(target);
-            TriggerEvent(config.OnExitEvent, config.OnExitAction, target);
+            TriggerEvent(config.OnExitEventID, config.OnExitActionID, target);
         }
     }
     
-    void TriggerEvent(string eventName, string actionName, Transform target)
+    void TriggerEvent(EventID eventID, ActionID actionID, Transform target)
     {
         eventArgsCache[0] = target;
         
-        if (!string.IsNullOrEmpty(eventName))
+        if (eventID.id != 0)
         {
-            owner.EmitEvent(eventName, eventArgsCache);
+            owner.EmitEvent(eventID, eventArgsCache);
         }
         
-        if (!string.IsNullOrEmpty(actionName))
+        if (actionID.id != 0)
         {
-            owner.ExecuteAction(actionName, eventArgsCache);
+            owner.ExecuteAction(actionID, eventArgsCache);
         }
     }
     
