@@ -29,7 +29,7 @@ public class EffectsDispatcher : MonoBehaviour
     /// </summary>
     private List<int> activatedItems = new List<int>();
 
-    void Start()
+    void Awake()
     {
         if (gameObject.name.Contains("Player"))
         {

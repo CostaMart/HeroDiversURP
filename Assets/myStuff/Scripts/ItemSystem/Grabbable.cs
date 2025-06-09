@@ -17,6 +17,7 @@ public class Grabbable : MonoBehaviour
     [SerializeField] public EconomyManager economyManager;
 
     [SerializeField] private ItemIconsList itemIconsList;
+    [SerializeField] public bool grabOnWalkIn = false;
     private RectTransform rectTransform;
     private MessageHelper helper;
     private PlayerInput playerInput;
@@ -25,7 +26,7 @@ public class Grabbable : MonoBehaviour
     public void Start()
     {
 
-        helper = GameObject.Find("InGameManagers").GetComponent<MessageHelper>();
+        helper = MessageHelper.Instance;
         playerInput = ItemManager.playerInput;
         dispatcher = ItemManager.playerDispatcher;
 
@@ -56,6 +57,7 @@ public class Grabbable : MonoBehaviour
         active = false;
 
         rectTransform = text.GetComponent<RectTransform>();
+        grabOnWalkIn = item.grabOnWalkIn;
     }
 
     void Update()
@@ -66,9 +68,11 @@ public class Grabbable : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (grabOnWalkIn) TryGrab();
+        Debug.Log("grab on walkin " + grabOnWalkIn);
+
         if (other.CompareTag("Player"))
         {
-            helper.PostMessage("Press E to pick up " + item.name);
             active = true;
             inRange = true;
         }
@@ -78,17 +82,48 @@ public class Grabbable : MonoBehaviour
 
     }
 
+    void OnTriggerStay(Collider other)
+    {
+        if (grabOnWalkIn) return;
+        if (helper.isMessageActive) return;
+        if (other.CompareTag("Player"))
+            helper.PostMessage("Press E to pick up " + item.name);
+    }
+
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            helper.HideMessage();
             inRange = false;
         }
+        helper.HideMessage();
     }
 
 
     void TryGrab(CallbackContext ctx)
+    {
+
+        if (inRange)
+        {
+            // if selling try buy item
+            if (selling)
+                if (!economyManager.TryBuyItem(item.inGamePrice, false))
+                {
+                    Debug.LogWarning("Not enough money");
+                    return;
+                }
+
+            grabbable = false;
+
+            dispatcher.modifierDispatch(item.modifier);
+            helper.HideMessage();
+
+            playerInput.actions["Interact"].performed -= TryGrab;
+            Debug.Log("picked up " + item.name);
+            Destroy(transform.parent.gameObject);
+        }
+    }
+    void TryGrab()
     {
 
         if (inRange)

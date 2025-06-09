@@ -16,8 +16,8 @@ public class EnemyAttack : MonoBehaviour
         behaviour.enemeyDispatcher = dispatcher;
         behaviour.mod = ItemManager.bulletPool[dispatcher.GetFeatureByType<int>(FeatureType.bulletEffects).Last()];
 
-        sphere.GetComponent<Rigidbody>().AddForce(shootingPoint.transform.forward *
-        dispatcher.GetFeatureByType<float>(FeatureType.bulletSpeed).Last(), ForceMode.VelocityChange);
+        sphere.GetComponent<Rigidbody>().linearVelocity = shootingPoint.transform.forward *
+        dispatcher.GetFeatureByType<float>(FeatureType.bulletSpeed).Last();
     }
 
     public void Update()

@@ -83,7 +83,7 @@ AudioMixerController:
   m_UpdateMode: 0
   m_ExposedParameters:
   - guid: e9e9ed59fb591ab37bbc821d02676d73
-    name: MyExposedParam 1
+    name: Explosion
   - guid: fa65916479b017a729f7085a824cce49
     name: MyExposedParam
   - guid: 9d330ecc674eac4a4a9ad1547810ec2f
@@ -150,7 +150,7 @@ AudioMixerSnapshotController:
   m_SnapshotID: 3058f002faaf5dcd899ae6ca8b83e86e
   m_FloatValues:
     fa65916479b017a729f7085a824cce49: 0.13552584
-    e9e9ed59fb591ab37bbc821d02676d73: -57.232933
+    e9e9ed59fb591ab37bbc821d02676d73: -0.16685188
     b38ef75aea8ddf987a9896546154bd44: -12.082023
     9d330ecc674eac4a4a9ad1547810ec2f: 0.27000841
     4439b98fa1ac7770c9b74b83cc6674c5: 0

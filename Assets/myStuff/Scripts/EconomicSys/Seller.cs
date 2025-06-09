@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor.Search;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static ItemManager;
@@ -52,6 +53,14 @@ public class Seller : MonoBehaviour
     {
         input.actions["Interact"].performed -= startGui;
         shopMan.gameObject.SetActive(false);
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (!other.gameObject.CompareTag("Player")) return;
+        if (MessageHelper.Instance.isMessageActive) return;
+
+        MessageHelper.Instance.PostMessage("Press E to open shop");
     }
 
     public void startGui(CallbackContext ctx)
