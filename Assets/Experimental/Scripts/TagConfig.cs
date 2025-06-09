@@ -33,11 +33,6 @@ public class TagConfigLoader : MonoBehaviour
             configContent = string.Empty;
         }
     }
-
-    void Start()
-    {
-        ConfigPlayerTag();
-    }
     
     public void LoadTagsFromConfig()
     {
@@ -57,17 +52,6 @@ public class TagConfigLoader : MonoBehaviour
             // Configura gli oggetti del tag
             ConfigureTaggedObjects(tag, tagConfig);
         }
-    }
-
-    private static void ConfigPlayerTag()
-    {
-        GameObject playerTag = new("PlayerTag");
-        GameTag newTag = playerTag.AddComponent<GameTag>();
-        newTag.tagName = "PlayerTag";
-        newTag.tagType = GameTag.TagType.Random;
-        newTag.transform.SetParent(TagManager.Instance.transform);
-        newTag.AddObject(GameObject.FindWithTag("Player"));
-        TagManager.Instance.RegisterTag(newTag);
     }
 
     private GameTag FindOrCreateTag(TagConfiguration tagConfig)
@@ -93,6 +77,10 @@ public class TagConfigLoader : MonoBehaviour
     
     private void ConfigureTaggedObjects(GameTag tag, TagConfiguration tagConfig)
     {
+        if (tag.tagName == "PlayerTag")
+        {
+            tag.AddObject(FindFirstObjectByType<Player>().gameObject);
+        }
         // Aggiungi gli oggetti specificati per nome
         foreach (string objectName in tagConfig.members)
         {

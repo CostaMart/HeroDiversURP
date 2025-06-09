@@ -1,6 +1,11 @@
 {
     "tags": [
         {
+            "name": "PlayerTag",
+            "type": "Random",
+            "members": ["Player"]
+        },
+        {
             "name": "DroneSpawnTag",
             "type": "Random",
             "members": ["Drone"]
