@@ -40,11 +40,15 @@ public class NPC : InteractiveObject
     // Transform targetTransform;
 
     // Attack Settings
-    public float attackDuration = 2.0f; // Durata dell'attacco
-
+    public float attackCooldown = 1.5f;
+    public float attackDuration = 0.5f;
+    bool isCooldownElapsed = true; // Flag to check if the cooldown is elapsed
+    private bool isAttacking;
     AgentController agentController; // Reference to the AgentController
 
-    enum State 
+    EnemyAttack enemyAttack;
+
+    enum State
     {
         Idle,
         Patrol,
@@ -57,6 +61,7 @@ public class NPC : InteractiveObject
     void Start()
     {
         agentController = GetComponent<AgentController>();
+        enemyAttack = GetComponent<EnemyAttack>();
 
         // Initialize components, features, and modifiers
         components = new List<Component>();
@@ -216,18 +221,28 @@ public class NPC : InteractiveObject
 
         currentState = State.Attack;
         EmitEvent(EventRegistry.ATTACK_STARTED, new object[] { target });
-    
-        StartCoroutine(AttackCooldown());
+
+        if (isCooldownElapsed)
+            StartCoroutine(AttackCooldown());
     }
 
     void OnRotateToTarget(object[] p)
     {
+        if (isAttacking) return; // Prevent rotation while attacking
         if (p.Length == 0 || p[0] is not Transform target)
         {
             Debug.LogError("Invalid target for rotation.");
             return;
-        }       
-        agentController.RotateToDirection(target.position, maxPitchAngle);
+        }     
+
+        Vector3 pos = target.position;
+
+        if (p.Length > 1 && p[1] is Vector3 center)
+        {
+            pos = center;
+        }
+        
+        agentController.RotateToDirection(pos, maxPitchAngle);
     }
 
     void Chase(object[] p)
@@ -303,24 +318,36 @@ public class NPC : InteractiveObject
     // Coroutine per il cooldown dell'attacco
     IEnumerator AttackCooldown()
     {
-        agentController.IsAttacking = true;
+        isCooldownElapsed = false;
+        isAttacking = true;
+        enemyAttack.Shoot();
         yield return new WaitForSeconds(attackDuration);
-        agentController.IsAttacking = false;
-
-        // agentController.ResumeAgent();
-        // EmitEvent("AttackEnded");
+        isAttacking = false;
+        yield return new WaitForSeconds(attackCooldown);
+        isCooldownElapsed = true;
     }
 
     private void OnAimAtTarget(object[] obj)
     {
+        agentController.StopAgent();
+        if (isAttacking) return; // Prevent aiming while attacking
         if (obj.Length == 0 || obj[0] is not Transform target)
         {
             Debug.LogError("Invalid target for aiming.");
             return;
         }
 
-        agentController.StopAgent();
-        agentController.RotateToDirection(target.position, maxPitchAngle);
+        Vector3 pos = target.position;
+
+        if (obj.Length > 1 && obj[1] is Vector3 center)
+        {
+            pos = center;
+        }
+
+        agentController.RotateToDirection(pos, maxPitchAngle);
+
+        // draw center for debugging
+        Debug.DrawLine(agentController.Position, pos, Color.cyan, 1f);
     }
     
     void OnDrawGizmosSelected()

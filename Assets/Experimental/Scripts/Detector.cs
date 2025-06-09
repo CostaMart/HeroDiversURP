@@ -25,7 +25,7 @@ public class Detector : MonoBehaviour
     LayerMask targetLayer;
     Collider[] overlapResults;
     readonly Dictionary<Transform, Collider> targetColliderCache = new();
-    readonly object[] eventArgsCache = new object[1];
+    readonly object[] eventArgsCache = new object[2];
     
     // Pre-calcolo per dot product
     float minDot;
@@ -320,6 +320,7 @@ public class Detector : MonoBehaviour
     void TriggerEvent(EventID eventID, ActionID actionID, Transform target)
     {
         eventArgsCache[0] = target;
+        eventArgsCache[1] = GetTargetBounds(target).center;
         
         if (eventID.id != 0)
         {

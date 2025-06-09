@@ -7,8 +7,6 @@ public class AgentController : MonoBehaviour
 
     private PitchRotator pitchRotator;
 
-    private bool isAttacking = false;
-
     public float Speed
     {
         get => agent.enabled ? agent.speed : 0f;
@@ -33,12 +31,6 @@ public class AgentController : MonoBehaviour
 
     public bool IsStopped => agent.enabled && agent.isStopped;
 
-    public bool IsAttacking
-    {
-        get => isAttacking;
-        set => isAttacking = value;
-    }
-
     Animator anim;
 
     private void Start()
@@ -57,7 +49,6 @@ public class AgentController : MonoBehaviour
         if (anim == null) return;
         anim.SetFloat("moveSpeed", agent.velocity.sqrMagnitude);
         anim.SetBool("isMoving", IsMoving);
-        anim.SetBool("isAttacking", isAttacking);
     }
 
 
@@ -96,7 +87,7 @@ public class AgentController : MonoBehaviour
     /// <param name="maxPitchAngle">L'angolo massimo (in gradi) di pitch consentito (asse X).</param>
     public void RotateToDirection(Vector3 lookAtPosition, float maxPitchAngle)
     {
-        if (!agent.enabled || IsAttacking || IsMoving) return;
+        if (!agent.enabled || IsMoving) return;
 
         Vector3 directionToTarget = lookAtPosition - transform.position;
 
