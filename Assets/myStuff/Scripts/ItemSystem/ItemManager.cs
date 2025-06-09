@@ -61,8 +61,6 @@ public class ItemManager : MonoBehaviour
 
     void Start()
     {
-        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
-
         if (instance == null)
         {
             instance = this;

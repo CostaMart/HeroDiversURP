@@ -3,6 +3,15 @@ using UnityEngine.Rendering;
 
 public class ClimateEffectController : MonoBehaviour
 {
+    static ClimateEffectController instance;
+    public static ClimateEffectController Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     Adversity adversity;
     private bool notSetupped = false;
     [SerializeField] private EffectsDispatcher playerEffectsDispatcher;
@@ -12,10 +21,10 @@ public class ClimateEffectController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        instance = this;
         player = GameObject.Find("Player");
-        playerEffectsDispatcher = player.GetComponent<EffectsDispatcher>();
+        playerEffectsDispatcher = ItemManager.playerDispatcher;
         volume = this.gameObject.GetComponent<Volume>();
-
     }
 
     // Update is called once per frame
