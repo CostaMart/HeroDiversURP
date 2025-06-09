@@ -7,6 +7,7 @@ public class CharStats : AbstractStatus
 {
     [SerializeField] private bool isPlayer = false;
     [SerializeField] private EnemyDropper dropper;
+    [SerializeField] private Ragdoller ragdoller;
 
 
     protected new void Awake()
@@ -35,11 +36,16 @@ public class CharStats : AbstractStatus
 
         if (hp <= 0)
         {
-            this.gameObject.SetActive(false);
-            if (!isPlayer) { dropper.DropItem(); }
+            if (!isPlayer)
+            {
+                this.gameObject.SetActive(false);
+                dropper.DropItem();
+            }
+
             else
             {
-                GameManager.Instance.Lost();
+                ragdoller.Ragdolling(true);
+                PostProcessor.instance.Lost();
             }
         }
 

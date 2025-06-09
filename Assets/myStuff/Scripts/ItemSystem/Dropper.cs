@@ -25,7 +25,6 @@ public class Dropper : MonoBehaviour
     PlayerInput playerInput;
     private Transform player;
     private MessageHelper helper;
-    private AudioSource audioSource;
 
     public int ID; // ID of the itempool to refer to for dops
 
@@ -36,12 +35,11 @@ public class Dropper : MonoBehaviour
     void Start()
     {
 
-        audioSource = GetComponent<AudioSource>();
 
         helper = MessageHelper.Instance;
         GameObject player = ItemManager.playerDispatcher.gameObject;
 
-
+        this.player = GameManager.Instance.playerInput.gameObject.transform;
         playerInput = GameManager.Instance.playerInput;
         anim = player.GetComponent<Animator>();
 
@@ -51,20 +49,25 @@ public class Dropper : MonoBehaviour
         }
 
 
-        playerInput.actions["Interact"].performed += Open;
 
         material = GetComponent<Renderer>().material;
         spawn = transform.GetChild(0);
 
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            playerInput.actions["Interact"].performed += Open;
+        }
+    }
     public void OnTriggerStay(Collider other)
     {
 
         if (used) return;
         if (other.CompareTag("Player"))
         {
-            inRange = true;
             player = other.transform;
             material.SetColor("_EmissionColor", Color.Lerp(material.color, emissionColor, 2f));
             if (!helper.isMessageActive) helper.PostMessage("Press 'E' to drop items");
@@ -74,10 +77,10 @@ public class Dropper : MonoBehaviour
 
     public void Open(CallbackContext ctx)
     {
-        Debug.Log("dropping");
-        if (!inRange) return;
         List<EnrichedModifier> items = null;
         used = true;
+
+        playerInput.actions["Interact"].performed -= Open;
 
 
         // launch on open effect!
@@ -91,7 +94,6 @@ public class Dropper : MonoBehaviour
         transform.GetChild(1).gameObject.GetComponent<Rigidbody>()
         .AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
 
-        audioSource.Play();
 
         anim.SetTrigger("opening");
         material.SetColor("_EmissionColor", Color.Lerp(material.color, usedColor, 2f));
@@ -103,6 +105,8 @@ public class Dropper : MonoBehaviour
 
     public void OnTriggerExit(Collider other)
     {
+        if (!other.CompareTag("Player")) return;
+        playerInput.actions["Interact"].performed -= Open;
         inRange = false;
         material.SetColor("_EmissionColor", Color.Lerp(material.color, defaultColor, 2f));
         helper.HideMessage();

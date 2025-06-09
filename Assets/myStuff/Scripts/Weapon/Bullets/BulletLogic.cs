@@ -74,6 +74,7 @@ public class BulletLogic : MonoBehaviour
     float homingTimer = 0f;
     bool followTargetSet = false;
     bool checkCollisions = true; // if false, the bullet will not check for collisions, useful for sticky bullets
+    int gravityContribute = 0;
 
     public float destroyExplosionRadius = 0f; // radius of the explosion, can be modified by the weapon
     public Modifier onDestroyModifier; // modifier to apply on explosion, can be modified by the weapon
@@ -119,6 +120,8 @@ public class BulletLogic : MonoBehaviour
         oldParent = this.transform.parent.gameObject;
         bulletHitCount = 0;
         rb.useGravity = !antigravitational;
+        gravityContribute = antigravitational ? 0 : 1;
+        gravitySpeedComponent = 0f;
 
         switch ((followType)followSomething)
         {
@@ -186,8 +189,13 @@ public class BulletLogic : MonoBehaviour
 
 
 
+    public float gravityStrength = 9.81f;
+    public float gravitySpeedComponent = 0;
+
+
     void FixedUpdate()
     {
+
         if ((followType)followSomething == followType.Aim)
         {
             Debug.Log("Homing bullet is following target: " + followTarget.name);
@@ -196,20 +204,21 @@ public class BulletLogic : MonoBehaviour
             Vector3 target = followTarget.position;
             Vector3 direction = (target - origin).normalized;
 
-            // Punto desiderato lungo la direzione, ma limitato a maxDistance
             Vector3 desiredPosition = origin + direction * maxDistance;
             var actualDistance = (this.transform.position - desiredPosition).sqrMagnitude;
-
-            // Se il proiettile è già oltre, bloccalo o riportalo in zona
             Vector3 toDesired = desiredPosition - transform.position;
 
-            // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
             if (toDesired.sqrMagnitude > 0.01f)
             {
+
+                gravitySpeedComponent += gravityStrength * Time.fixedDeltaTime;
+                gravitySpeedComponent = Mathf.Clamp(gravitySpeedComponent + gravityStrength * Time.fixedDeltaTime, -20, 20);
+                Vector3 gravity = Vector3.down * gravitySpeedComponent * gravityContribute;
+
                 if (actualDistance > 2)
-                    rb.linearVelocity = toDesired.normalized * speed;
+                    rb.linearVelocity = toDesired.normalized * speed + gravity;
                 else
-                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f; // riduce la velocità quando è vicino al target
+                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f + gravity;
             }
             else
             {
@@ -227,27 +236,26 @@ public class BulletLogic : MonoBehaviour
             Vector3 target = dispatcher.gameObject.transform.position + stopPointWithRespectToPlayer;
             Vector3 direction = (target - origin).normalized;
 
-            // Punto desiderato lungo la direzione, ma limitato a maxDistance
             Vector3 desiredPosition = origin + direction * maxDistance;
             var actualDistance = (this.transform.position - desiredPosition).sqrMagnitude;
-
-            // Se il proiettile è già oltre, bloccalo o riportalo in zona
             Vector3 toDesired = desiredPosition - transform.position;
 
-            // Se il proiettile è oltre la distanza massima, evitiamo che acceleri ancora o si perda
             if (toDesired.sqrMagnitude > 0.01f)
             {
+                gravitySpeedComponent += gravityStrength * Time.fixedDeltaTime;
+                gravitySpeedComponent = Mathf.Clamp(gravitySpeedComponent + gravityStrength * Time.fixedDeltaTime, -20, 20);
+                Vector3 gravity = Vector3.down * gravitySpeedComponent * gravityContribute;
+
                 if (actualDistance > 2)
-                    rb.linearVelocity = toDesired.normalized * speed;
+                    rb.linearVelocity = toDesired.normalized * speed + gravity;
                 else
-                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f; // riduce la velocità quando è vicino al target
+                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f + gravity;
             }
             else
             {
                 rb.linearVelocity = Vector3.zero;
             }
         }
-
         if ((followType)followSomething == followType.Homing)
         {
             if (!followTargetSet)
@@ -502,11 +510,10 @@ public class BulletLogic : MonoBehaviour
     {
 
 
-        gizmo.StartDrawing(radius, position);
         exploderTransform.gameObject.SetActive(true);
         exploderTransform.SetParent(null);
         exploderTransform.position = position;
-        exploderTransform.localScale = Vector3.one * radius / 2;
+        exploderTransform.localScale = Vector3.one * radius / 3;
         explodeVfX.Play();
         explosionAudioSource.PlayOneShot(explosionAudioClip);
 

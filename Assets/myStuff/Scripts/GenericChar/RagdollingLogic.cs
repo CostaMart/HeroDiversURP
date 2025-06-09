@@ -47,7 +47,7 @@ public class Ragdoller : MonoBehaviour
     }
 
     /*Activate or deactivate ragdolling*/
-    void Ragdolling(bool ragdolling)
+    public void Ragdolling(bool ragdolling)
     {
 
         Debug.Log("i've been called");

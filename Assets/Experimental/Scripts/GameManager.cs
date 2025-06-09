@@ -79,11 +79,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject LostScreen;
-    public void Lost()
-    {
-        LostScreen.SetActive(true);
-    }
 
 
 

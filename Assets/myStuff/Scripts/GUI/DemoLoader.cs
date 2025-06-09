@@ -120,6 +120,6 @@ public class DemoLoader : MonoBehaviour
 
     public void OnUnlockPanelButtonPressed()
     {
-        unlockpanel.SetActive(true);
+        unlockpanel.SetActive(!unlockpanel.activeSelf);
     }
 }

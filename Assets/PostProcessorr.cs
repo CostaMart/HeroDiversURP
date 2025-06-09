@@ -2,11 +2,14 @@ using System.Collections;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PostProcessor : MonoBehaviour
 {
 
+    public GameObject LostScreen;
+    public GameObject deathText;
     private static PostProcessor _instance;
     public static PostProcessor instance
     {
@@ -22,12 +25,19 @@ public class PostProcessor : MonoBehaviour
         if (_instance == null)
             _instance = this;
 
-        DontDestroyOnLoad(gameObject);
     }
     public void ShowDamageEffect(float duration, float alpha)
     {
 
         StartCoroutine(ShowDamageEffectCoroutine(duration, alpha));
+    }
+
+    public void Lost()
+    {
+        LostScreen.SetActive(true);
+        damageImage.gameObject.SetActive(true);
+        damageImage.color = new Color(1f, 1f, 1f, 0.8f);
+        deathText.SetActive(true);
     }
 
     public IEnumerator ShowDamageEffectCoroutine(float duration, float alpha)

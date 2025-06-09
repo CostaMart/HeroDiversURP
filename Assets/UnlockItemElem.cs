@@ -5,22 +5,25 @@ using UnityEngine;
 public class UnlockItemElem : MonoBehaviour
 {
     public int id;
-    public float price;
+    public int price;
     public AudioSource source;
     public AudioClip bought;
     public AudioClip notEnoughCredits;
     public GameObject result;
+    public TMP_Text creditsText;
 
     public void OnPressedUnlock()
     {
-        var credits = 0;
+        var credits = PlayerPrefs.GetInt("astroCredits", 0);
+        Debug.Log($"price: {price}");
 
-        if (price > credits)
+        if (credits > price)
         {
             ItemManager.UnlockItem(id);
-            PlayerPrefs.SetFloat("credits", credits - price);
+            PlayerPrefs.SetInt("astroCredits", credits - price);
+            creditsText.text = PlayerPrefs.GetInt("astroCredits", 0).ToString();
             source.PlayOneShot(bought);
-            Destroy(this.gameObject);
+            this.transform.parent.gameObject.SetActive(false);
         }
         else
         {
