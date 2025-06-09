@@ -339,6 +339,11 @@
             "effects": [
                 {
                     "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.29",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
                     "target": "@PrimaryWeaponStats.11",
                     "expr": "200.0"
                 },
@@ -416,11 +421,6 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.27",
                     "expr": "0.0"
-                },
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.29",
-                    "expr": "true"
                 },
                 {
                     "effectType": "sa",

@@ -61,7 +61,7 @@ public class MouseRotateCamera : MonoBehaviour
         initialCameraDistance = followCamera.CameraDistance;
         transform.localPosition = initialLocalPos;
 
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         initialPos = transform.localPosition;

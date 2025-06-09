@@ -245,6 +245,7 @@ MonoBehaviour:
   mydispatcher: {fileID: 0}
   isPlayer: 0
   dropper: {fileID: -3790830956408691179}
+  ragdoller: {fileID: 0}
 --- !u!114 &-3790830956408691179
 MonoBehaviour:
   m_ObjectHideFlags: 0
