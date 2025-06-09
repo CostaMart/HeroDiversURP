@@ -46,18 +46,22 @@ public class TagConfigLoader : MonoBehaviour
 
         foreach (TagConfiguration tagConfig in config.tags)
         {
+            // Genera l'ID per il tag
+            int tagId = TagIdGenerator.GetOrCreateTagId(tagConfig.name);
+            Debug.Log($"Processing tag: {tagConfig.name} with ID: {tagId}");
+
             // Trova o crea il tag
-            GameTag tag = FindOrCreateTag(tagConfig);
+            GameTag tag = FindOrCreateTag(tagId, tagConfig);
 
             // Configura gli oggetti del tag
             ConfigureTaggedObjects(tag, tagConfig);
         }
     }
 
-    private GameTag FindOrCreateTag(TagConfiguration tagConfig)
+    private GameTag FindOrCreateTag(int tagId, TagConfiguration tagConfig)
     {
         // Cerca un tag esistente con lo stesso nome
-        if (TagManager.Instance.GetTag(tagConfig.name) is GameTag existingTag)
+        if (TagManager.Instance.GetTag(tagId) is GameTag existingTag)
         {
             // Se esiste, ritorna l'istanza esistente
             Debug.Log($"Found existing tag: {existingTag.tagName}");
@@ -68,23 +72,26 @@ public class TagConfigLoader : MonoBehaviour
 
         // Aggiungi il componente appropriato in base al tipo
         GameTag newTag = tagObject.AddComponent<GameTag>();
-        newTag.tagName = tagConfig.name;
+        newTag.SetTagName(tagConfig.name);
         newTag.tagType = (GameTag.TagType)System.Enum.Parse(typeof(GameTag.TagType), tagConfig.type);
         newTag.transform.SetParent(TagManager.Instance.transform);
         TagManager.Instance.RegisterTag(newTag);
+
+        Debug.Log($"Created new tag: {newTag.tagName} with ID: {newTag.id}");
         return newTag;
     }
     
     private void ConfigureTaggedObjects(GameTag tag, TagConfiguration tagConfig)
     {
-        if (tag.tagName == "PlayerTag")
-        {
-            tag.AddObject(FindFirstObjectByType<Player>().gameObject);
-        }
         // Aggiungi gli oggetti specificati per nome
         foreach (string objectName in tagConfig.members)
         {
-            tag.trackedObjectNames.Add(objectName);
+            PoolObjectType obj = ObjectPool.Instance.GetTypeFromName(objectName);
+            if (obj != PoolObjectType.None)
+            {
+                tag.pooledObjects.Add(obj);
+                Debug.Log($"Added object '{objectName}' of type '{obj}' to tag '{tag.tagName}'");
+            }
             tag.RegisterToObjectEnableEvent(objectName);
             tag.RegisterToObjectDisableEvents(objectName);
         }

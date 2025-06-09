@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Events;
 using Utility.Positioning;
 
 namespace Spawning
@@ -616,7 +614,7 @@ namespace Spawning
         
         void Start()
         {
-            gameTag = TagManager.Instance.GetTag(tagName);
+            gameTag = TagManager.Instance.GetTagByName(tagName);
             
             if (autoStart)
             {

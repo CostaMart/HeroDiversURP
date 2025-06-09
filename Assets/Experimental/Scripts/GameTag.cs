@@ -9,20 +9,23 @@ public class GameTag : InteractiveObject
         Sequential,
     };
 
+    public int id;
     public string tagName;
     public TagType tagType;
     public List<GameObject> activeObjects = new();
-    public List<string> trackedObjectNames = new();
+    public List<PoolObjectType> pooledObjects = new();
 
     public IIterator iteratorStrategy;
 
     protected override void Awake()
     {
         InitializeIterator();
-    }
+        // Genera l'ID quando il tag viene creato
+        if (!string.IsNullOrEmpty(tagName))
+        {
+            id = TagIdGenerator.GetOrCreateTagId(tagName);
+        }
 
-    void Start()
-    {
         // Registra eventi per gestire l'aggiunta e la rimozione di oggetti
         RegisterAction(ActionRegistry.ADD_ENABLED_OBJECT, AddEnabledObjectAction);
         RegisterAction(ActionRegistry.REMOVE_DISABLED_OBJECT, RemoveDisabledObjectAction);
@@ -38,6 +41,14 @@ public class GameTag : InteractiveObject
         };
     }
 
+    // Metodo per impostare il nome del tag e generare l'ID
+    public void SetTagName(string name)
+    {
+        tagName = name;
+        id = TagIdGenerator.GetOrCreateTagId(name);
+    }
+
+
     public GameObject GetActiveObject()
     {
         return iteratorStrategy?.NextElement(activeObjects);
@@ -45,15 +56,15 @@ public class GameTag : InteractiveObject
 
     public GameObject CreateNextObject(Vector3 position, Quaternion rotation)
     {
-        if (trackedObjectNames.Count == 0)
+        if (pooledObjects.Count == 0)
         {
             Debug.LogWarning("No tracked object names available to create an object.");
             return null;
         }
 
-        string objName = iteratorStrategy?.NextElement(trackedObjectNames);
-
-        return ObjectPool.Instance.Get(objName, position, rotation);
+        PoolObjectType o = iteratorStrategy.NextElement(pooledObjects);
+        
+        return ObjectPool.Instance.Get(o, position, rotation);
     }
 
     // Aggiunge un oggetto alla lista dei tagged objects e aggiorna l'iteratore
@@ -141,7 +152,7 @@ public class GameTag : InteractiveObject
         return activeObjects.Contains(obj);
     }
 
-    public GameObject[] GetObjects()
+    public GameObject[] GetActiveObjects()
     {
         return activeObjects.ToArray();
     }

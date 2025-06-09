@@ -20,7 +20,7 @@ public class SimpleBulletBehaviour : MonoBehaviour
     {
         if (time > bulletLifeTime)
         {
-            ObjectPool.Instance.Return(gameObject);
+            ObjectPool.Instance.Return(PoolObjectType.EnemySphereBullet, gameObject);
         }
 
         time += Time.deltaTime;
@@ -49,7 +49,7 @@ public class SimpleBulletBehaviour : MonoBehaviour
             Debug.Log("Bullet hit player, applying effects from enemy dispatcher");
         }
 
-        ObjectPool.Instance.Return(gameObject);
+        ObjectPool.Instance.Return(PoolObjectType.EnemySphereBullet, gameObject);
     }
 
 

@@ -16,7 +16,7 @@ public class EnemyAttack : MonoBehaviour
 
     public void Shoot()
     {
-        var sphere = pool.Get("EnemySphereBullet", shootingPoint.transform.position, shootingPoint.transform.rotation);
+        var sphere = pool.Get(PoolObjectType.EnemySphereBullet, shootingPoint.transform.position, shootingPoint.transform.rotation);
         var behaviour = sphere.GetComponent<SimpleBulletBehaviour>();
         behaviour.enemeyDispatcher = dispatcher;
         behaviour.mod = ItemManager.bulletPool[dispatcher.GetFeatureByType<int>(FeatureType.bulletEffects).Last()];

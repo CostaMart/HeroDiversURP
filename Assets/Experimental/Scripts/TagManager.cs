@@ -9,7 +9,7 @@ public class TagManager : MonoBehaviour
 
     // Dizionario principale: la chiave è il nome del Tag (stringa),
     // il valore è l'istanza di Tag.
-    readonly Dictionary<string, GameTag> _tagRegistry = new();
+    readonly Dictionary<int, GameTag> _tagRegistry = new();
 
     // Dizionario per tracciare a quali Tag un GameObject appartiene.
     // Chiave: ID dell'oggetto di gioco.
@@ -46,9 +46,9 @@ public class TagManager : MonoBehaviour
     // --- Gestione dei Tag ---
     public void RegisterTag(GameTag tag)
     {
-        if (!_tagRegistry.ContainsKey(tag.name))
+        if (!_tagRegistry.ContainsKey(tag.id))
         {
-            _tagRegistry.Add(tag.name, tag);
+            _tagRegistry.Add(tag.id, tag);
         }
         else
         {
@@ -57,19 +57,28 @@ public class TagManager : MonoBehaviour
         }
     }
 
-    public GameTag GetTag(string tagName)
+    public GameTag GetTag(int tagId)
     {
-        if (_tagRegistry.TryGetValue(tagName, out GameTag tagObj))
+        if (_tagRegistry.TryGetValue(tagId, out GameTag tagObj))
         {
             return tagObj;
         }
-        return null; // O lanciare un'eccezione se il tag non esiste
+        return null; 
     }
 
-    // --- Associazione Oggetti a Tag ---
-    public void AddObjectToTag(GameObject obj, string tagName)
+    public GameTag GetTagByName(string tagName)
     {
-        GameTag tag = GetTag(tagName);
+        int tagId = TagIdGenerator.GetTagByName(tagName);
+        if (_tagRegistry.TryGetValue(tagId, out GameTag tagObj))
+        {
+            return tagObj;
+        }
+        return null;
+    }
+    // --- Associazione Oggetti a Tag ---
+    public void AddObjectToTag(GameObject obj, int tagId)
+    {
+        GameTag tag = GetTag(tagId);
         if (tag != null)
         {
             tag.AddObject(obj); // Aggiunge l'oggetto alla lista interna del Tag
@@ -84,13 +93,13 @@ public class TagManager : MonoBehaviour
         else
         {
             // Gestire il caso in cui il Tag non esista o il tipo non corrisponda
-            Debug.LogError($"Errore: Impossibile aggiungere '{obj.name}' a Tag '{tagName}'.");
+            Debug.LogError($"Errore: Impossibile aggiungere '{obj.name}' al Tag '{tagId} ({tag.tagName})'.");
         }
     }
 
-    public void RemoveObjectFromTag(GameObject obj, string tagName)
+    public void RemoveObjectFromTag(GameObject obj, int tagId)
     {
-        GameTag tag = GetTag(tagName);
+        GameTag tag = GetTag(tagId);
         if (tag != null)
         {
             tag.RemoveObject(obj);
@@ -108,9 +117,9 @@ public class TagManager : MonoBehaviour
     }
 
     // --- Query ---
-    public List<GameObject> GetObjectsInTag(string tagName)
+    public List<GameObject> GetObjectsInTag(int tagId)
     {
-        GameTag tag = GetTag(tagName);
+        GameTag tag = GetTag(tagId);
         return tag.activeObjects ?? new List<GameObject>();
     }
 
@@ -123,9 +132,9 @@ public class TagManager : MonoBehaviour
     //     return new HashSet<string>();
     // }
 
-    public bool IsObjectInTag(GameObject obj, string tagName)
+    public bool IsObjectInTag(GameObject obj, int tagId)
     {
-        GameTag tag = GetTag(tagName);
+        GameTag tag = GetTag(tagId);
         return tag != null && tag.Contains(obj);
     }
 }

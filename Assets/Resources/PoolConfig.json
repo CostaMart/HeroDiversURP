@@ -1,0 +1,30 @@
+{
+    "poolItems": [
+        {
+            "id": 0,
+            "prefabName": "EnemySphereBullet",
+            "initialSize": 10
+        },
+        {
+            "id": 1,
+            "prefabName": "Drone",
+            "initialSize": 10
+        }
+        ,
+        {
+            "id": 2,
+            "prefabName": "GroundUnit",
+            "initialSize": 10
+        },
+        {
+            "id": 3,
+            "prefabName": "BoxCommon 1",
+            "initialSize": 5
+        },
+        {
+            "id": 4,
+            "prefabName": "Key",
+            "initialSize": 5
+        }
+    ]
+}

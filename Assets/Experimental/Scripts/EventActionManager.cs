@@ -220,17 +220,19 @@ public class EventActionManager : MonoBehaviour
 
     private void ExecuteActionConfig(ActionConfig actionConfig, EventData eventData)
     {
+        var tag = TagManager.Instance.GetTagByName(actionConfig.tag);
+        if (tag == null)
+        {
+            Debug.LogWarning($"Tag '{actionConfig.tag}' not found for action '{actionConfig.ActionID}' in event '{eventData.eventId}'.");
+            return;
+        }
         if (actionConfig.isTagAction)
         {
-            var tag = TagManager.Instance.GetTag(actionConfig.tag);
-            if (tag != null)
-            {
-                tag.ExecuteAction(actionConfig.ActionID, eventData.parameters);
-            }
+            tag.ExecuteAction(actionConfig.ActionID, eventData.parameters);
         }
         else
         {
-            var objects = TagManager.Instance.GetObjectsInTag(actionConfig.tag);
+            var objects = tag.GetActiveObjects();
             foreach (var obj in objects)
             {
                 if (obj.TryGetComponent<InteractiveObject>(out var interactiveObject))

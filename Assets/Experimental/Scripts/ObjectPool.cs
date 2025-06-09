@@ -8,21 +8,20 @@ public class ObjectPool : MonoBehaviour
     [System.Serializable]
     public class PoolPrefab
     {
-        public string id;
+        public PoolObjectType id;
         public GameObject prefab;
         public int initialSize = 5;
     }
 
-    private readonly List<PoolPrefab> prefabList = new ();
+    private readonly List<PoolPrefab> prefabList = new();
+    private readonly Dictionary<PoolObjectType, GameObject> prefabLookup = new();
+    private readonly Dictionary<PoolObjectType, Queue<GameObject>> poolDictionary = new();
 
-    private readonly Dictionary<string, GameObject> prefabLookup = new();
-    private readonly Dictionary<string, Queue<GameObject>> poolDictionary = new();
+    [Tooltip("Nome del file JSON di configurazione (senza estensione)")]
+    public string configFileName = "PoolConfig";
 
     [Tooltip("Cartella all'interno di Resources da cui caricare i prefab")]
     public string resourcesFolder = "PoolPrefabs";
-
-    [Tooltip("Numero di oggetti da preistanziare per ogni prefab")]
-    public int defaultInitialSize = 10;
 
     void Awake()
     {
@@ -33,22 +32,39 @@ public class ObjectPool : MonoBehaviour
         }
         Instance = this;
 
-        LoadPrefabsFromResources();
+        LoadConfigurationFromJSON();
         InitializePools();
     }
 
-    private void LoadPrefabsFromResources()
+    private void LoadConfigurationFromJSON()
     {
-        GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>(resourcesFolder);
-
-        foreach (var prefab in loadedPrefabs)
+        TextAsset configFile = Resources.Load<TextAsset>(configFileName);
+        if (configFile == null)
         {
-            string id = prefab.name; // usa il nome del prefab come ID
+            Debug.LogError($"ObjectPool: File di configurazione \"{configFileName}.json\" non trovato in Resources.");
+            return;
+        }
+
+        PoolConfig config = JsonUtility.FromJson<PoolConfig>(configFile.text);
+
+        foreach (var item in config.poolItems)
+        {
+            GameObject prefab = Resources.Load<GameObject>($"{resourcesFolder}/{item.prefabName}");
+
+            if (prefab == null)
+            {
+                Debug.LogWarning($"ObjectPool: Prefab \"{item.prefabName}\" non trovato in {resourcesFolder}.");
+                continue;
+            }
+
+            // Usa l'ID specificato nel JSON
+            PoolObjectType id = (PoolObjectType)item.id;
+
             prefabList.Add(new PoolPrefab
             {
                 id = id,
                 prefab = prefab,
-                initialSize = defaultInitialSize
+                initialSize = item.initialSize
             });
         }
     }
@@ -62,17 +78,17 @@ public class ObjectPool : MonoBehaviour
 
             for (int i = 0; i < item.initialSize; i++)
             {
-                bool state = item.prefab.activeSelf; 
+                bool state = item.prefab.activeSelf;
                 item.prefab.SetActive(false);
                 GameObject obj = Instantiate(item.prefab, transform);
-                obj.name = item.id;
+                obj.name = item.prefab.name;
                 poolDictionary[item.id].Enqueue(obj);
                 item.prefab.SetActive(state);
             }
         }
     }
 
-    public GameObject Get(string id, Vector3 position, Quaternion rotation)
+    public GameObject Get(PoolObjectType id, Vector3 position, Quaternion rotation)
     {
         if (!prefabLookup.ContainsKey(id))
         {
@@ -84,26 +100,38 @@ public class ObjectPool : MonoBehaviour
         if (poolDictionary[id].Count == 0)
         {
             obj = Instantiate(prefabLookup[id], position, rotation);
-            obj.name = id;
+            obj.name = prefabLookup[id].name;
+            obj.transform.SetParent(transform);
             return obj;
         }
 
         obj = poolDictionary[id].Dequeue();
         obj.transform.SetPositionAndRotation(position, rotation);
-        obj.name = id;
         obj.SetActive(true);
 
         return obj;
     }
 
-    public void Return(GameObject obj)
+    public void Return(PoolObjectType id, GameObject obj)
     {
         obj.SetActive(false);
-        string id = obj.name;
 
         if (!poolDictionary.ContainsKey(id))
             poolDictionary[id] = new Queue<GameObject>();
 
         poolDictionary[id].Enqueue(obj);
+    }
+    
+    public PoolObjectType GetTypeFromName(string name)
+    {
+        foreach (var item in prefabList)
+        {
+            if (item.prefab.name == name)
+            {
+                return item.id;
+            }
+        }
+        Debug.LogWarning($"ObjectPool: Prefab con nome \"{name}\" non trovato.");
+        return PoolObjectType.None; // O un valore di default appropriato
     }
 }

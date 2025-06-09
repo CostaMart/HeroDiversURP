@@ -64,7 +64,7 @@ public class Detector : MonoBehaviour
         targetTags = new GameTag[tagsToDetect.Length];
         for (int i = 0; i < tagsToDetect.Length; i++)
         {
-            GameTag tag = TagManager.Instance.GetTag(tagsToDetect[i]);
+            GameTag tag = TagManager.Instance.GetTagByName(tagsToDetect[i]);
             if (tag != null)
             {
                 targetTags[i] = tag;
