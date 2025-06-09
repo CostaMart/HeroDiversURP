@@ -40,7 +40,7 @@ public class Seller : MonoBehaviour
         shopMan = shopManContainer.GetComponent<InteractiveShopMan>();
 
         var player = GameObject.Find("Player");
-        input = player.GetComponent<PlayerInput>();
+        input = GameManager.Instance.playerInput;
         dispatcher = player.GetComponent<EffectsDispatcher>();
     }
 
@@ -49,11 +49,6 @@ public class Seller : MonoBehaviour
         input.actions["Interact"].performed += startGui;
     }
 
-    void OnTriggerExit(Collider other)
-    {
-        input.actions["Interact"].performed -= startGui;
-        shopMan.gameObject.SetActive(false);
-    }
 
     void OnTriggerStay(Collider other)
     {
@@ -65,6 +60,8 @@ public class Seller : MonoBehaviour
 
     public void startGui(CallbackContext ctx)
     {
+
+        input.actions["Interact"].performed -= startGui;
         shopMan.SetupItemList(it.ToArray(), this);
         shopMan.gameObject.SetActive(true);
     }

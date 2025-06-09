@@ -312,6 +312,8 @@ public class BulletLogic : MonoBehaviour
 
 
         bulletAudioSource.PlayOneShot(bulletAudioClip);
+
+        hiteffectTransform.gameObject.SetActive(true);
         hiteffectTransform.SetParent(null);
         hiteffectTransform.position = collision.contacts[0].point;
 
@@ -361,6 +363,7 @@ public class BulletLogic : MonoBehaviour
 
 
             bulletAudioSource.PlayOneShot(bulletAudioClip);
+            hiteffectTransform.gameObject.SetActive(true);
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
 
@@ -409,6 +412,7 @@ public class BulletLogic : MonoBehaviour
             Debug.Log("TriggerStay a cadenza regolare. Hit count: " + bulletHitCount + " / Max: " + MaxhitCount);
             Debug.Log("Collisione (trigger) con: " + other.gameObject.name);
 
+            hiteffectTransform.gameObject.SetActive(true);
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
             var radius = dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
@@ -433,16 +437,17 @@ public class BulletLogic : MonoBehaviour
     /// </summary>
     private void ResetBullet()
     {
+        if (destroyExplosionRadius > 0)
+        {
+            Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
+        }
+
         explodeReset.StartResetTimer();
         hitReset.StartResetTimer();
 
         if (isReset) return;
         isReset = true;
 
-        if (destroyExplosionRadius > 0)
-        {
-            Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
-        }
 
         if (followSomething != 0)
         {
@@ -498,6 +503,7 @@ public class BulletLogic : MonoBehaviour
 
 
         gizmo.StartDrawing(radius, position);
+        exploderTransform.gameObject.SetActive(true);
         exploderTransform.SetParent(null);
         exploderTransform.position = position;
         exploderTransform.localScale = Vector3.one * radius / 2;

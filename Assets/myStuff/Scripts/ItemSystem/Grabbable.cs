@@ -27,7 +27,7 @@ public class Grabbable : MonoBehaviour
     {
 
         helper = MessageHelper.Instance;
-        playerInput = ItemManager.playerInput;
+        playerInput = GameManager.Instance.playerInput;
         dispatcher = ItemManager.playerDispatcher;
 
         playerInput.actions["Interact"].performed += TryGrab;
