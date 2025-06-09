@@ -7,6 +7,7 @@ public class DebuManager : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
     void Start()
     {
+        playerInput = GameManager.Instance.playerInput;
         playerInput.actions["ReloadScene"].performed += ctx => ReloadScene();
     }
 

@@ -36,6 +36,7 @@ public class PlayerControlManager : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
+        playerInput = GameManager.Instance.playerInput;
         charMovementLogic = GetComponent<MovementLogic>();
         if (charMovementLogic == null) return;
 

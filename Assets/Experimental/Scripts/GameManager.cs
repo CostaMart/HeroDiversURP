@@ -2,11 +2,13 @@ using System;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     // Singleton pattern
     public static GameManager Instance { get; private set; }
+    public PlayerInput playerInput;
 
     // [Header("Floating Plane Settings")]
     // [Tooltip("The name of the floating plane used for air units navigation")]
@@ -76,6 +78,14 @@ public class GameManager : MonoBehaviour
             Debug.Log("DetectorConfigLoader added to GameManager");
         }
     }
+
+    public GameObject LostScreen;
+    public void Lost()
+    {
+        LostScreen.SetActive(true);
+    }
+
+
 
     // private void LoadFloatingSurface()
     // {

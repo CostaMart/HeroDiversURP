@@ -11,6 +11,7 @@ public class PauseSettingsManager : MonoBehaviour
     bool pause = false;
     void Awake()
     {
+        playerInput = GameManager.Instance.playerInput;
         // just to force the ItemManager to be loaded
         float valueInDb = PlayerPrefs.GetFloat("sfxVolume", 1f);
         audioMixer.SetFloat("SFX", valueInDb);
@@ -29,7 +30,6 @@ public class PauseSettingsManager : MonoBehaviour
 
     void OnEnable()
     {
-        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
         playerInput.SwitchCurrentActionMap("Player");
         playerInput.actions["Pause"].performed += TogglePause;
     }

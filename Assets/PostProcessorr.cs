@@ -51,4 +51,10 @@ public class PostProcessor : MonoBehaviour
 
     }
 
+    public AudioSource audioSource;
+    public void EmitGenericSoundEffect(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+
 }

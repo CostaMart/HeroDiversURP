@@ -59,8 +59,10 @@ public class MovementLogic : MonoBehaviour
     UnityEvent jump = new UnityEvent();
 
 
+
     void OnEnable()
     {
+        playerInput = GameManager.Instance.playerInput;
         eventChannels.createEvent("BurstOn", burstOn);
         eventChannels.createEvent("BurstOff", burstOff);
         eventChannels.createEvent("Jump", jump);

@@ -100,6 +100,7 @@ public class Grabbable : MonoBehaviour
     }
 
 
+    public AudioClip pickupSound;
     void TryGrab(CallbackContext ctx)
     {
 
@@ -120,6 +121,8 @@ public class Grabbable : MonoBehaviour
 
             playerInput.actions["Interact"].performed -= TryGrab;
             Debug.Log("picked up " + item.name);
+
+            PostProcessor.instance.EmitGenericSoundEffect(pickupSound);
             Destroy(transform.parent.gameObject);
         }
     }
@@ -143,6 +146,7 @@ public class Grabbable : MonoBehaviour
 
             playerInput.actions["Interact"].performed -= TryGrab;
             Debug.Log("picked up " + item.name);
+            PostProcessor.instance.EmitGenericSoundEffect(pickupSound);
             Destroy(transform.parent.gameObject);
         }
     }

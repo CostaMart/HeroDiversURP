@@ -42,7 +42,7 @@ public class Dropper : MonoBehaviour
         GameObject player = ItemManager.playerDispatcher.gameObject;
 
 
-        playerInput = player.GetComponent<PlayerInput>();
+        playerInput = GameManager.Instance.playerInput;
         anim = player.GetComponent<Animator>();
 
         if (playerInput == null || playerInput.actions == null)
