@@ -55,7 +55,7 @@ public class StrafeBars : MonoBehaviour
 
         rectParent = this.transform.parent.GetComponent<RectTransform>();
         thisRect = this.transform.GetComponent<RectTransform>();
-        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
+        playerInput = GameManager.Instance.playerInput;
 
         if (toggleMode)
         {

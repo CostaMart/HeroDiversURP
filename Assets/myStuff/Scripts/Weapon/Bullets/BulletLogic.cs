@@ -209,7 +209,7 @@ public class BulletLogic : MonoBehaviour
                 if (actualDistance > 2)
                     rb.linearVelocity = toDesired.normalized * speed;
                 else
-                    rb.linearVelocity = toDesired.normalized * speed * actualDistance / 2f; // riduce la velocità quando è vicino al target
+                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f; // riduce la velocità quando è vicino al target
             }
             else
             {
@@ -240,7 +240,7 @@ public class BulletLogic : MonoBehaviour
                 if (actualDistance > 2)
                     rb.linearVelocity = toDesired.normalized * speed;
                 else
-                    rb.linearVelocity = toDesired.normalized * speed * actualDistance / 2f; // riduce la velocità quando è vicino al target
+                    rb.linearVelocity = toDesired.normalized * (speed * actualDistance) / 2f; // riduce la velocità quando è vicino al target
             }
             else
             {
@@ -312,6 +312,8 @@ public class BulletLogic : MonoBehaviour
 
 
         bulletAudioSource.PlayOneShot(bulletAudioClip);
+
+        hiteffectTransform.gameObject.SetActive(true);
         hiteffectTransform.SetParent(null);
         hiteffectTransform.position = collision.contacts[0].point;
 
@@ -361,6 +363,7 @@ public class BulletLogic : MonoBehaviour
 
 
             bulletAudioSource.PlayOneShot(bulletAudioClip);
+            hiteffectTransform.gameObject.SetActive(true);
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
 
@@ -409,6 +412,7 @@ public class BulletLogic : MonoBehaviour
             Debug.Log("TriggerStay a cadenza regolare. Hit count: " + bulletHitCount + " / Max: " + MaxhitCount);
             Debug.Log("Collisione (trigger) con: " + other.gameObject.name);
 
+            hiteffectTransform.gameObject.SetActive(true);
             hiteffectTransform.SetParent(null);
             hiteffectTransform.position = other.ClosestPointOnBounds(transform.position);
             var radius = dispatcher.GetFeatureByType<float>(FeatureType.explosionRadius).Sum();
@@ -433,16 +437,17 @@ public class BulletLogic : MonoBehaviour
     /// </summary>
     private void ResetBullet()
     {
+        if (destroyExplosionRadius > 0)
+        {
+            Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
+        }
+
         explodeReset.StartResetTimer();
         hitReset.StartResetTimer();
 
         if (isReset) return;
         isReset = true;
 
-        if (destroyExplosionRadius > 0)
-        {
-            Explode(transform.position, null, destroyExplosionRadius, onDestroyModifier);
-        }
 
         if (followSomething != 0)
         {
@@ -455,7 +460,7 @@ public class BulletLogic : MonoBehaviour
         }
 
 
-        this.GetComponent<SphereCollider>().enabled = true;
+        c.enabled = true;
         rb.includeLayers = ~0;
         rb.isKinematic = false;
         rb.linearVelocity = Vector3.zero;
@@ -498,6 +503,7 @@ public class BulletLogic : MonoBehaviour
 
 
         gizmo.StartDrawing(radius, position);
+        exploderTransform.gameObject.SetActive(true);
         exploderTransform.SetParent(null);
         exploderTransform.position = position;
         exploderTransform.localScale = Vector3.one * radius / 2;
@@ -509,36 +515,36 @@ public class BulletLogic : MonoBehaviour
 
         if (onDestroyModifier != null)
         {
-            try
-            {
-                Collider[] colliders = Physics.OverlapSphere(
-                    position,
-                    radius
-                );
+            Collider[] colliders = Physics.OverlapSphere(
+                position,
+                radius
+            );
 
-                foreach (Collider col in colliders)
+
+            foreach (Collider col in colliders)
+            {
+                if (col.gameObject.CompareTag("Player"))
                 {
-                    col.attachedRigidbody.AddExplosionForce(
-                                     explosionForce,
-                                     position,
-                                    radius,
-                                     3f,
-                                     ForceMode.Impulse
-                                 );
-
-                    if (col != null)
-                        if (col == toExclude) continue; // skip the collider that was excluded
-
-                    if (col.TryGetComponent<EffectsDispatcher>(out var d))
-                    {
-
-                        if (d.GetFeatureByType<bool>(FeatureType.antiExplosionSuit).Last()) continue;
-                        d.AttachModifierFromOtherDispatcher(dispatcher, mod);
-                    }
+                    PostProcessor.instance.ShowDamageEffect(0.5f, 0.5f);
                 }
-            }
-            catch (Exception e)
-            {
+
+                if (col.isTrigger) continue; // skip triggers
+                if (col.attachedRigidbody == null) continue; // skip if no rigidbody
+                col.attachedRigidbody.AddExplosionForce(
+                                 explosionForce,
+                                 position,
+                                radius,
+                                 3f,
+                                 ForceMode.Impulse
+                             );
+
+                if (col == toExclude) continue; // skip the collider that was excluded
+
+                if (col.TryGetComponent<EffectsDispatcher>(out var d))
+                {
+                    if (d.GetFeatureByType<bool>(FeatureType.antiExplosionSuit).Last()) continue;
+                    d.AttachModifierFromOtherDispatcher(dispatcher, mod);
+                }
             }
         }
 

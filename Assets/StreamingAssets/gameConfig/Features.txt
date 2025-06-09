@@ -39,7 +39,7 @@ damage = 10.0 ID:33
 
 #Drone-CharStats
 maxHealth = 200.0 ID:9
-bulletSpeed = 100.0 ID:20
+bulletSpeed = 20.0 ID:20
 bulletEffects = 2 ID:21 
 widthScale = 10.0 ID:24
 heightScale = 10.0 ID:23

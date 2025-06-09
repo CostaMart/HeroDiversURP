@@ -38,11 +38,11 @@ public class Dropper : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-        helper = GameObject.Find("InGameManagers").GetComponent<MessageHelper>();
-        GameObject player = GameObject.Find("Player");
+        helper = MessageHelper.Instance;
+        GameObject player = ItemManager.playerDispatcher.gameObject;
 
 
-        playerInput = player.GetComponent<PlayerInput>();
+        playerInput = GameManager.Instance.playerInput;
         anim = player.GetComponent<Animator>();
 
         if (playerInput == null || playerInput.actions == null)
@@ -54,24 +54,20 @@ public class Dropper : MonoBehaviour
         playerInput.actions["Interact"].performed += Open;
 
         material = GetComponent<Renderer>().material;
-
         spawn = transform.GetChild(0);
 
     }
 
-    public void OnTriggerEnter(Collider other)
-    {
-        if (!used)
-            helper.PostMessage("Press E to open");
-    }
     public void OnTriggerStay(Collider other)
     {
+
         if (used) return;
         if (other.CompareTag("Player"))
         {
             inRange = true;
             player = other.transform;
             material.SetColor("_EmissionColor", Color.Lerp(material.color, emissionColor, 2f));
+            if (!helper.isMessageActive) helper.PostMessage("Press 'E' to drop items");
         }
     }
 

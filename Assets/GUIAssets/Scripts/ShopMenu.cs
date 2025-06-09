@@ -21,10 +21,6 @@ public class InteractiveShopMan : MonoBehaviour
     CursorLockMode last;
 
 
-    public void Start()
-    {
-        playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
-    }
 
     public void StartShopGui()
     {
@@ -40,6 +36,7 @@ public class InteractiveShopMan : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Player");
         Cursor.lockState = last;
         Cursor.visible = false;
+
 
         foreach (Transform child in shopMenu.transform)
         {
@@ -63,6 +60,7 @@ public class InteractiveShopMan : MonoBehaviour
 
     public void OnEnable()
     {
+        playerInput = GameManager.Instance.playerInput;
         playerInput.SwitchCurrentActionMap("UI");
         playerInput.actions["Esc"].performed += CloseShopGui;
         StartShopGui();

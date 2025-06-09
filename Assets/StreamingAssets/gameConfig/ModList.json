@@ -3,6 +3,7 @@
         {
             "id": 0,
             "gameIconId": 37,
+            "grabOnWalkIn": false,
             "type": "normal",
             "name": "Fast Shoes",
             "description": "nano fiber shoes, incredibily lighter, made by Nike for military porpouses, as strange as it may sound",
@@ -18,6 +19,7 @@
         {
             "id": 3,
             "type": "normal",
+            "grabOnWalkIn": true,
             "inGamePrice": 1,
             "gameIconId": 9,
             "name": "5 DodgeCoins",
@@ -33,6 +35,7 @@
         {
             "id": 1,
             "gameIconId": 48,
+            "grabOnWalkIn": false,
             "type": "normal",
             "inGamePrice": 1,
             "name": "Fast Bullets",
@@ -48,6 +51,7 @@
         {
             "id": 2,
             "gameIconId": 0,
+            "grabOnWalkIn": false,
             "type": "normal",
             "inGamePrice": 1,
             "name": "Poison",
@@ -65,6 +69,7 @@
         {
             "id": 4,
             "gameIconId": 12,
+            "grabOnWalkIn": false,
             "type": "normal",
             "inGamePrice": 1,
             "name": "Laser Morpher",
@@ -79,6 +84,7 @@
         },
         {
             "id": 5,
+            "grabOnWalkIn": false,
             "gameIconId": 12,
             "type": "normal",
             "inGamePrice": 1,
@@ -129,6 +135,7 @@
         },
         {
             "id": 6,
+            "grabOnWalkIn": true,
             "gameIconId": 52,
             "type": "normal",
             "inGamePrice": 10,
@@ -144,6 +151,7 @@
         },
         {
             "id": 7,
+            "grabOnWalkIn": false,
             "gameIconId": 32,
             "type": "normal",
             "inGamePrice": 50,
@@ -174,6 +182,7 @@
         },
         {
             "id": 8,
+            "grabOnWalkIn": false,
             "gameIconId": 12,
             "type": "normal",
             "inGamePrice": 50,
@@ -219,6 +228,7 @@
         },
         {
             "id": 9,
+            "grabOnWalkIn": false,
             "gameIconId": 12,
             "type": "normal",
             "inGamePrice": 50,
@@ -299,6 +309,7 @@
         },
         {
             "id": 10,
+            "grabOnWalkIn": false,
             "gameIconId": 12,
             "type": "normal",
             "inGamePrice": 50,
@@ -319,12 +330,28 @@
         },
         {
             "id": 11,
+            "grabOnWalkIn": false,
             "gameIconId": 10,
             "type": "normal",
             "inGamePrice": 50,
             "name": "Radio controlled Bombs",
             "description": "They follow your commands, and detonate on trigger release, what's better than that?",
             "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.11",
+                    "expr": "200.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.12",
+                    "expr": "200.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.13",
+                    "expr": "200.0"
+                },
                 {
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.3",
@@ -409,6 +436,22 @@
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.32",
                     "expr": "0"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "grabOnWalkIn": true,
+            "gameIconId": 18,
+            "type": "normal",
+            "inGamePrice": 0,
+            "name": "Astro Credits",
+            "description": "Once Humanity was exiliated in the space the society has tryied to reconstruct itself, astroCoins are the new currency in this desperate attempt to restructure our systems",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.102",
+                    "expr": "@PrimaryWeaponStats.102 + 100"
                 }
             ]
         }

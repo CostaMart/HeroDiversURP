@@ -89,6 +89,7 @@ public class WeaponLogicContainer : MonoBehaviour
 
     void OnEnable()
     {
+        inputSys = GameManager.Instance.playerInput;
         inputSys.actions["Reload"].performed += Reload;
         inputSys.actions["Attack"].performed += OnFire;
         inputSys.actions["Attack"].canceled += OnFireStop;

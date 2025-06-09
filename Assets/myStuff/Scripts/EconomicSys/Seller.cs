@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor.Search;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static ItemManager;
@@ -39,7 +40,7 @@ public class Seller : MonoBehaviour
         shopMan = shopManContainer.GetComponent<InteractiveShopMan>();
 
         var player = GameObject.Find("Player");
-        input = player.GetComponent<PlayerInput>();
+        input = GameManager.Instance.playerInput;
         dispatcher = player.GetComponent<EffectsDispatcher>();
     }
 
@@ -48,14 +49,19 @@ public class Seller : MonoBehaviour
         input.actions["Interact"].performed += startGui;
     }
 
-    void OnTriggerExit(Collider other)
+
+    void OnTriggerStay(Collider other)
     {
-        input.actions["Interact"].performed -= startGui;
-        shopMan.gameObject.SetActive(false);
+        if (!other.gameObject.CompareTag("Player")) return;
+        if (MessageHelper.Instance.isMessageActive) return;
+
+        MessageHelper.Instance.PostMessage("Press E to open shop");
     }
 
     public void startGui(CallbackContext ctx)
     {
+
+        input.actions["Interact"].performed -= startGui;
         shopMan.SetupItemList(it.ToArray(), this);
         shopMan.gameObject.SetActive(true);
     }

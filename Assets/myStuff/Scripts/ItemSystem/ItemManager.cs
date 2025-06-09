@@ -112,6 +112,7 @@ public class ItemManager : MonoBehaviour
                 itemInCreation.inGamePrice = itemFromData.inGamePrice;
                 itemInCreation.astroCreditPrice = itemFromData.astroCreditPrice;
                 itemInCreation.description = itemFromData.description;
+                itemInCreation.grabOnWalkIn = itemFromData.grabOnWalkIn;
                 modifier.bullet = isbullet;
                 int effectID = 0;
 
@@ -351,6 +352,7 @@ public class ItemManager : MonoBehaviour
         public int id;
         public string name;
         public float astroCreditPrice;
+        public bool grabOnWalkIn;
         public bool requiresUnlocking; // if true, the item is locked and must be unlocked by the player
         public int inGamePrice;
         public string description;
@@ -368,6 +370,7 @@ public class ItemManager : MonoBehaviour
         public float astroCreditPrice;
         public bool locked;
         public int inGamePrice;
+        public bool grabOnWalkIn = false;
         public string description;
         public int gameIconId;
         public Modifier modifier;

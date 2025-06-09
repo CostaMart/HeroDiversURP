@@ -37,6 +37,10 @@ public class CharStats : AbstractStatus
         {
             this.gameObject.SetActive(false);
             if (!isPlayer) { dropper.DropItem(); }
+            else
+            {
+                GameManager.Instance.Lost();
+            }
         }
 
     }

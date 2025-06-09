@@ -86,6 +86,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
+        playerInput = GameManager.Instance.playerInput;
         playerInput.actions["Reload"].performed += ReloadAnimate;
 
         if (!toggleAim)
