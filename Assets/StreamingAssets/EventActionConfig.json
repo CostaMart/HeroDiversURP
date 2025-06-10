@@ -1,6 +1,41 @@
 {
     "events": [
         {
+            "name": "ObjectGrabbed",
+            "actions": [
+                {
+                    "action": "PlaySound",
+                    "tag": "PostProcessingTag"
+                }
+            ]
+        },
+        {
+            "name": "ObjectDisabled",
+            "actions": [
+                {
+                    "action": "EnableLostScreen",
+                    "tag": "PostProcessingTag",
+                    "emitterFilters": ["Player"]
+                }
+            ]
+        },
+        
+        
+        
+        
+        
+        
+        {
+            "name": "ObjectEnabled",
+            "actions": [
+                {
+                    "action": "AddEnabledObject",
+                    "tag": "EnemyTag",
+                    "isTagAction": true
+                }
+            ]
+        },
+        {
             "name": "TargetDetected",
             "emitterFilters": ["Enemy*", "Guard*"],
             "actions": [
@@ -22,16 +57,6 @@
                     "action": "PlaySound",
                     "tag": "AudioTag",
                     "emitterFilters": ["Player"]
-                }
-            ]
-        },
-        {
-            "name": "ObjectEnabled",
-            "actions": [
-                {
-                    "action": "AddEnabledObject",
-                    "tag": "EnemyTag",
-                    "isTagAction": true
                 }
             ]
         }

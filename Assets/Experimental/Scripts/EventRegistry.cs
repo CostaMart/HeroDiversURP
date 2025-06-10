@@ -13,6 +13,7 @@ public static class EventRegistry
     public static readonly EventID ATTACK_STARTED = RegisterEvent("AttackStarted");
     public static readonly EventID ATTACK_ENDED = RegisterEvent("AttackEnded");
     public static readonly EventID STATE_CHANGED = RegisterEvent("StateChanged");
+    public static readonly EventID OBJECT_GRABBED = RegisterEvent("ObjectGrabbed");
 
     // Eventi generici per ciclo di vita oggetti
     public static readonly EventID OBJECT_ENABLED = RegisterEvent("ObjectEnabled");

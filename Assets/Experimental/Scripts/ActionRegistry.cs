@@ -18,6 +18,9 @@ public static class ActionRegistry
     public static readonly ActionID MOVE_TO = RegisterAction("MoveTo");
     public static readonly ActionID ADD_ENABLED_OBJECT = RegisterAction("AddEnabledObject");
     public static readonly ActionID REMOVE_DISABLED_OBJECT = RegisterAction("RemoveDisabledObject");
+    public static readonly ActionID ENABLE_LOST_SCREEN = RegisterAction("EnableLostScreen");
+    public static readonly ActionID DROP_ITEM = RegisterAction("DropItem");
+    public static readonly ActionID PLAY_SOUND = RegisterAction("PlaySound");
 
     public static ActionID RegisterAction(string actionName)
     {
@@ -29,7 +32,7 @@ public static class ActionRegistry
         ActionID newAction = new(nextId++, actionName);
         actionsByName[actionName] = newAction;
         actionsById[newAction.id] = newAction;
-        
+
         return newAction;
     }
 

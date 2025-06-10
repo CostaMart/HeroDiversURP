@@ -532,7 +532,7 @@ public class BulletLogic : MonoBehaviour
             {
                 if (col.gameObject.CompareTag("Player"))
                 {
-                    PostProcessor.instance.ShowDamageEffect(0.5f, 0.5f);
+                    PostProcessor.Instance.ShowDamageEffect(0.5f, 0.5f);
                 }
 
                 if (col.isTrigger) continue; // skip triggers

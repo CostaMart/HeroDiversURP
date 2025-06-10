@@ -38,7 +38,7 @@ public class EventActionManager : MonoBehaviour
     // Dizionario ottimizzato con EventID come chiave
     readonly Dictionary<EventID, List<ActionConfig>> eventTable = new();
 
-    // Tracking degli emettitori per debugging e analytics
+    // Tracking degli emettitori per debugging
     readonly Dictionary<EventID, HashSet<InteractiveObject>> eventEmitters = new();
     readonly List<EventData> eventHistory = new();
 
