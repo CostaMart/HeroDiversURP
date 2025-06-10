@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using static ItemManager;
 
-public class HeatStats : AbstractStatus
+public class HeatStats : AbstractStatsClass
 {
     public bool isExposedToSun = false;
 
@@ -191,10 +191,6 @@ public class HeatStats : AbstractStatus
         }
     }
 
-    protected override int ComputeID()
-    {
-        return ItemManager.statClassToIdRegistry["HeatStats"];
-    }
     [System.Serializable]
     public class ModifierLoader
     {

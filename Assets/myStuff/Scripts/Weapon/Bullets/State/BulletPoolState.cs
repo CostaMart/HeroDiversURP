@@ -6,7 +6,7 @@ using static ItemManager;
 
 namespace Weapon.State
 {
-    public class BulletPoolStats : AbstractStatus
+    public class BulletPoolStats : AbstractStatsClass
     {
         private bool isPrimary = true;
         public int bulletEffects;
@@ -16,17 +16,6 @@ namespace Weapon.State
             base.Awake();
         }
 
-        protected override int ComputeID()
-        {
-            if (isPrimary)
-            {
-                return ItemManager.statClassToIdRegistry["BulletPoolStatsPrimary"];
-            }
-            else
-            {
-                return ItemManager.statClassToIdRegistry["BulletPoolStatsSecondary"];
-            }
-        }
 
     }
 }

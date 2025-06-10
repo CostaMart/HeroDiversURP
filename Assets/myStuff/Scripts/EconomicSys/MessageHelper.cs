@@ -10,9 +10,12 @@ public class MessageHelper : MonoBehaviour
     PlayerInput playerInput;
     public EffectsDispatcher dispatcher;
     public bool isMessageActive = false;
+    public bool allarmActive = false;
+    public AudioClip alarmSound;
 
     // Singleton instance
     private static MessageHelper _instance;
+
     public static MessageHelper Instance
     {
         get
@@ -51,11 +54,38 @@ public class MessageHelper : MonoBehaviour
     Coroutine coroutine;
     public void PostMessage(string message)
     {
+        if (allarmActive) return; // gli allarmi hanno maggiore priorità
+
         messagetext.transform.parent.gameObject.SetActive(true);
         messagetext.text = message;
+        messagetext.color = Color.white;
         isMessageActive = true;
         timer = 0f;
+    }
 
+    public void PostAlarm(string message, float duration)
+    {
+        messagetext.transform.parent.gameObject.SetActive(true);
+        messagetext.text = message;
+        messagetext.color = Color.red;
+        isMessageActive = true;
+        timer = 0f;
+        PostProcessor.instance.audioSource.PlayOneShot(alarmSound);
+
+
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine); // alarms can overwrite previous ones
+        }
+
+        coroutine = StartCoroutine(DisableAllarm(duration));
+    }
+
+    public IEnumerator DisableAllarm(float durartion)
+    {
+        yield return new WaitForSeconds(durartion);
+        allarmActive = false;
+        HideMessage();
     }
 
     public void HideMessage()

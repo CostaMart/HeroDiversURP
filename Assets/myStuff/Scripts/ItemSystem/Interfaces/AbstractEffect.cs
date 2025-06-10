@@ -37,13 +37,13 @@ public abstract class AbstractEffect
     /// This will contain references to the objects resolved by dispatcher, this effect can use this references
     /// to resolve values he needs on activation.
     /// </summary>
-    public AbstractStatus[] localParametersRefClasses = new AbstractStatus[0];
+    public AbstractStatsClass[] localParametersRefClasses = new AbstractStatsClass[0];
 
     /// <summary>
     /// This will contain references to the objects resolved by dispatcher, this effect can use this references
     /// to resolve values he needs on activation.
     /// </summary>
-    public AbstractStatus[] externParametersRefClasses = new AbstractStatus[0];
+    public AbstractStatsClass[] externParametersRefClasses = new AbstractStatsClass[0];
 
     /// <summary>
     /// parameters key used in the ex for local references
@@ -209,12 +209,12 @@ public abstract class AbstractEffect
         return (object)ex.Evaluate();
     }
 
-    private object[] resolveValues(AbstractStatus[] statusClass, int[][] paramIndexes)
+    private object[] resolveValues(AbstractStatsClass[] statusClass, int[][] paramIndexes)
     {
         var x = 0;
         object[] resolved = new object[statusClass.Length];
 
-        foreach (AbstractStatus refClass in statusClass)
+        foreach (AbstractStatsClass refClass in statusClass)
         {
             resolved[x] = refClass.GetStatByID<object>(paramIndexes[x][1]);
             x++;
@@ -229,7 +229,7 @@ public abstract class AbstractEffect
     /// </summary>
     /// <param name="target"></param>
     /// <param name="dispatcher"></param>
-    public abstract void Attach(Dictionary<int, AbstractStatus> target, EffectsDispatcher dispatcher);
+    public abstract void Attach(Dictionary<int, AbstractStatsClass> target, EffectsDispatcher dispatcher);
 
 
     /// <summary>
@@ -239,7 +239,7 @@ public abstract class AbstractEffect
     /// <paramref name="target"/> is the target of the effect.
     /// </summary>
     /// TODO: potrei voler levare target come parametro per impedire a chi scrive gli effetti di fare cose strane
-    public abstract object Activate(AbstractStatus target);
+    public abstract object Activate(AbstractStatsClass target);
 
     protected void DetachEffect()
     {

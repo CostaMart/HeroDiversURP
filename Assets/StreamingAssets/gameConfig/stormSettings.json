@@ -1,0 +1,6 @@
+{
+    "chance": 5,
+    "activationCheckRate": 1,
+    "minDuration": 30.0,
+    "maxDuration": 60.0
+}

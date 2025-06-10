@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Weapon.State;
 
-public class WeaponStats : AbstractStatus
+public class WeaponStats : AbstractStatsClass
 {
 
 
@@ -27,19 +27,21 @@ public class WeaponStats : AbstractStatus
 
 
 
-    protected override int ComputeID()
+    protected override (int, string) ComputeID()
     {
         if (isPrimary)
         {
             Debug.Log("Primary weapon state");
-            this.symbolicName = "PrimaryWeaponStats";
-            return ItemManager.statClassToIdRegistry["PrimaryWeaponStats"];
+            var name = "PrimaryWeaponStats";
+            var ID = ItemManager.statClassToIdRegistry[name];
+            return (ID, name);
         }
         else
         {
             Debug.Log("Secondary weapon state");
-            this.symbolicName = "SecondaryWeaponStats";
-            return ItemManager.statClassToIdRegistry["SecondaryWeaponStats"];
+            var name = "SecondaryWeaponStats";
+            var ID = ItemManager.statClassToIdRegistry[name];
+            return (ID, name);
         }
     }
 

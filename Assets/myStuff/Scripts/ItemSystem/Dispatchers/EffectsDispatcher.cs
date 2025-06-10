@@ -17,7 +17,7 @@ public class EffectsDispatcher : MonoBehaviour
     /// <summary>
     /// list of all components (push to data components, e.g. statusclasses, not Unity's) in this gameobject (and its hierarchy)
     /// </summary>
-    [SerializeField] protected Dictionary<int, AbstractStatus> affectables = new Dictionary<int, AbstractStatus>();
+    [SerializeField] protected Dictionary<int, AbstractStatsClass> affectables = new Dictionary<int, AbstractStatsClass>();
 
     /// <summary>
     /// disabled stat calsses are not used to compute stat values, they still recive modifiers
@@ -93,9 +93,9 @@ public class EffectsDispatcher : MonoBehaviour
     /// <paramref name="calssID"/> the ID of the class to reference
     /// <paramref name="attributeID"/> the ID of the attribute to reference
     /// </summary>
-    private AbstractStatus[] resolveReferences(int[][] references)
+    private AbstractStatsClass[] resolveReferences(int[][] references)
     {
-        AbstractStatus[] toret = new AbstractStatus[references.Length];
+        AbstractStatsClass[] toret = new AbstractStatsClass[references.Length];
 
         int x = 0;
 
@@ -128,7 +128,7 @@ public class EffectsDispatcher : MonoBehaviour
     /// </summary>
     /// <param name="statusClass"></param>
     /// <param name="isEnabled"></param>
-    public void AttachStatusClass(AbstractStatus statusClass, bool isEnabled)
+    public void AttachStatusClass(AbstractStatsClass statusClass, bool isEnabled)
     {
         if (affectables.ContainsKey(statusClass.ID))
         {
@@ -149,7 +149,7 @@ public class EffectsDispatcher : MonoBehaviour
     /// used by status classes (alias for push to data components) to unregister themselves from the dispatcher
     /// </summary>
     /// <param name="status"></param>
-    public void DetachStatusClass(AbstractStatus status)
+    public void DetachStatusClass(AbstractStatsClass status)
     {
         if (affectables.ContainsKey(status.ID))
         {

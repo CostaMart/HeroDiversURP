@@ -38,7 +38,9 @@ public class FireWeaponLogic : AbstractWeaponLogic
 
     // == Modifiers for ammo consumption ==
     private Modifier ammoConsumptionPrimary;
+    private int PrimaryammoID;
     private Modifier ammoConsumptionSecondary;
+    private int SecondaryammoID;
 
     // Renderer arma e materiale istanza per cambiare colore
     private Renderer weaponRenderer;

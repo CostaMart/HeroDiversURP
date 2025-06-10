@@ -1,4 +1,4 @@
-#Player-CharStats
+#>Player-CharStats
 maxHealth = 200.0 ID:9
 health = 200.0  ID:1 
 speed = 10.0 ID:2
@@ -16,7 +16,7 @@ maxStrafes = 4 ID:16
 antiExplosionSuit = false ID:18
 ##
 
-#GroundUnit-CharStats
+#>GroundUnit-CharStats
 maxHealth = 100.0 ID:9
 health = 100.0  ID:1 
 speed = 10.0 ID:2
@@ -37,7 +37,7 @@ antiExplosionSuit = false ID:18
 damage = 10.0 ID:33
 ##
 
-#Drone-CharStats
+#>Drone-CharStats
 maxHealth = 200.0 ID:9
 bulletSpeed = 20.0 ID:20
 bulletEffects = 2 ID:21 
@@ -62,7 +62,7 @@ damage = 10.0 ID:33
 ##
 
 
-#Player-HeatStats
+#>Player-HeatStats
 heatingPerSecond = 5.0 ID:0 
 coolingRate = 1.0 ID:1
 heatingRate = 1.0 ID:2
@@ -72,7 +72,7 @@ coolingPerSecond = 10.0 ID:5
 strafePower = 0.0 ID:6
 ##
 
-#GFX_MG-PrimaryWeaponStats
+#>GFX_MG-PrimaryWeaponStats
 magCount = 10 ID:1
 magSize = 1000 ID:2
 fireRate = 9.0 ID:3
@@ -95,7 +95,7 @@ recoilRecoverySpeed = 0.1 ID:20
 recoilMax = 1.0 ID:21
 ##
 
-#GFX_AR-PrimaryWeaponStats
+#>GFX_AR-PrimaryWeaponStats
 magCount = 10 ID:1
 magSize = 50 ID:2
 fireRate = 9.0 ID:3
@@ -135,7 +135,7 @@ hitForce = 100.0 ID:36 // the force applied to the target on hit, if greater tha
 explosionForce = 100.0 ID:37 // the force applied to the target on explosion, if greater than 0 the bullet will push the target
 ##
 
-#Pistol-SecondaryWeaponStats
+#>Pistol-SecondaryWeaponStats
 magCount = 10 ID:1
 magSize = 50 ID:2
 fireRate = 9.0 ID:3
@@ -160,7 +160,7 @@ pershotBull = 1 ID:22
 chargeTime = 3.0 ID:23
 ##
 
-#GFX_SNIPER-PrimaryWeaponStats
+#>GFX_SNIPER-PrimaryWeaponStats
 magCount = 2000 ID:1
 magSize = 10 ID:2
 fireRate = 0.5 ID:3

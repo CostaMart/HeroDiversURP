@@ -28,12 +28,12 @@ class OverTimeEffect : AbstractEffect
         timeLimitBetweenActivation = actRate;
     }
 
-    public override object Activate(AbstractStatus target)
+    public override object Activate(AbstractStatsClass target)
     {
         return Tick(target);
     }
 
-    private object Tick(AbstractStatus target)
+    private object Tick(AbstractStatsClass target)
     {
         if (effectStartTime == 0)
         {
@@ -57,7 +57,7 @@ class OverTimeEffect : AbstractEffect
         return result;
     }
 
-    public override void Attach(Dictionary<int, AbstractStatus> target, EffectsDispatcher dispatcher)
+    public override void Attach(Dictionary<int, AbstractStatsClass> target, EffectsDispatcher dispatcher)
     {
         this.dispatcher = dispatcher;
         target[localTargetClassID].AttachEffect(this);

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class CharStats : AbstractStatus
+public class CharStats : AbstractStatsClass
 {
     [SerializeField] private bool isPlayer = false;
     [SerializeField] private EnemyDropper dropper;
@@ -21,10 +21,6 @@ public class CharStats : AbstractStatus
             features.Add(101, new Feature(FeatureType.keys, 100, typeof(int)));
             features.Add(102, new Feature(FeatureType.astroCredits, PlayerPrefs.GetFloat("astroCredits", 0), typeof(int)));
         }
-    }
-    protected override int ComputeID()
-    {
-        return ItemManager.statClassToIdRegistry[this.GetType().Name];
     }
 
     new void Update()

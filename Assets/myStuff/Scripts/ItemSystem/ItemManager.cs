@@ -32,6 +32,7 @@ public class ItemManager : MonoBehaviour
     public static Dictionary<int, EnrichedModifier> globalItemPool = new Dictionary<int, EnrichedModifier>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
     public static Dictionary<int, DropPool> dropPools = new();
+    public static Dictionary<int, Dictionary<int, Feature>> featuresSets = new();
 
     /// this contains all the items created by the game from the JSON file 
 
@@ -56,6 +57,8 @@ public class ItemManager : MonoBehaviour
         globalItemPool = ComputeAllItems(Application.streamingAssetsPath + "/gameConfig/ModList.json", false);
         bulletPool = ComputeAllBullets(Application.streamingAssetsPath + "/gameConfig/Bullets.json");
         dropPools = ComputeDropPools();
+        featuresSets = LoadFeatures();
+        Debug.Log("Maro");
 
     }
 
@@ -304,6 +307,98 @@ public class ItemManager : MonoBehaviour
         }
 
         return itemsToDrop;
+    }
+    public Dictionary<int, Dictionary<int, Feature>> LoadFeatures()
+    {
+        string[] lines = File.ReadAllLines(Application.streamingAssetsPath + "/gameConfig/Features.txt");
+        bool found = false;
+        bool hasBeenFound = false;
+        Dictionary<int, Dictionary<int, Feature>> featuresDict = new();
+        Dictionary<int, Feature> features = new();
+        int hash = 0;
+
+        foreach (var thisLine in lines)
+        {
+            var line = thisLine.Trim();
+            line = line.Split("//")[0];
+
+            if (found && line.Contains("##"))
+            {
+                featuresDict.Add(hash, features);
+                features = new();
+                found = false;
+            }
+
+            if (found)
+            {
+                try
+                {
+                    string[] parts = line.Split("=");
+                    FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
+
+                    if (featureType == FeatureType.money || featureType == FeatureType.keys)
+                    {
+                        Debug.LogWarning("AbstractStatus: money and keys are special features, not customizable");
+                        continue;
+                    }
+
+                    parts = parts[1].Split("ID:");
+                    string value = parts[0].Trim();
+                    int ID = int.Parse(parts[1].Split("range:")[0].Trim());
+
+                    string rangeString = (parts[1].Split("range:").Length > 1) ? parts[1].Split("range:")[1].Trim() : null;
+                    string maxVal = null, minVal = null;
+
+                    if (rangeString != null)
+                    {
+                        maxVal = rangeString.Split("-")[1].Trim();
+                        minVal = rangeString.Split("-")[0].Trim();
+                    }
+
+                    if (int.TryParse(value, out _))
+                    {
+                        Feature f = new Feature(featureType, int.Parse(value), typeof(int));
+                        f.SetValue(int.Parse(value));
+                        if (maxVal != null)
+                        {
+                            f.maxVal = int.Parse(maxVal);
+                            f.minVal = int.Parse(minVal);
+                        }
+                        features.Add(ID, f);
+                    }
+                    else if (float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+                    {
+                        Feature f = new Feature(featureType, float.Parse(value, System.Globalization.CultureInfo.InvariantCulture), typeof(float));
+                        f.SetValue(float.Parse(value.Replace(" ", ""), System.Globalization.CultureInfo.InvariantCulture));
+                        if (maxVal != null)
+                        {
+                            f.maxVal = float.Parse(maxVal, System.Globalization.CultureInfo.InvariantCulture);
+                            f.minVal = float.Parse(minVal, System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        features.Add(ID, f);
+                    }
+                    else
+                    {
+                        Feature f = new Feature(featureType, bool.Parse(value), typeof(bool));
+                        f.SetValue(bool.Parse(value));
+                        features.Add(ID, f);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Abstract Status: Error in parsing line: " + line + " " + e.Message);
+                }
+            }
+
+            if (line.Contains("#>"))
+            {
+                hash = line.Split('>')[1].Trim().ToLower().GetHashCode();
+                found = true;
+                hasBeenFound = true;
+            }
+        }
+
+        return featuresDict;
     }
 
     public static void UnlockItem(int itemId)

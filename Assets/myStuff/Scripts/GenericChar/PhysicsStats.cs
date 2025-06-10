@@ -2,16 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class PhysicsStats : AbstractStatus
+public class PhysicsStats : AbstractStatsClass
 {
     private Rigidbody rb;
 
-    protected override int ComputeID()
-    {
-        var ret = ItemManager.statClassToIdRegistry[this.GetType().Name];
-        Debug.Log("ID of PhysicalState: " + ret);
-        return ret;
-    }
 
     new void Awake()
     {

@@ -1,24 +1,61 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class StormTrigger : MonoBehaviour
 {
     [SerializeField] Adversity storm;
-    [SerializeField] int prob = 50; // Probability of storm triggering, 0-100
-    private void OnTriggerEnter(Collider other)
+    stormSettings settings;
+    private float timer;
+
+
+    public void Start()
     {
+        string file = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "gameConfig/stormSettings.json"));
+        settings = JsonUtility.FromJson<stormSettings>(file);
+    }
+
+
+
+    private void OnTriggerStay(Collider other)
+    {
+
+        if (ClimateEffectController.Instance.active) return;
+
         if (other.CompareTag("Player"))
         {
-            int choosen = Random.Range(0, 100);
 
-            if (choosen < prob)
+
+            if (timer >= settings.activationCheckRate)
             {
-                ClimateEffectController.Instance.InjectAdversity(storm);
+                Debug.Log("Storm activation check");
+                int choosen = Random.Range(0, 100);
 
-                Debug.Log("Storm triggered");
+                if (choosen <= settings.chance)
+                {
+                    Debug.Log("Storm activated");
+                    ClimateEffectController.Instance.InjectAdversity(storm, settings.minDuration, settings.maxDuration);
+                }
+
+                timer = 0;
+                return;
             }
+
+            timer += Time.deltaTime;
+
         }
     }
 
 
+    private class stormSettings
+    {
+        public int chance = 50;
+
+        // rate at which the storm activation will be checked when player is inside the trigger
+        public float activationCheckRate = 0.5f;
+        public float minDuration = 10f;
+        public float maxDuration = 20f;
+    }
 
 }

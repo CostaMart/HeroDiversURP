@@ -13,14 +13,14 @@ public class SingleActivationEffect : AbstractEffect
   {
   }
 
-  public override object Activate(AbstractStatus target)
+  public override object Activate(AbstractStatsClass target)
   {
     var result = base.DoEffect();
     this.DetachEffect();
     target.RemoveEffect(this);
     return result;
   }
-  public override void Attach(Dictionary<int, AbstractStatus> target, EffectsDispatcher dispatcher)
+  public override void Attach(Dictionary<int, AbstractStatsClass> target, EffectsDispatcher dispatcher)
   {
     this.dispatcher = dispatcher;
 
