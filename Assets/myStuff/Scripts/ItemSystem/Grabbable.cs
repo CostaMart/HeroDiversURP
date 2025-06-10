@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using static ItemManager;
 using static UnityEngine.InputSystem.InputAction;
 
-public class Grabbable : MonoBehaviour
+public class Grabbable : InteractiveObject
 {
     public TMP_Text text;
     public EnrichedModifier item;
@@ -23,6 +23,11 @@ public class Grabbable : MonoBehaviour
     private PlayerInput playerInput;
     public EffectsDispatcher dispatcher;
 
+
+    protected override void OnEnable()
+    {
+        RegisterEvent(EventRegistry.OBJECT_GRABBED);
+    }
     public void Start()
     {
 
@@ -122,7 +127,7 @@ public class Grabbable : MonoBehaviour
             playerInput.actions["Interact"].performed -= TryGrab;
             Debug.Log("picked up " + item.name);
 
-            PostProcessor.instance.EmitGenericSoundEffect(pickupSound);
+            EmitEvent(EventRegistry.OBJECT_GRABBED, new object[] { pickupSound });
             Destroy(transform.parent.gameObject);
         }
     }
@@ -146,7 +151,7 @@ public class Grabbable : MonoBehaviour
 
             playerInput.actions["Interact"].performed -= TryGrab;
             Debug.Log("picked up " + item.name);
-            PostProcessor.instance.EmitGenericSoundEffect(pickupSound);
+            EmitEvent(EventRegistry.OBJECT_GRABBED, new object[] { pickupSound });
             Destroy(transform.parent.gameObject);
         }
     }

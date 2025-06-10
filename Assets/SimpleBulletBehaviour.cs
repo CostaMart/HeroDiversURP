@@ -14,7 +14,7 @@ public class SimpleBulletBehaviour : MonoBehaviour
 
     public void Start()
     {
-        postProcessor = PostProcessor.instance;
+        postProcessor = PostProcessor.Instance;
     }
     public void Update()
     {

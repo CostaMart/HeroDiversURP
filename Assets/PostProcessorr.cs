@@ -1,17 +1,14 @@
 using System.Collections;
-using System.ComponentModel;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class PostProcessor : MonoBehaviour
+public class PostProcessor : InteractiveObject
 {
 
     public GameObject LostScreen;
     public GameObject deathText;
     private static PostProcessor _instance;
-    public static PostProcessor instance
+    public static PostProcessor Instance
     {
         get
         {
@@ -20,11 +17,15 @@ public class PostProcessor : MonoBehaviour
     }
     public Image damageImage;
 
-    public void Awake()
+    protected override void Awake()
     {
         if (_instance == null)
             _instance = this;
 
+        base.Awake();
+
+        RegisterAction(ActionRegistry.ENABLE_LOST_SCREEN, (_) => Lost());
+        RegisterAction(ActionRegistry.PLAY_SOUND, EmitGenericSoundEffect);
     }
     public void ShowDamageEffect(float duration, float alpha)
     {
@@ -40,7 +41,7 @@ public class PostProcessor : MonoBehaviour
         deathText.SetActive(true);
     }
 
-    public IEnumerator ShowDamageEffectCoroutine(float duration, float alpha)
+    private IEnumerator ShowDamageEffectCoroutine(float duration, float alpha)
     {
 
         damageImage.gameObject.SetActive(true);
@@ -62,9 +63,11 @@ public class PostProcessor : MonoBehaviour
     }
 
     public AudioSource audioSource;
-    public void EmitGenericSoundEffect(AudioClip clip)
+    public void EmitGenericSoundEffect(object[] args)
     {
-        audioSource.PlayOneShot(clip);
+        if (args.Length > 0 && args[0] is AudioClip clip)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
-
 }

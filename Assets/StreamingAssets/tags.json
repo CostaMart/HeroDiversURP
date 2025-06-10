@@ -19,6 +19,11 @@
             "name": "ItemSpawnTag",
             "type": "Sequential",
             "members": ["BoxCommon 1", "Key"]
+        },
+        {
+            "name": "PostProcessingTag",
+            "type": "Sequential",
+            "members": ["PostProcessor"]
         }
     ]
 }

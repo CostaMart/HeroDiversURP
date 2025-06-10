@@ -12,17 +12,17 @@ public struct ActionID : IEquatable<ActionID>
         this.name = name;
     }
 
-    public bool Equals(ActionID other)
+    public readonly bool Equals(ActionID other)
     {
         return id == other.id;
     }
 
-    public override bool Equals(object obj)
+    public override readonly bool Equals(object obj)
     {
         return obj is ActionID other && Equals(other);
     }
 
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         return id;
     }
@@ -37,7 +37,7 @@ public struct ActionID : IEquatable<ActionID>
         return !left.Equals(right);
     }
 
-    public override string ToString()
+    public override readonly string ToString()
     {
         return $"{name} ({id})";
     }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using static ItemManager;
 
-public class EnemyDropper : MonoBehaviour
+public class EnemyDropper : InteractiveObject
 {
     public int ID = 2;
 
@@ -42,6 +42,7 @@ public class EnemyDropper : MonoBehaviour
         }
     }
 
-
+    protected override void OnEnable() { }
+    protected override void OnDisable() { }
 
 }

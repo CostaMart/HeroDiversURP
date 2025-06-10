@@ -243,9 +243,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dirty: 0
   mydispatcher: {fileID: 0}
-  isPlayer: 0
   dropper: {fileID: -3790830956408691179}
   ragdoller: {fileID: 0}
+  player: {fileID: 0}
 --- !u!114 &-3790830956408691179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd543247f1480628db0ec3628c292ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectId: 
   ID: 2
 --- !u!114 &6543437192502873596
 MonoBehaviour:
