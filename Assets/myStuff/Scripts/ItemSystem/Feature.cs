@@ -70,12 +70,17 @@ public enum FeatureType
     // === Movement & Jumping ===
     speed,
     rotationSpeed,
+    patrolSpeed,
+    chaseSpeed,
     aimRotationSpeed,
     jumpSpeedy,
     jumpSpeedx,
     jumpSpeedz,
     speedLimitBeforeRagdolling,
     maxJumps,
+    maxPitchAngle,
+    waitAtWaypointTime,
+    waitAtLastKnownPositionTime,
 
     // === Physics ===
     affetedByGravity,
@@ -94,6 +99,8 @@ public enum FeatureType
 
     // === Misc ===
     keys,
+    attackCooldown,
+    attackDuration,
 }
 
 public class Feature

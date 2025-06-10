@@ -136,19 +136,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectId: PA_Warrior
-  angularSpeed: 180
-  maxPitchAngle: 2.5
-  waitAtWaypointTime: 4
-  patrolRadius: 10
-  patrolCount: 5
-  minDistance: 2
-  pathUpdateRate: 0.5
-  waitAtLastKnownPositionTime: 1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
-  attackCooldown: 2
-  attackDuration: 0.5
 --- !u!65 &5255288954025309510
 BoxCollider:
   m_ObjectHideFlags: 0
