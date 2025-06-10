@@ -19,10 +19,11 @@ antiExplosionSuit = false ID:18
 #>GroundUnit-CharStats
 maxHealth = 100.0 ID:9
 health = 100.0  ID:1 
-speed = 10.0 ID:2
+patrolSpeed = 4.0 ID:2
+chaseSpeed = 10.0 ID:8
 bulletSpeed = 100.0 ID:20
 bulletEffects = 2 ID:21 
-rotationSpeed = 10.0  ID:13
+rotationSpeed = 90.0  ID:13
 aimRotationSpeed = 100.0 ID:14
 jumpSpeedy = 30.0  ID:3
 jumpSpeedx = 10.0 ID:4  
@@ -35,6 +36,11 @@ strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
 antiExplosionSuit = false ID:18
 damage = 10.0 ID:33
+maxPitchAngle = 40.0 ID:34
+attackCooldown = 1.5 ID:35
+attackDuration = 0.5 ID:36
+waitAtWaypointTime = 2.0 ID:37
+waitAtLastKnownPositionTime = 3.0 ID:38
 ##
 
 #>Drone-CharStats
@@ -44,9 +50,10 @@ bulletEffects = 2 ID:21
 widthScale = 10.0 ID:24
 heightScale = 10.0 ID:23
 lengthScale = 10.0 ID:22
-health = 200.0  ID:1 
-speed = 10.0 ID:2
-rotationSpeed = 10.0  ID:13
+health = 200.0  ID:1
+patrolSpeed = 4.0 ID:2
+chaseSpeed = 10.0 ID:8
+rotationSpeed = 120.0  ID:13
 aimRotationSpeed = 100.0 ID:14
 jumpSpeedy = 30.0  ID:3
 jumpSpeedx = 10.0 ID:4  
@@ -59,8 +66,12 @@ strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
 antiExplosionSuit = false ID:18
 damage = 10.0 ID:33
+maxPitchAngle = 5.0 ID:34
+attackCooldown = 1.5 ID:35
+attackDuration = 0.5 ID:36
+waitAtWaypointTime = 1.0 ID:37
+waitAtLastKnownPositionTime = 2.0 ID:38
 ##
-
 
 #>Player-HeatStats
 heatingPerSecond = 5.0 ID:0 
