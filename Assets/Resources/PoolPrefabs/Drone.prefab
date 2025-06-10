@@ -137,19 +137,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectId: AlienFighter
-  angularSpeed: 120
-  maxPitchAngle: 40
-  waitAtWaypointTime: 2
-  patrolRadius: 10
-  patrolCount: 5
-  minDistance: 2
-  pathUpdateRate: 0.5
-  waitAtLastKnownPositionTime: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackCooldown: 2
-  attackDuration: 0.5
 --- !u!135 &3548407098811895849
 SphereCollider:
   m_ObjectHideFlags: 0

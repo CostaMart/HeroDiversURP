@@ -56,7 +56,9 @@ public class SandStorm : Adversity
         Vector3 spawnPos = player.transform.position + new Vector3(0, offsetY, 0);
         Quaternion spawnRot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
 
-        sandstormInstance = Instantiate(sandstormPrefab, spawnPos, spawnRot);
+        if (sandstormInstance == null)
+            sandstormInstance = Instantiate(sandstormPrefab, spawnPos, spawnRot);
+
         visualEffect = sandstormInstance.GetComponent<VisualEffect>();
 
         // Leggi il valore iniziale di spawn rate dal VFX Graph
@@ -67,6 +69,7 @@ public class SandStorm : Adversity
         visualEffect.Play();
 
         this.audiosource = source;
+        this.isDisabling = false;
 
     }
 
@@ -79,6 +82,9 @@ public class SandStorm : Adversity
 
     public override void DoEffect()
     {
+        if (!sandstormInstance.activeSelf)
+            sandstormInstance.SetActive(true);
+
         // Se siamo in fase di disattivazione graduale
         if (isDisabling)
         {
@@ -144,8 +150,8 @@ public class SandStorm : Adversity
     {
         if (sandstormInstance != null)
         {
+            sandstormInstance.gameObject.SetActive(false);
             visualEffect.Stop();
-            Destroy(sandstormInstance);
         }
 
         // Ripristina valori originali

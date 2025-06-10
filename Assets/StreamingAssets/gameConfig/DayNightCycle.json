@@ -1,5 +1,6 @@
 {
-    "targetAngle": "-64",
     "axis": "X",
-    "durationInSeconds": "30"
+    "startAngle": "34",
+    "targetAngle": "-64",
+    "durationInSeconds": "900"
 }

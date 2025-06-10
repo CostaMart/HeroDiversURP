@@ -136,9 +136,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectId: PA_Warrior
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!65 &5255288954025309510
 BoxCollider:
   m_ObjectHideFlags: 0
