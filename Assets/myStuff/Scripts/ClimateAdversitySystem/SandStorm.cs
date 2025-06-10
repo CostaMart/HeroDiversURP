@@ -32,10 +32,14 @@ public class SandStorm : Adversity
     private GameObject player;
     private Vector3 offsetFromPlayer;
 
+    [Header("Audio")]
+    [SerializeField] AudioClip audio;
+    AudioSource audiosource;
+
     // Nome esatto della proprietà Float esposta nel VFX Graph
     private const string k_SpawnRateProperty = "SpawnRate";
 
-    public override void SetupAdversity(GameObject origin, GameObject playerPos, EffectsDispatcher playerDispatcher, Volume vol)
+    public override void SetupAdversity(GameObject origin, GameObject playerPos, EffectsDispatcher playerDispatcher, Volume vol, AudioSource source)
     {
         // Riferimenti
         player = playerPos;
@@ -62,32 +66,81 @@ public class SandStorm : Adversity
         offsetFromPlayer = new Vector3(0, offsetY, 0);
         visualEffect.Play();
 
+        this.audiosource = source;
+
     }
+
+    public float fadeOutTime = 5f; // Aggiungi questa variabile per controllare la durata del fade out
+    private float disableTimer = 0f;
+    private float currentSpawnRate;
+    private float currentFogDensity;
+    private float currentAmbientIntensity;
+    private float currentVignette;
 
     public override void DoEffect()
     {
-        // Incrementa progressivamente i parametri
-        if (currentTime < growTime)
+        // Se siamo in fase di disattivazione graduale
+        if (isDisabling)
         {
-            currentTime += Time.deltaTime;
-            float t = currentTime / growTime;
+            disableTimer += Time.deltaTime;
+            float t = disableTimer / fadeOutTime;
 
-            // Spawn rate nel VFX Graph
-            float newRate = Mathf.Lerp(initialRate, targetRate, t);
+            // Decrementa progressivamente i parametri
+            float newRate = Mathf.Lerp(currentSpawnRate, 0f, t);
             visualEffect.SetFloat(k_SpawnRateProperty, newRate);
 
-            // Fog e ambient lighting
-            RenderSettings.fogDensity = Mathf.Lerp(oldFog, fogTarget, t);
-            RenderSettings.ambientIntensity = Mathf.Lerp(oldIllumination, fogTarget, t);
-            vignette.intensity.value = Mathf.Lerp(0f, vignetteTarget, t);
+            RenderSettings.fogDensity = Mathf.Lerp(currentFogDensity, oldFog, t);
+            RenderSettings.ambientIntensity = Mathf.Lerp(currentAmbientIntensity, oldIllumination, t);
+            vignette.intensity.value = Mathf.Lerp(currentVignette, 0f, t);
+
+            // Quando il fade out è completato
+            if (disableTimer >= fadeOutTime)
+            {
+                CompleteDisable();
+            }
+        }
+        // Se la tempesta è attiva normalmente
+        else if (currentTime < growTime)
+        {
+            if (!audiosource.isPlaying) audiosource.PlayOneShot(audio);
+
+            // Incrementa progressivamente i parametri
+            if (currentTime < growTime)
+            {
+                currentTime += Time.deltaTime;
+                float t = currentTime / growTime;
+
+                // Spawn rate nel VFX Graph
+                float newRate = Mathf.Lerp(initialRate, targetRate, t);
+                visualEffect.SetFloat(k_SpawnRateProperty, newRate);
+
+                // Fog e ambient lighting
+                RenderSettings.fogDensity = Mathf.Lerp(oldFog, fogTarget, t);
+                RenderSettings.ambientIntensity = Mathf.Lerp(oldIllumination, fogTarget, t);
+                vignette.intensity.value = Mathf.Lerp(0f, vignetteTarget, t);
+            }
         }
 
-        // Mantieni la tempesta centrata sul player
+        // Mantieni centrata sul player (anche durante il fade out)
         Vector3 pos = player.transform.position + offsetFromPlayer;
         sandstormInstance.transform.position = pos;
     }
 
-    public override void Disable()
+    public void StartDisable()
+    {
+        if (isDisabling || sandstormInstance == null) return;
+
+        isDisabling = true;
+        disableTimer = 0f;
+
+        // Salva i valori correnti per il fade out
+        currentSpawnRate = visualEffect.GetFloat(k_SpawnRateProperty);
+        currentFogDensity = RenderSettings.fogDensity;
+        currentAmbientIntensity = RenderSettings.ambientIntensity;
+        currentVignette = vignette.intensity.value;
+    }
+
+    private void CompleteDisable()
     {
         if (sandstormInstance != null)
         {
@@ -95,8 +148,16 @@ public class SandStorm : Adversity
             Destroy(sandstormInstance);
         }
 
-        // Ripristina impostazioni originali
+        // Ripristina valori originali
         RenderSettings.fogDensity = oldFog;
         RenderSettings.ambientIntensity = oldIllumination;
+        vignette.intensity.value = 0f;
+
+        // Ferma l'audio
+        if (audiosource.isPlaying) audiosource.Stop();
+    }
+    public override void Disable()
+    {
+        StartDisable();
     }
 }

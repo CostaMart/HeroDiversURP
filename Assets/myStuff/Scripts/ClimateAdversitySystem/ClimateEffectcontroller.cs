@@ -21,10 +21,13 @@ public class ClimateEffectController : MonoBehaviour
     private Volume volume;
     private Dictionary<int, string> data = new();
 
+    private AudioSource effectSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
+        effectSource = this.gameObject.GetComponent<AudioSource>();
         player = GameObject.Find("Player");
         playerEffectsDispatcher = ItemManager.playerDispatcher;
         volume = this.gameObject.GetComponent<Volume>();
@@ -56,8 +59,9 @@ public class ClimateEffectController : MonoBehaviour
 
     public void InjectAdversity(Adversity newAdversity, float minduration, float maxduration)
     {
+
         duration = Random.Range(minduration, maxduration);
-        MessageHelper.Instance.PostAlarm($"Adversity: {newAdversity.name}, duration: {duration}", 2f);
+        MessageHelper.Instance.PostAlarm($"Adversity: {newAdversity.name}, duration: {duration}", 5f);
 
         if (adversity != null)
         {
@@ -65,7 +69,7 @@ public class ClimateEffectController : MonoBehaviour
         }
 
         adversity = newAdversity;
-        adversity.SetupAdversity(this.gameObject, player, playerEffectsDispatcher, volume);
+        adversity.SetupAdversity(this.gameObject, player, playerEffectsDispatcher, volume, effectSource);
         active = true;
     }
 

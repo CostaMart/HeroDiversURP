@@ -10,6 +10,7 @@ public class SimpleBulletBehaviour : MonoBehaviour
 
     public Transform hiteffectTransform;
     public ParticleSystem hitEffect;
+    public EffectReset resetter;
     public AudioSource audioSource;
 
     public void Start()
@@ -40,6 +41,8 @@ public class SimpleBulletBehaviour : MonoBehaviour
         hiteffectTransform.SetParent(null);
         hitEffect.Play();
         audioSource.Play();
+        resetter.StartResetTimer();
+
 
         if (collision.gameObject.CompareTag("Player"))
         {

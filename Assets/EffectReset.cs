@@ -7,9 +7,9 @@ public class EffectReset : MonoBehaviour
     public float timeToReset = 0.5f; // Time to wait before resetting the effect
     Coroutine coroutine;
     Transform origin;
+    ParticleSystem sys;
     public void OnEnable()
     {
-
         origin = this.gameObject.transform.parent;
         coroutine = null;
     }
@@ -24,7 +24,8 @@ public class EffectReset : MonoBehaviour
 
     IEnumerator ResetEffect()
     {
-        Debug.Log("Coroutine launched effects abuot to be reset");
+
+        Debug.Log("Coroutine launched effects about to be reset");
         yield return new WaitForSeconds(timeToReset);
         this.gameObject.transform.SetParent(origin);
         gameObject.SetActive(false);

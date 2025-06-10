@@ -18,3 +18,4 @@ MonoBehaviour:
   fogTarget: 0.1
   vignetteTarget: 0.5
   offsetY: 0
+  audio: {fileID: 8300000, guid: 2c44e3d0fcd644cdc8591e60112eb860, type: 3}

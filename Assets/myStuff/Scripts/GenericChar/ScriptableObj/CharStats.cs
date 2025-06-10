@@ -38,7 +38,7 @@ public class CharStats : AbstractStatsClass
                 return;
             }
 
-            gameObject.SetActive(false);
+            this.gameObject.SetActive(false);
             dropper.DropItem();
         }
 

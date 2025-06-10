@@ -126,4 +126,15 @@ public class Feature
         lastModifiedTime = Time.time;
     }
 
+    public Feature Clone()
+    {
+        return new Feature(id, baseValue, type)
+        {
+            currentValue = currentValue,
+            maxVal = maxVal,
+            minVal = minVal,
+            lastModifiedTime = lastModifiedTime
+        };
+    }
+
 }

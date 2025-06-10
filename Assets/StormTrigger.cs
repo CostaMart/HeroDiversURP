@@ -27,9 +27,9 @@ public class StormTrigger : MonoBehaviour
         {
 
 
-            if (timer >= settings.activationCheckRate)
+            if (timer >= settings.activationCheckInterval)
             {
-                Debug.Log("Storm activation check");
+                Debug.Log("Storm activation check " + timer + " >= " + settings.activationCheckInterval);
                 int choosen = Random.Range(0, 100);
 
                 if (choosen <= settings.chance)
@@ -41,8 +41,11 @@ public class StormTrigger : MonoBehaviour
                 timer = 0;
                 return;
             }
+            else
+            {
 
-            timer += Time.deltaTime;
+                timer += Time.deltaTime;
+            }
 
         }
     }
@@ -53,7 +56,7 @@ public class StormTrigger : MonoBehaviour
         public int chance = 50;
 
         // rate at which the storm activation will be checked when player is inside the trigger
-        public float activationCheckRate = 0.5f;
+        public float activationCheckInterval = 0.5f;
         public float minDuration = 10f;
         public float maxDuration = 20f;
     }

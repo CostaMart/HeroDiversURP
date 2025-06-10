@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Random = System.Random;
 
 /// <summary>
@@ -16,7 +15,6 @@ public class ItemManager : MonoBehaviour
 
 
     public static EffectsDispatcher playerDispatcher;
-    public static PlayerInput playerInput;
 
 
     private static ItemManager instance = null;
@@ -32,7 +30,7 @@ public class ItemManager : MonoBehaviour
     public static Dictionary<int, EnrichedModifier> globalItemPool = new Dictionary<int, EnrichedModifier>(); /// this contains all the items created by the game from the JSON file
     public static Dictionary<int, Modifier> bulletPool = new Dictionary<int, Modifier>();
     public static Dictionary<int, DropPool> dropPools = new();
-    public static Dictionary<int, Dictionary<int, Feature>> featuresSets = new();
+    private static Dictionary<int, Dictionary<int, Feature>> featuresSets = new();
 
     /// this contains all the items created by the game from the JSON file 
 
@@ -307,6 +305,23 @@ public class ItemManager : MonoBehaviour
         }
 
         return itemsToDrop;
+    }
+
+    /// <summary>
+    ///  returns a deep copy of a features set by hash.
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public static Dictionary<int, Feature> GetFeaturesByHash(int hash)
+    {
+        Dictionary<int, Feature> newFeatures = new();
+        Dictionary<int, Feature> old = featuresSets[hash];
+        foreach (var feature in old)
+        {
+            newFeatures.Add(feature.Key, feature.Value.Clone());
+        }
+
+        return newFeatures;
     }
     public Dictionary<int, Dictionary<int, Feature>> LoadFeatures()
     {

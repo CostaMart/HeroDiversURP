@@ -70,7 +70,7 @@ public class MessageHelper : MonoBehaviour
         messagetext.color = Color.red;
         isMessageActive = true;
         timer = 0f;
-        PostProcessor.instance.audioSource.PlayOneShot(alarmSound);
+        PostProcessor.Instance.audioSource.PlayOneShot(alarmSound);
 
 
         if (coroutine != null)

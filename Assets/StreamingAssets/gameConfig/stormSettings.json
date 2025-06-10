@@ -1,6 +1,6 @@
 {
-    "chance": 5,
-    "activationCheckRate": 1,
-    "minDuration": 30.0,
-    "maxDuration": 60.0
+    "chance": 100,
+    "activationCheckInterval": 5,
+    "minDuration": 10.0,
+    "maxDuration": 15.0
 }

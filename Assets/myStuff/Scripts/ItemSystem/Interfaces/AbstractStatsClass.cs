@@ -72,7 +72,7 @@ public abstract class AbstractStatsClass : MonoBehaviour
     {
         string name = this.symbolicName;
         int hash = (this.gameObject.name + "-" + name).Trim().ToLower().GetHashCode();
-        return ItemManager.featuresSets[hash];
+        return ItemManager.GetFeaturesByHash(hash);
     }
 
     // ====== GESTIONE DELLE FEATURE ======
