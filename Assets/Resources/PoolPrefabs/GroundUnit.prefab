@@ -135,10 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e61e647d69007b49befcdbb38681938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectId: PA_Warrior
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  ClassName: 
 --- !u!65 &5255288954025309510
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -247,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd543247f1480628db0ec3628c292ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectId: 
+  ClassName: 
   ID: 2
 --- !u!114 &26371453514924533
 MonoBehaviour:

@@ -136,20 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e61e647d69007b49befcdbb38681938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectId: AlienFighter
-  angularSpeed: 120
-  maxPitchAngle: 40
-  waitAtWaypointTime: 2
-  patrolRadius: 10
-  patrolCount: 5
-  minDistance: 2
-  pathUpdateRate: 0.5
-  waitAtLastKnownPositionTime: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackCooldown: 2
-  attackDuration: 0.5
+  ClassName: 
 --- !u!135 &3548407098811895849
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -258,7 +245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd543247f1480628db0ec3628c292ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectId: 
+  ClassName: 
   ID: 2
 --- !u!114 &6543437192502873596
 MonoBehaviour:

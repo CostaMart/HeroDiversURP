@@ -51,22 +51,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        InitializeManagers();
-    }
-
-    private void InitializeManagers()
-    {
-        // Verifica ed inizializza EntityManager
-        if (EntityManager.Instance != null)
-        {
-            EntityManager.Instance.InitializeDefaultEntities();
-        }
-        else
-        {
-            Debug.LogError("EntityManager.Instance is null!");
-        }
-
-        // Assicura la presenza del DetectorConfigLoader
         EnsureDetectorConfigLoader();
     }
 

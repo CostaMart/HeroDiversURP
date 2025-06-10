@@ -1,0 +1,80 @@
+{
+  "detectorConfigs": {
+    "default": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 10.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    },
+    "BossLongRangeView": {
+      "OnEnterAction": "Walk",
+      "OnEnterEvent": "TargetDetected",
+      "detectionRange": 65.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    },
+    "BossShortRangeView": {
+      "OnEnterAction": "Run",
+      "OnEnterEvent": "TargetDetected",
+      "detectionRange": 40.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    },
+    "BossAttackRange": {
+      "OnEnterAction": "Attack",
+      "OnExitAction": "StopAttack",
+      "detectionRange": 20.0,
+      "detectionAngle": 20.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "useVerticalRange": true,
+      "detectionBufferSize": 1
+    },
+    "BossMemory": {
+      "OnExitAction": "Stop",
+      "OnExitEvent": "TargetLost",
+      "OnStayAction": "RotateToTarget",
+      "detectionRange": 50.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    },
+    "GetUpDetector": {
+      "OnEnterAction": "GetUp",
+      "detectionRange": 70.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    }
+  }
+}

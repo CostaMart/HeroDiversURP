@@ -16,9 +16,9 @@ public interface IEventEmitter
 
 public abstract class InteractiveObject : MonoBehaviour, IActionable, IEventEmitter
 {
-    public string objectId;
+    public string ClassName;
 
-    // Dictionary ottimizzato con ActionID
+    // Dictionary delle azioni
     protected Dictionary<ActionID, Action<object[]>> actions = new();
     
     // Lista di eventi disponibili
@@ -27,9 +27,9 @@ public abstract class InteractiveObject : MonoBehaviour, IActionable, IEventEmit
     protected virtual void Awake()
     {
         name = name.Replace("(Clone)", "").Trim();
-        if (string.IsNullOrEmpty(objectId))
+        if (string.IsNullOrEmpty(ClassName))
         {
-            objectId = name;
+            ClassName = name;
         }
     }
 

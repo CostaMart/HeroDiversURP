@@ -21,6 +21,10 @@ public static class ActionRegistry
     public static readonly ActionID ENABLE_LOST_SCREEN = RegisterAction("EnableLostScreen");
     public static readonly ActionID DROP_ITEM = RegisterAction("DropItem");
     public static readonly ActionID PLAY_SOUND = RegisterAction("PlaySound");
+    public static readonly ActionID WALK = RegisterAction("Walk");
+    public static readonly ActionID RUN = RegisterAction("Run");
+    public static readonly ActionID STOP_ATTACK = RegisterAction("StopAttack");
+    public static readonly ActionID GET_UP = RegisterAction("GetUp");
 
     public static ActionID RegisterAction(string actionName)
     {
