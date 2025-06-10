@@ -9,7 +9,7 @@ public class ActionConfig
     public string tag;
     public bool isTagAction = false;
     public List<string> emitterFilters = new();
-    
+
     // Conversione automatica a ActionID
     public ActionID ActionID => ActionRegistry.GetActionByName(action);
 }
@@ -20,7 +20,7 @@ public class EventConfiguration
     public string name;
     public List<ActionConfig> actions;
     public List<string> emitterFilters = new();
-    
+
     // Conversione automatica a EventID
     public EventID EventID => EventRegistry.GetEventByName(name);
 }
@@ -118,7 +118,6 @@ public class EventActionManager : MonoBehaviour
     {
         AddToHistory(eventData);
 
-        Debug.Log($"Triggering event '{eventData.eventId}' from {eventData.emitter.name ?? "Unknown"}");
 
         if (eventTable.TryGetValue(eventData.eventId, out var actionConfigs))
         {
@@ -156,7 +155,7 @@ public class EventActionManager : MonoBehaviour
         foreach (string filter in actionConfig.emitterFilters)
         {
             if (string.IsNullOrEmpty(filter)) continue;
-            
+
             // Supporta wildcard semplici con *
             if (filter.Contains("*"))
             {
@@ -184,7 +183,7 @@ public class EventActionManager : MonoBehaviour
         }
 
         EventID eventId = eventConfig.EventID;
-        
+
         if (eventId.id == 0)
         {
             Debug.LogError($"Unknown event: {eventConfig.name}");
@@ -203,16 +202,16 @@ public class EventActionManager : MonoBehaviour
                 Debug.LogWarning($"Unknown action: {actionCfg.action}");
                 continue;
             }
-            
+
             // Se l'evento ha filtri globali, applicali alle azioni che non hanno filtri specifici
-            if (eventConfig.emitterFilters != null && eventConfig.emitterFilters.Count > 0 && 
+            if (eventConfig.emitterFilters != null && eventConfig.emitterFilters.Count > 0 &&
                 (actionCfg.emitterFilters == null || actionCfg.emitterFilters.Count == 0))
             {
                 actionCfg.emitterFilters = new List<string>(eventConfig.emitterFilters);
             }
-            
+
             eventTable[eventId].Add(actionCfg);
-            string filtersInfo = actionCfg.emitterFilters?.Count > 0 ? 
+            string filtersInfo = actionCfg.emitterFilters?.Count > 0 ?
                 $" (filters: {string.Join(", ", actionCfg.emitterFilters)})" : "";
             Debug.Log($"Event '{eventId}' configured with action '{actionCfg.ActionID}' for tag '{actionCfg.tag}'{filtersInfo}.");
         }

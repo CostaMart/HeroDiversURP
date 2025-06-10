@@ -49,7 +49,6 @@ public class SimpleBulletBehaviour : MonoBehaviour
             ItemManager.playerDispatcher.AttachModifierFromOtherDispatcher(enemeyDispatcher, mod);
             postProcessor.ShowDamageEffect(0.5f, 0.5f);
 
-            Debug.Log("Bullet hit player, applying effects from enemy dispatcher");
         }
 
         ObjectPool.Instance.Return(PoolObjectType.EnemySphereBullet, gameObject);

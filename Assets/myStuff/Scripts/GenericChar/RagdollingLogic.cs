@@ -50,7 +50,6 @@ public class Ragdoller : MonoBehaviour
     public void Ragdolling(bool ragdolling)
     {
 
-        Debug.Log("i've been called");
         Rigidbody[] r = GetComponentsInChildren<Rigidbody>();
 
         foreach (Rigidbody otherRigid in r)
