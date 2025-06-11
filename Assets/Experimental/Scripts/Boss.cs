@@ -16,6 +16,7 @@ public class Boss : InteractiveObject
     private bool isMonitoring = true;
     private Coroutine healthMonitorCoroutine;
     private Coroutine berserkEventCoroutine;
+    private bool isDead;
 
     void Start()
     {
@@ -44,6 +45,17 @@ public class Boss : InteractiveObject
         RegisterEvent(EventRegistry.BERSERK_MODE);
 
         StartHealthMonitoring();
+    }
+
+    void Update()
+    {
+        var hp = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum();
+        hp = Mathf.Clamp(hp, 0, dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum());
+
+        if (hp <= 0)
+        {
+            Die();
+        }
     }
 
     private void Idle(object[] obj)
@@ -138,8 +150,8 @@ public class Boss : InteractiveObject
     {
         while (isMonitoring)
         {
-            float healthPercentage = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum() / dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum();
-            float berserkThreshold = dispatcher.GetFeatureByType<float>(FeatureType.berserkLevel).Sum();
+            float healthPercentage = dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum() / dispatcher.GetFeatureByType<float>(FeatureType.health).Sum();
+            float berserkThreshold = dispatcher.GetFeatureByType<float>(FeatureType.berserkThreshold).Sum();
             // Controlla se la vita è sotto la soglia e non siamo già in berserk mode
             if (healthPercentage <= berserkThreshold && !isBerserkMode)
             {
@@ -186,21 +198,26 @@ public class Boss : InteractiveObject
     {
         while (isBerserkMode)
         {
-            EmitEvent(EventRegistry.BERSERK_MODE, new object[] { dispatcher.GetFeatureByType<float>(FeatureType.spawnBatchSize).Sum() });
+            EmitEvent(EventRegistry.BERSERK_MODE, new object[] { dispatcher.GetFeatureByType<int>(FeatureType.spawnBatchSize).Sum() });
             yield return new WaitForSeconds(dispatcher.GetFeatureByType<float>(FeatureType.spawnDelay).Sum());
         }
     }
 
-    protected override void OnDisable()
+    private void Die()
     {
-        base.OnDisable();
-
+        if (isDead) return; 
+        isDead = true;
+        agentController.StopAgent();
         isMonitoring = false;
         if (healthMonitorCoroutine != null)
             StopCoroutine(healthMonitorCoroutine);
         if (berserkEventCoroutine != null)
             StopCoroutine(berserkEventCoroutine);
-            
+
+        GetComponentsInChildren<Detector>().ToList().ForEach(d => d.enabled = false);
+
+        animator.SetTrigger("die");
+        EmitEvent(EventRegistry.OBJECT_DISABLED, new object[] { gameObject });
         Debug.Log("Boss died!");
     }
 }

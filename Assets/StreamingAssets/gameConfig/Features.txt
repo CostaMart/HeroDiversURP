@@ -83,9 +83,9 @@ attackSpeed = 2.0       ID:6
 damage = 100.0          ID:7
 attackCooldown = 1.5    ID:8
 attackDuration = 0.5    ID:9
-spawnBatchSize = 3      ID:10
-spawnDelay = 10.0       ID:11
-berserkLevel = 0.5      ID:12
+spawnDelay = 10.0       ID:10
+berserkThreshold = 0.5  ID:11
+spawnBatchSize = 3      ID:12
 ##
 
 #>Player-HeatStats

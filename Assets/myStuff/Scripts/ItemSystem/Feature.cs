@@ -106,7 +106,7 @@ public enum FeatureType
     attackSpeed,
     spawnBatchSize,
     spawnDelay,
-    berserkLevel
+    berserkThreshold,
 }
 
 public class Feature

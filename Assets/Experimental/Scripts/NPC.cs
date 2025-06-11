@@ -7,15 +7,16 @@ using Utility.Positioning;
 public class NPC : InteractiveObject
 {
     EffectsDispatcher dispatcher;
-    AgentController agentController; // Reference to the AgentController
+    AgentController agentController;
     EnemyAttack enemyAttack;
+    EnemyDropper dropper; 
 
     bool isCooldownElapsed = true; // Flag to check if the cooldown is elapsed
     bool isAttacking = false;
     float pathUpdateTimer;
     Vector3 lastKnownPosition;
     List<Vector3> waypoints = new(); // List of patrol points
-    readonly NPCSettings settings = new (); // Settings for the NPC
+    readonly NPCSettings settings = new(); // Settings for the NPC
 
     enum State
     {
@@ -26,13 +27,19 @@ public class NPC : InteractiveObject
     }
 
     State currentState = State.Idle;
+    private bool isDead;
 
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         agentController = GetComponent<AgentController>();
         enemyAttack = GetComponent<EnemyAttack>();
         dispatcher = GetComponent<EffectsDispatcher>();
+        dropper = GetComponent<EnemyDropper>();
+    }
 
+    void Start()
+    {
         // ========== Patrol Settings ==========
         var options = new RandomPointGenerator.PointGeneratorOptions
         {
@@ -80,6 +87,17 @@ public class NPC : InteractiveObject
         OnStartPatrol(); // Start patrolling by default
     }
 
+    void Update()
+    {
+        var hp = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum();
+        hp = Mathf.Clamp(hp, 0, dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum());
+
+        if (hp <= 0)
+        {
+            Die();
+        }
+    }
+
     // Implementazioni delle azioni    
     void OnStartPatrol()
     {
@@ -87,7 +105,7 @@ public class NPC : InteractiveObject
         agentController.Speed = dispatcher.GetFeatureByType<float>(FeatureType.patrolSpeed).Sum();
         StartCoroutine(PatrolRoutine());
     }
-    
+
     private void OnAttack(object[] p)
     {
         if (p.Length == 0 || p[0] is not Transform target)
@@ -110,7 +128,7 @@ public class NPC : InteractiveObject
         {
             Debug.LogError("Invalid target for rotation.");
             return;
-        }     
+        }
 
         Vector3 pos = target.position;
 
@@ -118,7 +136,7 @@ public class NPC : InteractiveObject
         {
             pos = center;
         }
-        
+
         float maxPitchAngle = dispatcher.GetFeatureByType<float>(FeatureType.maxPitchAngle).Sum();
         agentController.RotateToDirection(pos, maxPitchAngle);
     }
@@ -135,7 +153,7 @@ public class NPC : InteractiveObject
         agentController.Speed = dispatcher.GetFeatureByType<float>(FeatureType.chaseSpeed).Sum();
         pathUpdateTimer += Time.deltaTime;
         Vector3 targetPosition = target.position;
-        
+
         if (targetPosition != null)
         {
             // Resetta il timer se vediamo ancora il target
@@ -228,5 +246,15 @@ public class NPC : InteractiveObject
 
         float maxPitchAngle = dispatcher.GetFeatureByType<float>(FeatureType.maxPitchAngle).Sum();
         agentController.RotateToDirection(pos, maxPitchAngle);
+    }
+
+    private void Die()
+    {
+        if (isDead) return; 
+        isDead = true;
+        agentController.StopAgent();
+        StopAllCoroutines();
+        gameObject.SetActive(false);
+        dropper.DropItem();
     }
 }

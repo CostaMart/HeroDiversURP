@@ -11,7 +11,7 @@
       "detectionAngle": 45.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
-      "ignoreObstacles": false,
+      "ignoreObstacles": true,
       "targetLayerName": "Player",
       "useVerticalRange": false,
       "detectionBufferSize": 1
