@@ -73,6 +73,21 @@ waitAtWaypointTime = 1.0 ID:37
 waitAtLastKnownPositionTime = 2.0 ID:38
 ##
 
+#>BossMatio-CharStats
+maxHealth = 1000.0      ID:1
+health = 1000.0         ID:2
+rotationSpeed = 120.0   ID:3
+walkSpeed = 4.0         ID:4
+runSpeed = 10.0         ID:5
+attackSpeed = 2.0       ID:6
+damage = 100.0          ID:7
+attackCooldown = 1.5    ID:8
+attackDuration = 0.5    ID:9
+spawnBatchSize = 3      ID:10
+spawnDelay = 10.0       ID:11
+berserkLevel = 0.5      ID:12
+##
+
 #>Player-HeatStats
 heatingPerSecond = 5.0 ID:0 
 coolingRate = 1.0 ID:1

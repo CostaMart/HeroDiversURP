@@ -20,7 +20,7 @@ public class TagConfigLoader : MonoBehaviour
 {
     private string configContent;
     
-    void Awake()
+    void ConfigFile()
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "tags.json");
         if (File.Exists(filePath))
@@ -36,6 +36,7 @@ public class TagConfigLoader : MonoBehaviour
     
     public void LoadTagsFromConfig()
     {
+        ConfigFile();
         if (string.IsNullOrEmpty(configContent))
         {
             Debug.LogError("No config content available.");
@@ -73,7 +74,14 @@ public class TagConfigLoader : MonoBehaviour
         // Aggiungi il componente appropriato in base al tipo
         GameTag newTag = tagObject.AddComponent<GameTag>();
         newTag.SetTagName(tagConfig.name);
-        newTag.tagType = (GameTag.TagType)System.Enum.Parse(typeof(GameTag.TagType), tagConfig.type);
+        if (string.IsNullOrEmpty(tagConfig.type))
+        {
+            newTag.tagType = GameTag.TagType.Random;
+        }
+        else
+        {
+            newTag.tagType = (GameTag.TagType)System.Enum.Parse(typeof(GameTag.TagType), tagConfig.type);
+        }
         newTag.transform.SetParent(TagManager.Instance.transform);
         TagManager.Instance.RegisterTag(newTag);
 

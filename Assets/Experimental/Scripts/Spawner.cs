@@ -608,6 +608,9 @@ public class Spawner : InteractiveObject
     void Start()
     {
         gameTag = TagManager.Instance.GetTagByName(tagName);
+        RegisterAction(ActionRegistry.START_SPAWNING, (_) => StartSpawning());
+        RegisterAction(ActionRegistry.STOP_SPAWNING, (_) => StopSpawning());      
+        RegisterAction(ActionRegistry.SPAWN_BATCH, SpawnBatch);      
         
         if (autoStart)
         {
@@ -810,22 +813,48 @@ public class Spawner : InteractiveObject
         isSpawning = false;
     }
     
+    /// <summary>
+    /// Spawns all objects in a batch at once. Used for both grid and area batch spawning.
+    /// This overload is used when called from an action registry event.
+    /// <param name="p">Parameters passed from the action registry, contains batch size</param>
+    /// </summary>
+    private void SpawnBatch(object[] p)
+    {
+        if (isSpawning) return;
+        isSpawning = true;
+        if (p.Length > 0 && p[0] is int batchSize)
+        {
+            StartCoroutine(SpawnBatchCoroutine(batchSize));
+        }
+        
+        isSpawning = false;
+    }
+
+    private IEnumerator SpawnBatchCoroutine(int batchSize)
+    {
+        while (batchSize-- >= 0)
+        {
+            SpawnSingleObject();
+            yield return null;
+        }
+    }
+
     private IEnumerator SpawnRoutine()
     {
         yield return new WaitForSeconds(timingSettings.initialDelay);
-        
-        while (isSpawning && activeStrategy.HasRemainingPositions() && 
+
+        while (isSpawning && activeStrategy.HasRemainingPositions() &&
                 (maxSpawnCount <= 0 || currentSpawnCount < maxSpawnCount))
         {
             SpawnSingleObject();
-            
+
             float nextInterval = timingSettings.useRandomInterval
                 ? UnityEngine.Random.Range(timingSettings.minInterval, timingSettings.maxInterval)
                 : timingSettings.interval;
-            
+
             yield return new WaitForSeconds(nextInterval);
         }
-        
+
         isSpawning = false;
     }
     

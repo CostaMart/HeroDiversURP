@@ -2,17 +2,32 @@
     "tags": [
         {
             "name": "PlayerTag",
-            "type": "Random",
             "members": ["Player"]
         },
         {
+            "name": "EnemyTag",
+            "members": ["Drone", "GroundUnit"]
+        },
+        {
+            "name": "SpawnerTag",
+            "members": [
+                "DroneSpawner", 
+                "GroundUnitSpawner",
+                "EnemySpawner",
+                "BossDroneSpawner",
+                "BossGroundUnitSpawner"
+            ]
+        },
+        {
+            "name": "BossSpawnTag",
+            "members": ["BossDroneSpawner", "BossGroundUnitSpawner"]
+        },
+        {
             "name": "DroneSpawnTag",
-            "type": "Random",
             "members": ["Drone"]
         },
         {
             "name": "GroundUnitSpawnTag",
-            "type": "Random",
             "members": ["GroundUnit"]
         },
         {

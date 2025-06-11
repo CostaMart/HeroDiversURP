@@ -16,47 +16,31 @@
                     "action": "EnableLostScreen",
                     "tag": "PostProcessingTag",
                     "emitterFilters": ["Player"]
-                }
-            ]
-        },
-        
-        
-        
-        
-        
-        
-        {
-            "name": "ObjectEnabled",
-            "actions": [
-                {
-                    "action": "AddEnabledObject",
-                    "tag": "EnemyTag",
-                    "isTagAction": true
-                }
-            ]
-        },
-        {
-            "name": "TargetDetected",
-            "emitterFilters": ["Enemy*", "Guard*"],
-            "actions": [
-                {
-                    "action": "MoveTo",
-                    "tag": "PlayerTag"
-                }
-            ]
-        },
-        {
-            "name": "AttackStarted",
-            "actions": [
-                {
-                    "action": "MoveTo",
-                    "tag": "PlayerTag",
-                    "emitterFilters": ["EnemyBoss", "EliteGuard"]
                 },
                 {
-                    "action": "PlaySound",
-                    "tag": "AudioTag",
+                    "action": "EnableWinScreen",
+                    "tag": "PostProcessingTag",
                     "emitterFilters": ["Player"]
+                },
+                {
+                    "action": "DisableObject",
+                    "tag": "EnemyTag",
+                    "emitterFilters": ["BossMatio"]
+                },
+                {
+                    "action": "StopSpawning",
+                    "tag": "SpawnerTag",
+                    "emitterFilters": ["BossMatio"]
+                }
+            ]
+        },
+        {
+            "name": "BerserkMode",
+            "emitterFilters": ["BossMatio"],
+            "actions": [
+                {
+                    "action": "SpawnBatch",
+                    "tag": "BossSpawnTag"
                 }
             ]
         }

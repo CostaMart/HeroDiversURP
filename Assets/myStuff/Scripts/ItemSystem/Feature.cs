@@ -81,6 +81,8 @@ public enum FeatureType
     maxPitchAngle,
     waitAtWaypointTime,
     waitAtLastKnownPositionTime,
+    walkSpeed,
+    runSpeed,
 
     // === Physics ===
     affetedByGravity,
@@ -101,6 +103,10 @@ public enum FeatureType
     keys,
     attackCooldown,
     attackDuration,
+    attackSpeed,
+    spawnBatchSize,
+    spawnDelay,
+    berserkLevel
 }
 
 public class Feature

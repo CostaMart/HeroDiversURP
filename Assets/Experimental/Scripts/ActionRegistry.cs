@@ -19,12 +19,16 @@ public static class ActionRegistry
     public static readonly ActionID ADD_ENABLED_OBJECT = RegisterAction("AddEnabledObject");
     public static readonly ActionID REMOVE_DISABLED_OBJECT = RegisterAction("RemoveDisabledObject");
     public static readonly ActionID ENABLE_LOST_SCREEN = RegisterAction("EnableLostScreen");
+    public static readonly ActionID ENABLE_WIN_SCREEN = RegisterAction("EnableWinScreen");
     public static readonly ActionID DROP_ITEM = RegisterAction("DropItem");
     public static readonly ActionID PLAY_SOUND = RegisterAction("PlaySound");
     public static readonly ActionID WALK = RegisterAction("Walk");
     public static readonly ActionID RUN = RegisterAction("Run");
     public static readonly ActionID STOP_ATTACK = RegisterAction("StopAttack");
     public static readonly ActionID GET_UP = RegisterAction("GetUp");
+    public static readonly ActionID START_SPAWNING = RegisterAction("StartSpawning");
+    public static readonly ActionID STOP_SPAWNING = RegisterAction("StopSpawning");
+    public static readonly ActionID SPAWN_BATCH = RegisterAction("SpawnBatch");
 
     public static ActionID RegisterAction(string actionName)
     {
