@@ -1,0 +1,9 @@
+{
+    "effects": [
+        {
+            "effectType": "sa",
+            "target": "@CharStats.33",
+            "expr": "30"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 {
     "axis": "X",
-    "startAngle": "34",
+    "timeOfPowerUP": "10",
+    "startAngle": "10",
     "targetAngle": "-64",
     "durationInSeconds": "900"
 }

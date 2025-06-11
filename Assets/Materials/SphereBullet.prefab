@@ -81,7 +81,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8159
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -34357,6 +34357,8 @@ MonoBehaviour:
   stopPointWithRespectToPlayer: {x: 0, y: 0, z: 0}
   destroyExplosionRadius: 0
   weaponContainer: {fileID: 0}
+  gravityStrength: 9.81
+  gravitySpeedComponent: 0
   hitForce: 0
   explosionForce: 0
   gizmo: {fileID: 0}

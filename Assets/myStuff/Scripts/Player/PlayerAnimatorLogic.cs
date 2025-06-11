@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -103,6 +104,20 @@ public class PlayerAnimatorLogic : MonoBehaviour
         playerInput.actions["Move"].canceled += MoveCanceled;
 
         playerInput.actions["wpn1"].performed += WeaponSwitch;
+
+    }
+
+    public void Start()
+    {
+        AimToggle();
+        StartCoroutine(Reset());
+
+    }
+
+    IEnumerator Reset()
+    {
+        yield return new WaitForSeconds(0.1f);
+        AimToggle();
     }
 
     void OnDisable()
@@ -149,6 +164,15 @@ public class PlayerAnimatorLogic : MonoBehaviour
     }
 
     private void AimToggle(InputAction.CallbackContext ctx)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
+        {
+            aiming = !aiming;
+            animator.SetBool(aimHash, aiming);
+        }
+    }
+
+    private void AimToggle()
     {
         if (!animator.GetCurrentAnimatorStateInfo(1).IsName("Reload"))
         {

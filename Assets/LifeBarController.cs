@@ -9,10 +9,6 @@ public class LifeBarController : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] EffectsDispatcher dispatcher;
 
-    void OnEnable()
-    {
-        canvas.worldCamera = GameObject.Find("GUICam").GetComponent<Camera>();
-    }
     void Update()
     {
         image.fillAmount = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum() /
