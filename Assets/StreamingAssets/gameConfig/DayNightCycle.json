@@ -1,5 +1,7 @@
 {
-    "targetAngle": "-64",
     "axis": "X",
-    "durationInSeconds": "30"
+    "timeOfPowerUP": "10",
+    "startAngle": "10",
+    "targetAngle": "-64",
+    "durationInSeconds": "900"
 }

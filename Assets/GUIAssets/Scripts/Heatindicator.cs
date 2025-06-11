@@ -51,7 +51,6 @@ public class Heatindicator : MonoBehaviour
 
         if (logic.temperature < maxHeat)
         {
-            Debug.Log("Heat is back to normal.");
             alarmed = false;
         }
 
