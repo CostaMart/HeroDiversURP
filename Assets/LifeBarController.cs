@@ -11,8 +11,9 @@ public class LifeBarController : MonoBehaviour
 
     void Update()
     {
-        image.fillAmount = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum() /
-            dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum();
+        var health = dispatcher.GetFeatureByType<float>(FeatureType.health);
+        var maxHealth = dispatcher.GetFeatureByType<float>(FeatureType.maxHealth);
+        image.fillAmount = health.Sum() / maxHealth.Sum();
 
         image.color = Color.Lerp(Color.red, Color.green, image.fillAmount);
     }

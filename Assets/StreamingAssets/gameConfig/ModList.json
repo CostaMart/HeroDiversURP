@@ -467,6 +467,23 @@
                     "expr": "@PrimaryWeaponStats.102 + 100"
                 }
             ]
+        },
+        {
+            "id": 13,
+            "grabOnWalkIn": true,
+            "gameIconId": 18,
+            "requiresUnlocking": false,
+            "astroCreditPrice": 20,
+            "inGamePrice": 50,
+            "name": "Rapid Fire Pistol",
+            "description": "Once Humanity was exiliated in the space the society has tryied to reconstruct itself, astroCoins are the new currency in this desperate attempt to restructure our systems",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@SecondaryWeaponStats.3",
+                    "expr": "15"
+                }
+            ]
         }
     ]
 }

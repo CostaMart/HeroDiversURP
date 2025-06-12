@@ -32,6 +32,17 @@
                     "expr": "!CharStats.1 - (@CharStats.33)"
                 }
             ]
+        },
+        {
+            "id": 3,
+            "name": "bullet 1",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "!CharStats.1",
+                    "expr": "!CharStats.1 - (@CharStats.7)"
+                }
+            ]
         }
     ]
 }

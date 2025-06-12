@@ -350,12 +350,6 @@ public class ItemManager : MonoBehaviour
                     string[] parts = line.Split("=");
                     FeatureType featureType = (FeatureType)Enum.Parse(typeof(FeatureType), parts[0]);
 
-                    if (featureType == FeatureType.money || featureType == FeatureType.keys)
-                    {
-                        Debug.LogWarning("AbstractStatus: money and keys are special features, not customizable");
-                        continue;
-                    }
-
                     parts = parts[1].Split("ID:");
                     string value = parts[0].Trim();
                     int ID = int.Parse(parts[1].Split("range:")[0].Trim());

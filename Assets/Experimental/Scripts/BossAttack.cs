@@ -3,6 +3,7 @@ using UnityEngine;
 public class BossAttack : MonoBehaviour
 {
     [SerializeField] private Collider attackCollider;
+    [SerializeField] private EffectsDispatcher bossDispatcher;
 
     void Awake()
     {
@@ -20,5 +21,18 @@ public class BossAttack : MonoBehaviour
     {
         attackCollider.enabled = false;
         Debug.Log("Boss attack ended.");
+    }
+
+    int col;
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            col++;
+            var disp = other.GetComponent<EffectsDispatcher>();
+            disp.AttachModifierFromOtherDispatcher(bossDispatcher, ItemManager.bulletPool[3]);
+            Debug.Log($"Player hit by boss attack! Collision count: {col}");
+            attackCollider.enabled = false;
+        }
     }
 }

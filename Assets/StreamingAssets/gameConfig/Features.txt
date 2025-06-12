@@ -13,6 +13,7 @@ strafeBurstDuration = 0.3 ID:12
 strafePower = 70.0 ID:15
 strafeCooldown = 2.0 ID:17
 maxStrafes = 4 ID:16
+money = 100 ID:99
 antiExplosionSuit = false ID:18
 ##
 
@@ -74,8 +75,8 @@ waitAtLastKnownPositionTime = 2.0 ID:38
 ##
 
 #>BossMatio-CharStats
-maxHealth = 1000.0      ID:1
-health = 1000.0         ID:2
+health = 10000.0         ID:1
+maxHealth = 10000.0      ID:2
 rotationSpeed = 120.0   ID:3
 walkSpeed = 4.0         ID:4
 runSpeed = 10.0         ID:5
