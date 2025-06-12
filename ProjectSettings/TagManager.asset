@@ -9,6 +9,7 @@ TagManager:
   - FxTemporaire
   - NPC
   - Sun
+  - TrackingObject
   layers:
   - Default
   - TransparentFX
@@ -24,8 +25,8 @@ TagManager:
   - AirUnit
   - Props
   - Map
-  - 
-  - 
+  - noVis
+  - Sun
   - 
   - 
   - 
