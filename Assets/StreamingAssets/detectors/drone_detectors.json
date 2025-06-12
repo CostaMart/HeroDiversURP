@@ -38,7 +38,7 @@
       "OnExitAction": "WaitAndStartPatrol",
       "OnExitEvent": "TargetLost",
       "OnStayAction": "Chase",
-      "detectionRange": 40.0,
+      "detectionRange": 50.0,
       "detectionAngle": 360.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
@@ -49,7 +49,7 @@
     },
     "DroneAttackRange": {
       "OnStayAction": "Attack",
-      "detectionRange": 15.0,
+      "detectionRange": 21.0,
       "detectionAngle": 10.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
@@ -61,7 +61,7 @@
     "DroneAimPerceiver": {
       "OnExitAction": "Resume",
       "OnStayAction": "AimAtTarget",
-      "detectionRange": 14.0,
+      "detectionRange": 20.0,
       "detectionAngle": 360.0,
       "tagsToDetect": "PlayerTag",
       "scanInterval": 0.2,
