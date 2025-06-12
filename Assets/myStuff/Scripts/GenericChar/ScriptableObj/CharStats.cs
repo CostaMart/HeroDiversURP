@@ -14,7 +14,6 @@ public class CharStats : AbstractStatsClass
         if (isPlayer)
         {
             features.Add(101, new Feature(FeatureType.keys, 100, typeof(int)));
-            features.Add(102, new Feature(FeatureType.astroCredits, PlayerPrefs.GetFloat("astroCredits", 0), typeof(int)));
         }
     }
 }

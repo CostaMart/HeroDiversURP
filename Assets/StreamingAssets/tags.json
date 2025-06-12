@@ -2,18 +2,23 @@
     "tags": [
         {
             "name": "PlayerTag",
-            "members": ["Player"]
+            "members": [
+                "Player"
+            ]
         },
         {
             "name": "EnemyTag",
-            "members": ["Drone", "GroundUnit"]
+            "members": [
+                "Drone",
+                "GroundUnit"
+            ]
         },
         {
             "name": "SpawnerTag",
             "members": [
-                "DroneSpawnArenaTag", 
+                "DroneSpawnArenaTag",
                 "GroundUnitArenaSpawnTag",
-                "DroneSpawnZoneBTag", 
+                "DroneSpawnZoneBTag",
                 "GroundUnitZoneBSpawnTag",
                 "EnemySpawner",
                 "BossDroneSpawner",
@@ -22,41 +27,60 @@
         },
         {
             "name": "BossSpawnTag",
-            "members": ["BossDroneSpawner", "BossGroundUnitSpawner"]
+            "members": [
+                "BossDroneSpawner",
+                "BossGroundUnitSpawner"
+            ]
         },
         {
             "name": "DroneTag",
-            "members": ["Drone"]
+            "members": [
+                "Drone"
+            ]
         },
         {
             "name": "GroundUnitTag",
-            "members": ["GroundUnit"]
+            "members": [
+                "GroundUnit"
+            ]
         },
         {
             "name": "DroneArenaSpawnerTag",
-            "members": ["DroneArenaSpawner"]
+            "members": [
+                "DroneArenaSpawner"
+            ]
         },
         {
             "name": "GroundUnitArenaSpawnTag",
-            "members": ["GroundUnitArenaSpawner"]
+            "members": [
+                "GroundUnitArenaSpawner"
+            ]
         },
         {
             "name": "DroneZoneBSpawnTag",
-            "members": ["DroneZoneBSpawner"]
+            "members": [
+                "DroneZoneBSpawner"
+            ]
         },
         {
             "name": "GroundUnitZoneBSpawnTag",
-            "members": ["GroundUnitZoneBSpawner"]
+            "members": [
+                "GroundUnitZoneBSpawner"
+            ]
         },
         {
             "name": "ItemSpawnTag",
             "type": "Sequential",
-            "members": ["BoxCommon 1", "Key"]
+            "members": [
+                "BoxCommon 1"
+            ]
         },
         {
             "name": "PostProcessingTag",
             "type": "Sequential",
-            "members": ["PostProcessor"]
+            "members": [
+                "PostProcessor"
+            ]
         }
     ]
 }

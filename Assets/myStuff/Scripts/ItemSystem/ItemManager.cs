@@ -36,7 +36,6 @@ public class ItemManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
 
         // Initialize the statClass dictionary with some values
         statClassToIdRegistry = new Dictionary<string, int>

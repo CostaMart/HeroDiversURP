@@ -26,6 +26,7 @@ public class PostProcessor : InteractiveObject
 
         RegisterAction(ActionRegistry.ENABLE_LOST_SCREEN, (_) => Lost());
         RegisterAction(ActionRegistry.PLAY_SOUND, EmitGenericSoundEffect);
+        RegisterAction(ActionRegistry.ENABLE_WIN_SCREEN, (_) => Win());
     }
     public void ShowDamageEffect(float duration, float alpha)
     {
@@ -39,6 +40,12 @@ public class PostProcessor : InteractiveObject
         damageImage.gameObject.SetActive(true);
         damageImage.color = new Color(1f, 1f, 1f, 0.8f);
         deathText.SetActive(true);
+    }
+
+    [SerializeField] GameObject winScreen;
+    public void Win()
+    {
+        winScreen.SetActive(true);
     }
 
     private IEnumerator ShowDamageEffectCoroutine(float duration, float alpha)

@@ -21,6 +21,7 @@ public class Dropper : MonoBehaviour
     [SerializeField] Color emissionColor = Color.green * 5.0f;
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color usedColor = Color.red;
+    [SerializeField] private GameObject coperchio;
     Animator anim;
     PlayerInput playerInput;
     private Transform player;
@@ -87,12 +88,12 @@ public class Dropper : MonoBehaviour
         var direction = (transform.position - player.position).normalized;
         var torqueAxis = Vector3.Cross(direction, Vector3.up);
 
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().isKinematic = false;
-
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>().
+        coperchio.GetComponent<Rigidbody>().isKinematic = false;
+        coperchio.GetComponent<Rigidbody>().
         AddForce(direction * 10f - Vector3.forward * 10f, ForceMode.Impulse);
-        transform.GetChild(1).gameObject.GetComponent<Rigidbody>()
+        coperchio.gameObject.GetComponent<Rigidbody>()
         .AddTorque(torqueAxis * (-10f), ForceMode.Impulse);
+        Destroy(transform.GetChild(2).gameObject);
 
 
         anim.SetTrigger("opening");

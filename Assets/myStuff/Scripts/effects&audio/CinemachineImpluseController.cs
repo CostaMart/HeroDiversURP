@@ -1,40 +1,50 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal; // Importante per MotionBlur
+using UnityEngine.Rendering.Universal;
 
 public class CinemachineImpluseController : MonoBehaviour
 {
-    [SerializeField] EventChannels eventChannels;
-    [SerializeField] CinemachineImpulseSource impulseSource;
-    [SerializeField] string startEvent = "VFXEvent";
-    [SerializeField] string stopEvent = "BurstOff";
-    [SerializeField] Volume volume;
+    [SerializeField] private EventChannels eventChannels;
+    [SerializeField] private CinemachineImpulseSource impulseSource;
+    [SerializeField] private string startEvent = "VFXEvent";
+    [SerializeField] private string stopEvent = "BurstOff";
+    [SerializeField] private Volume volume;
 
     private MotionBlur motionBlur;
     private float intensity;
 
     void Start()
     {
+        // Subscribe agli eventi
         eventChannels.Subscribe(startEvent, GenerateImpulse);
         eventChannels.Subscribe(stopEvent, RemoveBlur);
 
-        // Clona il profilo se serve evitare modifiche globali
-        volume.profile = Instantiate(volume.profile);
-
-        // Recupera Motion Blur dal profilo
-        if (!volume.profile.TryGet(out motionBlur))
+        if (volume == null || volume.profile == null)
         {
-            Debug.LogWarning("Motion Blur non trovato nel profilo Volume.");
+            Debug.LogError("Volume o profilo non assegnato!");
+            return;
         }
 
+        // Ottieni Motion Blur dal profilo attivo (runtime)
+        if (!volume.profile.TryGet(out motionBlur))
+        {
+            Debug.LogError("Motion Blur non trovato nel volume.profile!");
+            return;
+        }
+
+        // Attiva l'override per sicurezza
+        motionBlur.active = true;
+
         intensity = PlayerPrefs.GetFloat("strafeBlur", 0.6f);
+
+        Debug.Log("Motion Blur trovato. Override attivo? " + motionBlur.active);
     }
 
     public void GenerateImpulse()
     {
         impulseSource.GenerateImpulse();
-        ApplyMotionBlur(); // Imposta intensity a 0.6
+        ApplyMotionBlur();
     }
 
     public void ApplyMotionBlur()
@@ -42,16 +52,17 @@ public class CinemachineImpluseController : MonoBehaviour
         if (motionBlur == null) return;
 
         motionBlur.active = true;
-        motionBlur.intensity.overrideState = true;
         motionBlur.intensity.value = intensity;
 
-        // Puoi anche impostare il mode (es. Camera o Object)
-        motionBlur.mode.overrideState = true;
-        motionBlur.mode.value = MotionBlurMode.CameraOnly;
+        Debug.Log($"ApplyMotionBlur: intensity = {motionBlur.intensity.value}");
     }
 
     public void RemoveBlur()
     {
-        motionBlur.active = false;
+        if (motionBlur == null) return;
+
+        motionBlur.intensity.value = 0f;
+
+        Debug.Log("RemoveBlur: intensity = 0");
     }
 }

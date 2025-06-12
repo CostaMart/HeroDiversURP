@@ -1,6 +1,55 @@
 {
     "mods": [
         {
+            "id": 20,
+            "grabOnWalkIn": false,
+            "gameIconId": 32,
+            "requiresUnlocking": false,
+            "astroCreditPrice": 100,
+            "inGamePrice": 50,
+            "name": "Double Damage",
+            "description": "Exo weapon at its finest, 8 barrels, 8 bullets, 8 times the fun",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.15",
+                    "expr": "@PrimaryWeaponStats.15 * 2"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "grabOnWalkIn": false,
+            "gameIconId": 32,
+            "requiresUnlocking": false,
+            "astroCreditPrice": 100,
+            "inGamePrice": 50,
+            "name": "Octa Barrel",
+            "description": "Exo weapon with suppressor off is a beast",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.22",
+                    "expr": "8"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.3",
+                    "expr": "3.0"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.6",
+                    "expr": "false"
+                },
+                {
+                    "effectType": "sa",
+                    "target": "@PrimaryWeaponStats.23",
+                    "expr": "0.0"
+                }
+            ]
+        },
+        {
             "id": 0,
             "gameIconId": 37,
             "grabOnWalkIn": false,
@@ -24,30 +73,13 @@
             "grabOnWalkIn": true,
             "inGamePrice": 1,
             "gameIconId": 9,
-            "name": "5 DodgeCoins",
-            "description": "5 DodgeCoins, the currency of the future, used by the most advanced civilizations in the galaxy",
+            "name": "5 Star Coins",
+            "description": "5 Star Coins, the currency of the future, used by the most advanced civilizations in the galaxy",
             "effects": [
                 {
                     "effectType": "sa",
                     "target": "@CharStats.100",
                     "expr": "5 + @CharStats.100"
-                }
-            ]
-        },
-        {
-            "id": 1,
-            "gameIconId": 48,
-            "grabOnWalkIn": false,
-            "requiresUnlocking": false,
-            "astroCreditPrice": 100,
-            "inGamePrice": 1,
-            "name": "Fast Bullets",
-            "description": "Bullets made with a special alloy, they are lighter and faster than normal bullets, don't get used to them",
-            "effects": [
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.4",
-                    "expr": "@PrimaryWeaponStats.4 + 100"
                 }
             ]
         },
@@ -67,23 +99,6 @@
                     "effectType": "ot",
                     "target": "@CharStats.1",
                     "expr": "@CharStats.1 - 5"
-                }
-            ]
-        },
-        {
-            "id": 4,
-            "gameIconId": 12,
-            "grabOnWalkIn": false,
-            "requiresUnlocking": false,
-            "astroCreditPrice": 100,
-            "inGamePrice": 1,
-            "name": "Laser Morpher",
-            "description": "How would life get easier with a laser? Here it is for your morph gun",
-            "effects": [
-                {
-                    "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.7",
-                    "expr": "1"
                 }
             ]
         },
@@ -352,7 +367,7 @@
                 {
                     "effectType": "sa",
                     "target": "@PrimaryWeaponStats.29",
-                    "expr": "false"
+                    "expr": "true"
                 },
                 {
                     "effectType": "sa",
@@ -454,7 +469,7 @@
         {
             "id": 12,
             "grabOnWalkIn": true,
-            "gameIconId": 18,
+            "gameIconId": 45,
             "requiresUnlocking": false,
             "astroCreditPrice": 100,
             "inGamePrice": 0,
@@ -463,15 +478,15 @@
             "effects": [
                 {
                     "effectType": "sa",
-                    "target": "@PrimaryWeaponStats.102",
-                    "expr": "@PrimaryWeaponStats.102 + 100"
+                    "target": "@CharStats.19",
+                    "expr": "@CharStats.19 + 10"
                 }
             ]
         },
         {
             "id": 13,
             "grabOnWalkIn": true,
-            "gameIconId": 18,
+            "gameIconId": 46,
             "requiresUnlocking": false,
             "astroCreditPrice": 20,
             "inGamePrice": 50,
@@ -482,6 +497,23 @@
                     "effectType": "sa",
                     "target": "@SecondaryWeaponStats.3",
                     "expr": "15"
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "grabOnWalkIn": true,
+            "gameIconId": 21,
+            "requiresUnlocking": false,
+            "astroCreditPrice": 20,
+            "inGamePrice": 50,
+            "name": "Healing pillol",
+            "description": "",
+            "effects": [
+                {
+                    "effectType": "sa",
+                    "target": "@CharStats.1",
+                    "expr": "@CharStats.1 + 10"
                 }
             ]
         }

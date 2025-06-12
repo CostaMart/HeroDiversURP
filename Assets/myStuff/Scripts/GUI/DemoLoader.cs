@@ -41,6 +41,7 @@ public class DemoLoader : MonoBehaviour
         if (!loading)
         {
             loading = true;
+            Debug.Log("Loading DesertLevelHeroDivers...");
             loadingOperation = SceneManager.LoadSceneAsync("DesertLevelHeroDivers");
             loadingOperation.allowSceneActivation = false;
 
@@ -89,6 +90,7 @@ public class DemoLoader : MonoBehaviour
             yield return null;
         }
 
+        fadeStarted = false;
         loadingOperation.allowSceneActivation = true;
         isLoading = false;
     }

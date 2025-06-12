@@ -21,7 +21,7 @@ public class LostManager : MonoBehaviour
 
     public void PlayerIsAHero(CallbackContext ctx)
     {
-        Debug.Log("Player is a hero, loading DesertLevelHeroDivers scene");
+        Debug.Log("Player is a hero, loading for the lost");
         SceneManager.LoadSceneAsync("DesertLevelHeroDivers", LoadSceneMode.Single);
 
     }
