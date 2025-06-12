@@ -1,0 +1,32 @@
+{
+  "detectorConfigs": {
+    "default": {
+      "OnEnterAction": "",
+      "OnEnterEvent": "",
+      "OnExitAction": "",
+      "OnExitEvent": "",
+      "OnStayAction": "",
+      "OnStayEvent": "",
+      "detectionRange": 10.0,
+      "detectionAngle": 45.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.2,
+      "ignoreObstacles": false,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    },
+    "SpawnerDetector": {
+      "OnEnterAction": "StartSpawning",
+      "OnExitAction": "StopSpawning",
+      "detectionRange": 60.0,
+      "detectionAngle": 360.0,
+      "tagsToDetect": "PlayerTag",
+      "scanInterval": 0.5,
+      "ignoreObstacles": true,
+      "targetLayerName": "Player",
+      "useVerticalRange": false,
+      "detectionBufferSize": 1
+    }
+  }
+}

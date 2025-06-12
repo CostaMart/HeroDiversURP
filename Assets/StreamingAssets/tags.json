@@ -11,8 +11,10 @@
         {
             "name": "SpawnerTag",
             "members": [
-                "DroneSpawner", 
-                "GroundUnitSpawner",
+                "DroneSpawnArenaTag", 
+                "GroundUnitArenaSpawnTag",
+                "DroneSpawnZoneBTag", 
+                "GroundUnitZoneBSpawnTag",
                 "EnemySpawner",
                 "BossDroneSpawner",
                 "BossGroundUnitSpawner"
@@ -23,12 +25,28 @@
             "members": ["BossDroneSpawner", "BossGroundUnitSpawner"]
         },
         {
-            "name": "DroneSpawnTag",
+            "name": "DroneTag",
             "members": ["Drone"]
         },
         {
-            "name": "GroundUnitSpawnTag",
+            "name": "GroundUnitTag",
             "members": ["GroundUnit"]
+        },
+        {
+            "name": "DroneArenaSpawnerTag",
+            "members": ["DroneArenaSpawner"]
+        },
+        {
+            "name": "GroundUnitArenaSpawnTag",
+            "members": ["GroundUnitArenaSpawner"]
+        },
+        {
+            "name": "DroneZoneBSpawnTag",
+            "members": ["DroneZoneBSpawner"]
+        },
+        {
+            "name": "GroundUnitZoneBSpawnTag",
+            "members": ["GroundUnitZoneBSpawner"]
         },
         {
             "name": "ItemSpawnTag",

@@ -150,7 +150,7 @@ public class Boss : InteractiveObject
     {
         while (isMonitoring)
         {
-            float healthPercentage = dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum() / dispatcher.GetFeatureByType<float>(FeatureType.health).Sum();
+            float healthPercentage = dispatcher.GetFeatureByType<float>(FeatureType.health).Sum() / dispatcher.GetFeatureByType<float>(FeatureType.maxHealth).Sum();
             float berserkThreshold = dispatcher.GetFeatureByType<float>(FeatureType.berserkThreshold).Sum();
             // Controlla se la vita è sotto la soglia e non siamo già in berserk mode
             if (healthPercentage <= berserkThreshold && !isBerserkMode)

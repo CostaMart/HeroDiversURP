@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClassName: BossDroneSpawner
-  tagName: DroneSpawnTag
+  tagName: DroneTag
   spawnContainer: {fileID: 0}
   maxSpawnCount: 0
   autoStart: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClassName: BossGroundUnitSpawner
-  tagName: GroundUnitSpawnTag
+  tagName: GroundUnitTag
   spawnContainer: {fileID: 0}
   maxSpawnCount: 0
   autoStart: 0
@@ -2984,6 +2984,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackCollider: {fileID: 8772666909391384546}
+  bossDispatcher: {fileID: 0}
 --- !u!114 &7192065047930880695
 MonoBehaviour:
   m_ObjectHideFlags: 0
