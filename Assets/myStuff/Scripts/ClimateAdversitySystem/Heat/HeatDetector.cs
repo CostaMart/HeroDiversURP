@@ -29,9 +29,12 @@ public class HeatStats : AbstractStatsClass
 
     private float raycastTimer = 0f;
     private float timer = 0f;
+    private int layermask;
 
     void Start()
     {
+        layermask = LayerMask.GetMask("Sun", "Player", "Default", "Terrain");
+
         string path = Path.Combine(Application.streamingAssetsPath, "gameConfig/HeatSystem.json");
         var mod = JsonConvert.DeserializeObject<Dictionary<string, ModifierLoader>>(File.ReadAllText(path));
 
@@ -168,7 +171,7 @@ public class HeatStats : AbstractStatsClass
 
         Vector3 leftOrigin = rayCastLSource.position;
         Vector3 leftDir = (heatsorce.position - (transform.position + leftRayOffset)).normalized;
-        if (Physics.Raycast(leftOrigin, leftDir, out RaycastHit hitLeft, distance))
+        if (Physics.Raycast(leftOrigin, leftDir, out RaycastHit hitLeft, distance, layermask))
         {
             Debug.DrawRay(leftOrigin, leftDir * distance, Color.green, raycastInterval);
             if (hitLeft.collider.CompareTag("Sun"))
@@ -180,7 +183,7 @@ public class HeatStats : AbstractStatsClass
 
         Vector3 rightOrigin = rayCastRSource.position;
         Vector3 rightDir = (heatsorce.position - (transform.position + rightRayOffset)).normalized;
-        if (Physics.Raycast(rightOrigin, rightDir, out RaycastHit hitRight, distance))
+        if (Physics.Raycast(rightOrigin, rightDir, out RaycastHit hitRight, distance, layermask))
         {
             Debug.DrawRay(rightOrigin, rightDir * distance, Color.blue, raycastInterval);
             if (hitRight.collider.CompareTag("Sun"))

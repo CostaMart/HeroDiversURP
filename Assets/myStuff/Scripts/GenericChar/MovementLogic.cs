@@ -316,8 +316,10 @@ public class MovementLogic : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision)
+
+    void OnCollisionStay(Collision collision)
     {
+        if (isGrounded) return;
         if (collision.gameObject.CompareTag("terrain"))
         {
             jumpsAvailable = dispatcher.GetFeatureByType<int>(FeatureType.maxJumps).Sum();

@@ -126,8 +126,10 @@ public class SunController : MonoBehaviour
                 itmes++;
                 Debug.Log($"executed : {itmes} times");
                 night = true;
-                MessageHelper.Instance.PostAlarm("Night Has come", 10f);
-                SendPowerUp.Invoke(powerUP);
+                MessageHelper.Instance.PostAlarm("Monsters are now stronger", 10f);
+
+                if (SendPowerUp != null)
+                    SendPowerUp.Invoke(powerUP);
             }
 
             currentTime += Time.deltaTime;

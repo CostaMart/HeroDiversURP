@@ -496,8 +496,8 @@ public class BulletLogic : MonoBehaviour
 
         try
         {
-            otherdDispathcer.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
             otherdDispathcer.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward.normalized * hitForce, ForceMode.Impulse);
+            otherdDispathcer.AttachModifierFromOtherDispatcher(dispatcher, onHitModifier);
         }
         catch (Exception e)
         {

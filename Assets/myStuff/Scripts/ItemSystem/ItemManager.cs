@@ -256,51 +256,50 @@ public class ItemManager : MonoBehaviour
     public static List<EnrichedModifier> DropFromPool(int id)
     {
         List<EnrichedModifier> itemsToDrop = new List<EnrichedModifier>();
-        Random rand = new Random();
-        var numberOfDrops = rand.Next(dropPools[id].minDrops, dropPools[id].maxDrops + 1);
-        var items = dropPools[id].indexes.ToArray(); // get the items from the pool
-        var rarities = (int[])dropPools[id].raritiesVal.Clone();
+        var pool = dropPools[id];
+
+        // Sicurezza: clona le liste
+        List<int> items = new List<int>(pool.indexes);
+        List<int> rarities = new List<int>(pool.raritiesVal);
+
+        // Protezione: se non è con ripetizione, non possiamo pescare più elementi del pool
+        int maxAvailable = pool.withRipetition ? pool.maxDrops : Mathf.Min(pool.maxDrops, items.Count);
+        int numberOfDrops = UnityEngine.Random.Range(pool.minDrops, maxAvailable + 1);
 
         for (int i = 0; i < numberOfDrops; i++)
         {
+            int totalRarity = rarities.Sum();
+            if (totalRarity == 0 || items.Count == 0)
+                break;
 
+            // Calcola le probabilità normalizzate
+            List<float> normalized = rarities.Select(r => (float)r / totalRarity).ToList();
 
-            var totalRarity = rarities.Sum();
-            var normalizeRarities = rarities.Select(r => (float)r / totalRarity).ToArray();
+            // Seleziona un elemento in base alla probabilità
+            float randValue = UnityEngine.Random.value;
+            float cumulative = 0f;
 
-
-
-            var selected = rand.NextDouble();
-            var lowerBound = 0f;
-            var upperbound = 0f;
-            int index = 0;
-
-            foreach (var prob in normalizeRarities)
+            for (int j = 0; j < normalized.Count; j++)
             {
-                upperbound = upperbound + prob;
-
-                if (selected <= upperbound && selected >= lowerBound)
+                cumulative += normalized[j];
+                if (randValue <= cumulative)
                 {
+                    int selectedItemIndex = items[j];
 
-                    if (items[index] == -1) break;
-
-                    itemsToDrop.Add(globalItemPool[items[index]]);
-
-                    if (dropPools[id].withRipetition == false)
+                    // Controllo di sicurezza
+                    if (selectedItemIndex >= 0 && selectedItemIndex < globalItemPool.Count)
                     {
-                        var momList = items.ToList();
-                        momList.RemoveAt(index);
-                        items = momList.ToArray(); // set the item to -1 to avoid duplicates
-                        var momRarities = rarities.ToList();
-                        momRarities.RemoveAt(index);
-                        rarities = momRarities.ToArray(); // remove the rarity of the item from the pool to avoid duplicates
+                        itemsToDrop.Add(globalItemPool[selectedItemIndex]);
+                    }
+
+                    if (!pool.withRipetition)
+                    {
+                        items.RemoveAt(j);
+                        rarities.RemoveAt(j);
                     }
 
                     break;
                 }
-
-                index++;
-                lowerBound += prob;
             }
         }
 

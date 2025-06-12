@@ -25,7 +25,6 @@ public class PostProcessor : InteractiveObject
         base.Awake();
 
         RegisterAction(ActionRegistry.ENABLE_LOST_SCREEN, (_) => Lost());
-        RegisterAction(ActionRegistry.ENABLE_WIN_SCREEN, (_) => Lost());
         RegisterAction(ActionRegistry.PLAY_SOUND, EmitGenericSoundEffect);
     }
     public void ShowDamageEffect(float duration, float alpha)

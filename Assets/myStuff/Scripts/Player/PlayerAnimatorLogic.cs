@@ -228,7 +228,7 @@ public class PlayerAnimatorLogic : MonoBehaviour
 
 
     int jumpHash = Animator.StringToHash("jump");
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("terrain"))
         {
