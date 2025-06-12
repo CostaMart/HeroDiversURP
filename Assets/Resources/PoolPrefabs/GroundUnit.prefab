@@ -265,9 +265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dirty: 0
   mydispatcher: {fileID: 0}
-  dropper: {fileID: 0}
-  ragdoller: {fileID: 0}
-  player: {fileID: 0}
+  isPlayer: 0
 --- !u!114 &7855717922795911030
 MonoBehaviour:
   m_ObjectHideFlags: 0
