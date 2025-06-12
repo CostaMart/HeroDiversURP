@@ -29,6 +29,7 @@ public static class ActionRegistry
     public static readonly ActionID START_SPAWNING = RegisterAction("StartSpawning");
     public static readonly ActionID STOP_SPAWNING = RegisterAction("StopSpawning");
     public static readonly ActionID SPAWN_BATCH = RegisterAction("SpawnBatch");
+    public static readonly ActionID DISABLE_OBJECT = RegisterAction("DisableObject");
 
     public static ActionID RegisterAction(string actionName)
     {

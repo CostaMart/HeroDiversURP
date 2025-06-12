@@ -832,7 +832,7 @@ public class Spawner : InteractiveObject
 
     private IEnumerator SpawnBatchCoroutine(int batchSize)
     {
-        while (batchSize-- >= 0)
+        while (batchSize-- > 0)
         {
             SpawnSingleObject();
             yield return null;

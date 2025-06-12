@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ public class NPC : InteractiveObject
     EffectsDispatcher dispatcher;
     AgentController agentController;
     EnemyAttack enemyAttack;
-    EnemyDropper dropper; 
+    EnemyDropper dropper;
 
     bool isCooldownElapsed = true; // Flag to check if the cooldown is elapsed
     bool isAttacking = false;
@@ -27,7 +28,7 @@ public class NPC : InteractiveObject
     }
 
     State currentState = State.Idle;
-    private bool isDead;
+    private bool isDead = false;
 
     protected override void Awake()
     {
@@ -75,9 +76,9 @@ public class NPC : InteractiveObject
         RegisterAction(ActionRegistry.WAIT_AND_START_PATROL, (_) => StartCoroutine(OnWaitAtLastKnownPosition()));
         RegisterAction(ActionRegistry.ROTATE_TO_TARGET, OnRotateToTarget);
         RegisterAction(ActionRegistry.AIM_AT_TARGET, OnAimAtTarget);
+        RegisterAction(ActionRegistry.DISABLE_OBJECT, (_) => Disable());
 
         // Registra gli eventi
-        RegisterEvent(EventRegistry.STATE_CHANGED);
         RegisterEvent(EventRegistry.TARGET_DETECTED);
         RegisterEvent(EventRegistry.TARGET_LOST);
         RegisterEvent(EventRegistry.ATTACK_STARTED);
@@ -250,11 +251,19 @@ public class NPC : InteractiveObject
 
     private void Die()
     {
-        if (isDead) return; 
+        if (isDead) return;
         isDead = true;
         agentController.StopAgent();
         StopAllCoroutines();
         gameObject.SetActive(false);
         dropper.DropItem();
+    }
+    
+    private void Disable()
+    {
+        StopAllCoroutines();
+        agentController.StopAgent();
+        isDead = true;
+        gameObject.SetActive(false);
     }
 }

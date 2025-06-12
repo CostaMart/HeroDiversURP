@@ -37,12 +37,12 @@ public class Boss : InteractiveObject
         RegisterAction(ActionRegistry.GET_UP, (_) => animator.SetTrigger("getUp"));
 
         // ========== Events ==========
-        RegisterEvent(EventRegistry.STATE_CHANGED);
         RegisterEvent(EventRegistry.TARGET_DETECTED);
         RegisterEvent(EventRegistry.TARGET_LOST);
         RegisterEvent(EventRegistry.ATTACK_STARTED);
         RegisterEvent(EventRegistry.ATTACK_ENDED);
         RegisterEvent(EventRegistry.BERSERK_MODE);
+        RegisterEvent(EventRegistry.BOSS_DEFEATED);
 
         StartHealthMonitoring();
     }
@@ -205,19 +205,24 @@ public class Boss : InteractiveObject
 
     private void Die()
     {
-        if (isDead) return; 
+        if (isDead) return;
         isDead = true;
         agentController.StopAgent();
         isMonitoring = false;
-        if (healthMonitorCoroutine != null)
-            StopCoroutine(healthMonitorCoroutine);
-        if (berserkEventCoroutine != null)
-            StopCoroutine(berserkEventCoroutine);
+        StopAllCoroutines();
 
         GetComponentsInChildren<Detector>().ToList().ForEach(d => d.enabled = false);
 
         animator.SetTrigger("die");
-        EmitEvent(EventRegistry.OBJECT_DISABLED, new object[] { gameObject });
+        EmitEvent(EventRegistry.BOSS_DEFEATED, new object[] { gameObject });
         Debug.Log("Boss died!");
     }
+
+    void OnDeath()
+    {
+        // Logica da eseguire quando il boss muore
+        Debug.Log("Boss has died. Triggering death logic.");
+        EmitEvent(EventRegistry.OBJECT_DISABLED, new object[] { gameObject });
+    }
+    
 }

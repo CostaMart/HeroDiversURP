@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class EventRegistry
 {
@@ -7,14 +6,14 @@ public static class EventRegistry
     private static readonly Dictionary<int, EventID> eventsById = new();
     private static int nextId = 1;
 
-    // Eventi predefiniti del sistema
+    // Eventi dei personaggi
     public static readonly EventID TARGET_DETECTED = RegisterEvent("TargetDetected");
     public static readonly EventID TARGET_LOST = RegisterEvent("TargetLost");
     public static readonly EventID ATTACK_STARTED = RegisterEvent("AttackStarted");
     public static readonly EventID ATTACK_ENDED = RegisterEvent("AttackEnded");
-    public static readonly EventID STATE_CHANGED = RegisterEvent("StateChanged");
     public static readonly EventID OBJECT_GRABBED = RegisterEvent("ObjectGrabbed");
     public static readonly EventID BERSERK_MODE = RegisterEvent("BerserkMode");
+    public static readonly EventID BOSS_DEFEATED = RegisterEvent("BossDefeated");
 
     // Eventi generici per ciclo di vita oggetti
     public static readonly EventID OBJECT_ENABLED = RegisterEvent("ObjectEnabled");

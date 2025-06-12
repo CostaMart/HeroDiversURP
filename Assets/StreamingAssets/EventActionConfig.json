@@ -20,16 +20,6 @@
                 {
                     "action": "EnableWinScreen",
                     "tag": "PostProcessingTag",
-                    "emitterFilters": ["Player"]
-                },
-                {
-                    "action": "DisableObject",
-                    "tag": "EnemyTag",
-                    "emitterFilters": ["BossMatio"]
-                },
-                {
-                    "action": "StopSpawning",
-                    "tag": "SpawnerTag",
                     "emitterFilters": ["BossMatio"]
                 }
             ]
@@ -41,6 +31,19 @@
                 {
                     "action": "SpawnBatch",
                     "tag": "BossSpawnTag"
+                }
+            ]
+        },
+        {
+            "name": "BossDefeated",
+            "actions": [
+                {
+                    "action": "DisableObject",
+                    "tag": "EnemyTag"
+                },
+                {
+                    "action": "StopSpawning",
+                    "tag": "SpawnerTag"
                 }
             ]
         }
