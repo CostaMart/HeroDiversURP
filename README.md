@@ -28,7 +28,6 @@ Once a working and presentable version was completed, development was paused. Ho
 - 🧬 **Gameplay modifiers**: dynamically alter weapons and player behavior  
 - 📁 **Data-driven configuration**: all items and modifiers are defined in external JSON files  
 - 🔁 **High replayability** thanks to custom content support and modularity  
-- 🤖 **Custom enemy AI** (the "Raim") built for flexibility and maintainability
 
 ---
 
