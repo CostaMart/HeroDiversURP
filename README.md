@@ -64,11 +64,8 @@ if you just wish to try the game out, you can download the zip file posted as re
 
 ---
 
-## 📸 Screenshots
 
-_Add your gameplay screenshots here (e.g., player shooting, modifiers in action, overheating effect, etc.)_
 
----
 
 ## 👨‍💻 Development Team
 
